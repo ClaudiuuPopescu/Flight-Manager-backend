@@ -1,5 +1,7 @@
 package service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,7 @@ public class UserService {
 
 		User user = userConverter.createUserModelToUser(createUserModel);
 		user.setActive(false);
-		// TODO generate unique username
+
 		String username = generateUsername(createUserModel.getFirstName(), createUserModel.getLastName());
 		user.setUsername(username);
 		// TODO encrypt password
@@ -53,6 +55,8 @@ public class UserService {
 	}
 
 	private boolean checkIfUsernameExists(String username) {
-		return false; // TODO add logic
+		Optional<User> user = userRepository.findByUsername(username);
+
+		return user.isEmpty() ? true : false;
 	}
 }
