@@ -1,6 +1,6 @@
 package model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,7 +57,7 @@ public class Company {
 	private String email;
     
     @Column(name = "foundedIn")
-	private Date foundedIn;
+	private LocalDate foundedIn;
     
     @Column(name = "activ")
     private boolean activ = true;

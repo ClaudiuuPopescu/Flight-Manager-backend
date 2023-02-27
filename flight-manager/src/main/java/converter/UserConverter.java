@@ -1,11 +1,14 @@
 package converter;
 
+import org.springframework.stereotype.Component;
+
 import model.User;
 import modelHelper.CreateUserModel;
 
+@Component
 public class UserConverter {
 
-	public static User createUserModelToUser(CreateUserModel createUserModel) {
+	public User createUserModelToUser(CreateUserModel createUserModel) {
 
 		User user = User.builder().firstName(createUserModel.getFirstName()).lastName(createUserModel.getLastName())
 				.email(createUserModel.getEmail()).phoneNumber(createUserModel.getPhoneNumber())
