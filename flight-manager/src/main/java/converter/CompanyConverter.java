@@ -1,24 +1,20 @@
 package converter;
 
-import dto.CompanyDTO;
+import dto.CompanyDto;
 import model.Company;
 
-public class CompanyConverter implements IConverter<Company, CompanyDTO>{
+public class CompanyConverter implements IConverter<Company, CompanyDto> {
 
 	@Override
-	public Company convertToEntity(CompanyDTO companyDTO) {
+	public Company convertToEntity(CompanyDto companyDto) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public CompanyDTO convertToDTO(Company company) {
-		
-		return CompanyDTO.builder()
-		.idCompany(company.getIdCompany())
-		.build();
-	}
+	public CompanyDto convertToDTO(Company company) {
 
-	
+		return null;
+	}
 
 }

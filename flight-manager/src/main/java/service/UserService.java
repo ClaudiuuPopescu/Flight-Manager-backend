@@ -17,11 +17,13 @@ public class UserService {
 	private UserRepository userRepository;
 	@Autowired
 	private UserValidator userValidator;
+	@Autowired
+	private UserConverter userConverter;
 
 	public UserDto createUser(CreateUserModel createUserModel) {
 		userValidator.validateCreateUserModel(createUserModel);
 
-		User user = UserConverter.createUserModelToUser(createUserModel);
+		User user = userConverter.createUserModelToUser(createUserModel);
 		user.setActive(false);
 		// TODO generate unique username
 		String username = generateUsername(createUserModel.getFirstName(), createUserModel.getLastName());
