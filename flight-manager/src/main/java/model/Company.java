@@ -4,18 +4,63 @@ import java.sql.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
+@Entity(name = "Company")
+@Table(name = "company")
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Company {
 
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
+    @Column(name = "idCompany")
+	private Long idCompany;
+    
+    @Column(name = "name", length = 30, nullable = false)
+    @Length(max = 30)
+    @NotNull
 	private String name;
+    
+    @Column(name = "phone_number", unique = true, nullable = false)
+    @NotNull
 	private String phoneNumber;
+    
+    @Column(name = "email", length = 40, unique = true, nullable = false)
+    @Length(max = 40)
+    @NotNull
 	private String email;
+    
+    @Column(name = "foundedIn")
 	private Date foundedIn;
+    
+    @Column(name = "activ")
+    private boolean activ = true;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
@@ -26,4 +71,6 @@ public class Company {
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 	private Set<User> employees = new HashSet<>();
+	
+	
 }
