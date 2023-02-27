@@ -45,8 +45,8 @@ public class UserValidator {
 	}
 
 	public void validateEmail(String email) {
-		// pattern: [email]@msggroup.com
-		String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@msggroup.com$";
+		// pattern: [email]@airline.com
+		String regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@airline.com$";
 
 		Pattern pattern = Pattern.compile(regexPattern);
 		Matcher matcher = pattern.matcher(email);
@@ -57,7 +57,14 @@ public class UserValidator {
 	}
 
 	public void validatePhoneNumber(String phoneNumber) {
-		// TODO sa vad aici ce criterii sa fie
+		String regexRo = "^(\\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\\s|\\.|\\-)?([0-9]{3}(\\s|\\.|\\-|)){2}$";
+
+		Pattern pattern = Pattern.compile(regexRo);
+		Matcher matcher = pattern.matcher(phoneNumber);
+
+		if (!matcher.matches()) {
+			// TODO throw exception
+		}
 	}
 
 	public void validatePassword(String password) {

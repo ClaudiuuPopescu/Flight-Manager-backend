@@ -2,21 +2,18 @@ package service.interfaces;
 
 import java.util.List;
 
-import dto.CompanyDTO;
+import dto.CompanyDto;
 
 public interface ICompanyService {
 
-	void addCompany(CompanyDTO companyDTO);
-	
-	void updateCompany(CompanyDTO companyDTO);
-	
+	void addCompany(CompanyDto companyDto);
+
+	void updateCompany(CompanyDto companyDto);
+
 	void dezactivateCompany(Long idCompany);
-	
-	List<CompanyDTO> findAll();
-	
-	CompanyDTO findByCompanyID(Long idCompany);
-	
-	
-	
-	
+
+	List<CompanyDto> findAll();
+
+	CompanyDto findByCompanyID(Long idCompany);
+
 }
