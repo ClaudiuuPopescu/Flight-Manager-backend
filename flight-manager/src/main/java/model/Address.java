@@ -3,6 +3,7 @@ package model;
 import java.util.HashSet;
 import java.util.Set;
 
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -16,7 +17,8 @@ public class Address {
 	private String city;
 	private String street;
 	private int streetNumber;
-	private int apartment; // optional daca sta la casa
+	@Nullable
+	private int apartment;
 
 	@OneToMany(mappedBy = "address", orphanRemoval = true, cascade = CascadeType.PERSIST)
 	private Set<User> users = new HashSet<>();
