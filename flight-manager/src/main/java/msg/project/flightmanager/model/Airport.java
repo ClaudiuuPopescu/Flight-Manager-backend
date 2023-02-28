@@ -1,40 +1,51 @@
 package msg.project.flightmanager.model;
 
+import java.util.Set;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Table(name = "Airport")
-@Getter
-@Setter
-@NoArgsConstructor
+@Entity(name = "Airport")
+@Table(name = "airport")
+@Data
+@Builder(toBuilder = true)
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Airport {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Long id;
-
-	@Column
-	private String name;
-
-	@Column
-	private String timeZone;
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "airportName")
+	private String airportName;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
+
+	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+	@Column(name = "flight_start")
+	private Set<Flight> flightsStart;
+
+	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
+	@Column(name = "flight_end")
+	private Set<Flight> flightsEnd;
+
 }

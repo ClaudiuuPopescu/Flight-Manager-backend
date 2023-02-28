@@ -2,6 +2,10 @@ package msg.project.flightmanager.model;
 
 import java.sql.Date;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,46 +16,56 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Table(name = "Plane")
-@Getter
-@Setter
-@NoArgsConstructor
+@Entity(name = "Plane")
+@Table(name = "plane")
+@Data
+@Builder(toBuilder = true)
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
+@EqualsAndHashCode
+@JsonIgnoreProperties("hibernateLazyInitializer")
 public class Plane {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "idPlane")
+	private Long idPlane;
 
-	@Column
+	@Column(name = "model", nullable = false, unique = true)
 	private String model;
 
-	@Column
+	@Column(name = "capacity", nullable = false)
 	private int capacity;
 
-	@Column
+	@Column(name = "range", nullable = false)
 	private Long range;
 
-	@Column
+	@Column(name = "fuelTankCapacity", nullable = false)
 	private int fuelTankCapacity;
 
-	@Column
+	@Column(name = "manufacturingDate")
 	private Date manufacturingDate;
 
-	@Column
+	@Column(name = "firstFlight")
 	private Date firstFlight;
 
-	@Column
+	@Column(name = "lastRevision")
 	private Date lastRevision;
 
 	@ManyToOne
 	@JoinColumn(name = "company_id")
 	private Company company;
+
+	public void addToCompany() {
+		company.getPlanes().add(this);
+	}
+
+	public void removeFRomCompany() {
+		company.getPlanes().remove(this);
+	}
 }
