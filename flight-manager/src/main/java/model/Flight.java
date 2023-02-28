@@ -1,5 +1,6 @@
 package model;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Entity;
@@ -14,8 +15,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "flight")
 @Data
 @Builder(toBuilder = true)
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 @EqualsAndHashCode
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Flight {
