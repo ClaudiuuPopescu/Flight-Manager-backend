@@ -1,7 +1,6 @@
 package dto;
 
-import java.sql.Date;
-
+import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,8 +9,12 @@ import lombok.Data;
 public class CompanyDto {
 
 	private String name;
+    
 	private String phoneNumber;
+    
 	private String email;
-	private Date foundedIn;
+
+	private LocalDate foundedIn;
+	
 	private AddressDto address;
 }
