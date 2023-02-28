@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -60,16 +61,22 @@ public class Company {
 	private LocalDate foundedIn;
     
     @Column(name = "activ")
+	@Builder.Default
     private boolean activ = true;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy="to",
+    		fetch = FetchType.LAZY,
+    		cascade = CascadeType.ALL,
+    		orphanRemoval = false)
+	@Builder.Default
 	private Set<Plane> planes = new HashSet<>();
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+	@Builder.Default
 	private Set<User> employees = new HashSet<>();
 	
 	

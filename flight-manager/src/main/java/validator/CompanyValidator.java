@@ -79,7 +79,7 @@ public class CompanyValidator {
 
 		else if (currentDate.getYear() == foundedIn.getYear()) {
 			if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == 0) {
-				if (currentDate.getDayOfMonth() > foundedIn.getDayOfMonth())
+				if (currentDate.getDayOfMonth() < foundedIn.getDayOfMonth())
 					throw new ValidatorException("The day should be lower than the current day!", ErrorCode.WRONG_INTERVAL);
 			} else if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == -1)
 				throw new ValidatorException("The month should be lower than the current month!", ErrorCode.WRONG_INTERVAL);
