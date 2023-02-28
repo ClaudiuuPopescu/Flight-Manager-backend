@@ -9,19 +9,14 @@ import org.springframework.stereotype.Service;
 
 import converter.CompanyConverter;
 import dto.CompanyDto;
-import lombok.Getter;
-import lombok.Setter;
 import model.Company;
 import repository.CompanyRepository;
 import service.interfaces.ICompanyService;
 import validator.CompanyValidator;
 
-
 @Service
-@Getter
-@Setter
-public class CompanyService implements ICompanyService{
-	
+public class CompanyService implements ICompanyService {
+
 	@Autowired
 	private CompanyRepository companyRepository;
 	
@@ -88,7 +83,6 @@ public class CompanyService implements ICompanyService{
 		Company companyToDezactivate = findByCompanyName(companyName);
 		companyToDezactivate.setActiv(false);
 		this.companyRepository.save(companyToDezactivate);
-
 	}
 
 	@Override
@@ -105,7 +99,6 @@ public class CompanyService implements ICompanyService{
         }
         return companyOptional.get();
 	}
-
 
 
 }

@@ -17,4 +17,5 @@ public interface ICompanyService {
 	
 	Company findByCompanyName(String companyName);
 
+
 }
