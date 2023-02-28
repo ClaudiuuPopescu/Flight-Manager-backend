@@ -1,25 +1,34 @@
 package converter;
 
-import org.springframework.stereotype.Component;
-
 import dto.AddressDto;
-import msg.project.flightmanager.model.Address;
+import model.Address;
 
-@Component
-public class AddressConverter implements IConverter<Address, AddressDto> {
+public class AddressConverter implements IConverter<Address, AddressDto>{
 
 	@Override
 	public AddressDto convertToDTO(Address address) {
-		AddressDto addressDto = AddressDto.builder().coutry(address.getCoutry()).city(address.getCity())
-				.street(address.getStreet()).streetNumber(address.getStreetNumber()).apartment(address.getApartment())
+
+		return AddressDto.builder()
+				.idAddress(address.getIdAddress())
+				.coutry(address.getCountry())
+				.city(address.getCity())
+				.street(address.getStreet())
+				.streetNumber(address.getStreetNumber())
+				.apartment(address.getApartment())
 				.build();
-		return addressDto;
 	}
 
 	@Override
-	public Address convertToEntity(AddressDto dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public Address convertToEntity(AddressDto addressDto) {
+		
+		return Address.builder()
+				.idAddress(addressDto.getIdAddress())
+				.country(addressDto.getCoutry())
+				.city(addressDto.getCity())
+				.street(addressDto.getStreet())
+				.streetNumber(addressDto.getStreetNumber())
+				.apartment(addressDto.getApartment())
+				.build();
 	}
 
 }
