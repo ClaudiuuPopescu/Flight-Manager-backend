@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 
 import dto.AddressDto;
 import dto.CompanyDto;
+import exceptions.ErrorCode;
+import exceptions.ValidatorException;
 
 @Component
 public class CompanyValidator {
@@ -17,7 +19,7 @@ public class CompanyValidator {
 	@Autowired
 	private AddressValidator addressValidator;
 
-	public void validateCompany(CompanyDto companyDto) throws Exception {
+	public void validateCompany(CompanyDto companyDto) throws ValidatorException {
 		validateName(companyDto.getName());
 		validateEmail(companyDto.getEmail());
 		validatePhoneNumber(companyDto.getPhoneNumber());
@@ -25,62 +27,62 @@ public class CompanyValidator {
 		validateAddress(companyDto.getAddress());
 	}
 
-	public void validateAddress(AddressDto addressDto) throws Exception {
+	public void validateAddress(AddressDto addressDto) throws ValidatorException {
 
 		addressValidator.validateAddress(addressDto);
 	}
 
-	public void validateName(String name) throws Exception {
+	public void validateName(String name) throws ValidatorException {
 
 		if (name.isEmpty())
-			throw new IllegalAccessException("Name cannot be empty!");
+			throw new ValidatorException("Name cannot be empty!", ErrorCode.EMPTY_FIELD);
 
 		if (!StringUtils.isAsciiPrintable(name))
-			throw new Exception("Name can contain only letters!");
+			throw new ValidatorException("Name can contain only letters!", ErrorCode.IS_NOT_OUT_OF_LETTERS);
 
 		if (name.length() < 1 || name.length() > 30)
-			throw new Exception("Name can can have the lenght between 1 and 30!");
+			throw new ValidatorException("Name can can have the lenght between 1 and 30!", ErrorCode.WRONG_INTERVAL);
 	}
 
-	public void validateEmail(String email) throws Exception {
+	public void validateEmail(String email) throws ValidatorException {
 		
 		if(email.isEmpty())
-			throw new IllegalAccessException("Email cannot be empty!");
+			throw new ValidatorException("Email cannot be empty!", ErrorCode.EMPTY_FIELD);
 
 		if (!email.matches(EMAIL_REGEX)) {
-			throw new Exception("The email should look like wizzair@company.com!");
+			throw new ValidatorException("The email should look like wizzair@company.com!", ErrorCode.WRONG_FROMAT);
 		}
 		if (email.length() <= 13) {
-			throw new Exception("The email is not long enought!");
+			throw new ValidatorException("The email is not long enought!", ErrorCode.IS_TOO_SHORT);
 		}
 	}
 
-	public void validatePhoneNumber(String phoneNumber) throws Exception {
+	public void validatePhoneNumber(String phoneNumber) throws ValidatorException {
 
 		if(phoneNumber.isEmpty())
-			throw new IllegalAccessException("PhoneNumber cannot be empty!");
+			throw new ValidatorException("PhoneNumber cannot be empty!", ErrorCode.EMPTY_FIELD);
 		
 		if(phoneNumber.length() < 10 || phoneNumber.length() > 10)
-			throw new Exception("The phone number should have 10 numbers!");
+			throw new ValidatorException("The phone number should have 10 numbers!", ErrorCode.IS_TOO_SHORT);
 		
 		if (!phoneNumber.matches(PHONE_NUMBER_REGEX)) {
-			throw new Exception("Wrong phone number!");
+			throw new ValidatorException("Wrong phone number!", ErrorCode.WRONG_FROMAT);
 		}
 	}
 
-	public void validateFoundedIn(LocalDate foundedIn) {
+	public void validateFoundedIn(LocalDate foundedIn) throws ValidatorException {
 
 		LocalDate currentDate = java.time.LocalDate.now();
 
 		if (currentDate.getYear() < foundedIn.getYear())
-			throw new IllegalArgumentException("The year should be lower than the current year!");
+			throw new ValidatorException("The year should be lower than the current year!", ErrorCode.WRONG_INTERVAL);
 
 		else if (currentDate.getYear() == foundedIn.getYear()) {
 			if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == 0) {
 				if (currentDate.getDayOfMonth() > foundedIn.getDayOfMonth())
-					throw new IllegalArgumentException("The day should be lower than the current day!");
+					throw new ValidatorException("The day should be lower than the current day!", ErrorCode.WRONG_INTERVAL);
 			} else if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == -1)
-				throw new IllegalArgumentException("The month should be lower than the current month!");
+				throw new ValidatorException("The month should be lower than the current month!", ErrorCode.WRONG_INTERVAL);
 		}
 	}
 
