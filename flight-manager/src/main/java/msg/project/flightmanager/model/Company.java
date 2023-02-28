@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.sql.Date;
 import java.util.HashSet;
@@ -36,31 +36,31 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Company {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "idCompany")
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "idCompany")
 	private Long idCompany;
-    
-    @Column(name = "name", length = 30, nullable = false)
-    @Length(max = 30)
-    @NotNull
+
+	@Column(name = "name", length = 30, nullable = false)
+	@Length(max = 30)
+	@NotNull
 	private String name;
-    
-    @Column(name = "phone_number", unique = true, nullable = false)
-    @NotNull
+
+	@Column(name = "phone_number", unique = true, nullable = false)
+	@NotNull
 	private String phoneNumber;
-    
-    @Column(name = "email", length = 40, unique = true, nullable = false)
-    @Length(max = 40)
-    @NotNull
+
+	@Column(name = "email", length = 40, unique = true, nullable = false)
+	@Length(max = 40)
+	@NotNull
 	private String email;
-    
-    @Column(name = "foundedIn")
+
+	@Column(name = "foundedIn")
 	private Date foundedIn;
-    
-    @Column(name = "activ")
-    private boolean activ = true;
+
+	@Column(name = "activ")
+	private boolean activ = true;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
@@ -71,6 +71,5 @@ public class Company {
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 	private Set<User> employees = new HashSet<>();
-	
-	
+
 }

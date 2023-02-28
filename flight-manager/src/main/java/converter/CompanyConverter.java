@@ -1,7 +1,7 @@
 package converter;
 
 import dto.CompanyDto;
-import model.Company;
+import msg.project.flightmanager.model.Company;
 
 public class CompanyConverter implements IConverter<Company, CompanyDto> {
 

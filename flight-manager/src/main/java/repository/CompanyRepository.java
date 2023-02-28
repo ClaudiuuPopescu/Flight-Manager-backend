@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import jakarta.transaction.Transactional;
-import model.Company;
+import msg.project.flightmanager.model.Company;
 
 @Repository
 @Transactional
