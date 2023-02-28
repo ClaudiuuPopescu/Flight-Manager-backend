@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.sql.Date;
 
@@ -30,41 +30,41 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Plane {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "idPlane")
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "idPlane")
 	private Long idPlane;
-    
-    @Column(name = "model", nullable = false, unique = true)
+
+	@Column(name = "model", nullable = false, unique = true)
 	private String model;
-    
-    @Column(name = "capacity", nullable = false)
+
+	@Column(name = "capacity", nullable = false)
 	private int capacity;
-    
-    @Column(name = "range", nullable = false)
+
+	@Column(name = "range", nullable = false)
 	private Long range;
-    
-    @Column(name = "fuelTankCapacity", nullable = false)
+
+	@Column(name = "fuelTankCapacity", nullable = false)
 	private int fuelTankCapacity;
-    
-    @Column(name = "manufacturingDate")
+
+	@Column(name = "manufacturingDate")
 	private Date manufacturingDate;
-    
-    @Column(name = "firstFlight")
+
+	@Column(name = "firstFlight")
 	private Date firstFlight;
-    
-    @Column(name = "lastRevision")
+
+	@Column(name = "lastRevision")
 	private Date lastRevision;
 
 	@ManyToOne
 	@JoinColumn(name = "company_id")
 	private Company company;
-	
+
 	public void addToCompany() {
 		company.getPlanes().add(this);
 	}
-	
+
 	public void removeFRomCompany() {
 		company.getPlanes().remove(this);
 	}

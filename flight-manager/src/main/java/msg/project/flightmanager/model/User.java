@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.util.Date;
 import java.util.Objects;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "User")
+@Table(name = "user")
 @Getter
 @Setter
 @NoArgsConstructor
