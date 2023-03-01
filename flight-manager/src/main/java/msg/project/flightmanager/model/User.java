@@ -3,6 +3,8 @@ package msg.project.flightmanager.model;
 import java.util.Date;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class User {
 
 	@Id
@@ -43,10 +46,10 @@ public class User {
 	@Column
 	private String lastName;
 
-	@Column
+	@Column(unique = true)
 	private String email;
 
-	@Column
+	@Column(unique = true)
 	private String phoneNumber;
 
 	@Column
@@ -81,7 +84,6 @@ public class User {
 				phoneNumber, role, username);
 	}
 
-	// TODO de facut hash si equals la restul claselor, company, role, address
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

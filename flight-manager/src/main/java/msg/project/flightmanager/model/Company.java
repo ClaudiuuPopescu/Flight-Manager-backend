@@ -56,22 +56,19 @@ public class Company {
 	@Length(max = 40)
 	@NotNull
 	private String email;
-    
-    @Column(name = "foundedIn")
+
+	@Column(name = "foundedIn")
 	private LocalDate foundedIn;
-    
-    @Column(name = "activ")
+
+	@Column(name = "activ")
 	@Builder.Default
-    private boolean activ = true;
+	private boolean activ = true;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@OneToMany(mappedBy="to",
-    		fetch = FetchType.LAZY,
-    		cascade = CascadeType.ALL,
-    		orphanRemoval = false)
+	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Builder.Default
 	private Set<Plane> planes = new HashSet<>();
 

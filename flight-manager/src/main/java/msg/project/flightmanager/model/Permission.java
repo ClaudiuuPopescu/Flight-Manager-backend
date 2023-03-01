@@ -3,6 +3,8 @@ package msg.project.flightmanager.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import enums.PermissionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,12 +20,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Permission")
+@Table(name = "permission")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Permission {
 
 	@Id
@@ -35,6 +38,7 @@ public class Permission {
 	private PermissionEnum permissionEnum;
 
 	@ManyToMany(mappedBy = "permissions")
+	@Builder.Default
 	private Set<Role> roles = new HashSet<>();
 
 }

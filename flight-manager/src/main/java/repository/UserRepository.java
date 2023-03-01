@@ -12,6 +12,12 @@ import msg.project.flightmanager.model.User;
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
 
-	@Query("SELECT u FROM User u where u.username = :username")
+	@Query("SELECT u FROM user u where u.username = :username")
 	Optional<User> findByUsername(@Param("username") String username);
+
+	@Query("SELECT u FROM user u where u.phoneNumber = :phoneNumber")
+	Optional<User> findByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+	@Query("SELECT u FROM user u where u.email = :email")
+	Optional<User> findByEmail(@Param("email") String email);
 }

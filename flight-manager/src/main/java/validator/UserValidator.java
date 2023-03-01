@@ -3,17 +3,24 @@ package validator;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 import exceptions.FlightManagerException;
 import modelHelper.CreateUserModel;
+import modelHelper.EditUserModel;
+import msg.project.flightmanager.model.User;
+import repository.UserRepository;
 
 @Component
 public class UserValidator {
+	@Autowired
+	private UserRepository userRepository;
 
 	public void validateCreateUserModel(CreateUserModel createUserModel) {
 		validateFirstName(createUserModel.getFirstName());
@@ -22,6 +29,12 @@ public class UserValidator {
 		validatePhoneNumber(createUserModel.getPhoneNumber());
 		validatePassword(createUserModel.getPassword());
 		validateBithDate(createUserModel.getBirthDate());
+	}
+
+	public void validateEditUserModel(EditUserModel editUserModel) {
+		validateLastName(editUserModel.getLastName());
+		validateEmail(editUserModel.getEmail());
+		validatePhoneNumber(editUserModel.getPhoneNumber());
 	}
 
 	public void validateFirstName(String firstName) {
@@ -57,6 +70,13 @@ public class UserValidator {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
 					"The email entered does not match our convension");
 		}
+
+		Optional<User> user = userRepository.findByEmail(email);
+
+		if (user.isPresent()) {
+			throw new FlightManagerException(HttpStatus.IM_USED, "The email is already exists");
+		}
+
 	}
 
 	public void validatePhoneNumber(String phoneNumber) {
@@ -67,6 +87,12 @@ public class UserValidator {
 
 		if (!matcher.matches()) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The phone number must be romanian");
+		}
+
+		Optional<User> user = userRepository.findByPhoneNumber(phoneNumber);
+
+		if (user.isPresent()) {
+			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already exists");
 		}
 	}
 
