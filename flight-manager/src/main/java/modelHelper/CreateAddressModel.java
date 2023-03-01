@@ -2,9 +2,9 @@ package modelHelper;
 
 import io.micrometer.common.lang.Nullable;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 @Builder
 public class CreateAddressModel {
 

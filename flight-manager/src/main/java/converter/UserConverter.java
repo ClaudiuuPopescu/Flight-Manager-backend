@@ -1,18 +1,29 @@
 package converter;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dto.UserDto;
-import model.User;
 import modelHelper.CreateUserModel;
+import msg.project.flightmanager.model.User;
 
 @Component
 public class UserConverter implements IConverter<User, UserDto> {
+	@Autowired
+	private AddressConverter addressConverter;
+	@Autowired
+	private CompanyConverter companyConverter;
+	@Autowired
+	private RoleConverter roleConverter;
 
 	@Override
-	public UserDto convertToDTO(User entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public UserDto convertToDTO(User user) {
+		UserDto userDto = UserDto.builder().firstName(user.getFirstName()).lastName(user.getLastName())
+				.username(user.getUsername()).email(user.getEmail()).phoneNumber(user.getPhoneNumber())
+				.birthDate(user.getBirthDate()).address(addressConverter.convertToDTO(user.getAddress()))
+				.role(roleConverter.convertToDTO(user.getRole()))
+				.company(companyConverter.convertToDTO(user.getCompany())).build();
+		return userDto;
 	}
 
 	@Override

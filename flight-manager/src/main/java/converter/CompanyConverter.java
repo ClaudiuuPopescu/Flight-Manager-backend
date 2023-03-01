@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import dto.CompanyDto;
-import model.Company;
+import msg.project.flightmanager.model.Company;
 
 @Component
 public class CompanyConverter implements IConverter<Company, CompanyDto> {

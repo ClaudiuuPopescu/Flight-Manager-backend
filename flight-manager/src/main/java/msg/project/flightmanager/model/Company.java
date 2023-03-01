@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -37,47 +37,43 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Company {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "idCompany")
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "idCompany")
 	private Long idCompany;
-    
-    @Column(name = "name", length = 30, nullable = false)
-    @Length(max = 30)
-    @NotNull
+
+	@Column(name = "name", length = 30, nullable = false)
+	@Length(max = 30)
+	@NotNull
 	private String name;
-    
-    @Column(name = "phone_number", unique = true, nullable = false)
-    @NotNull
+
+	@Column(name = "phone_number", unique = true, nullable = false)
+	@NotNull
 	private String phoneNumber;
-    
-    @Column(name = "email", length = 40, unique = true, nullable = false)
-    @Length(max = 40)
-    @NotNull
+
+	@Column(name = "email", length = 40, unique = true, nullable = false)
+	@Length(max = 40)
+	@NotNull
 	private String email;
-    
-    @Column(name = "foundedIn")
+
+	@Column(name = "foundedIn")
 	private LocalDate foundedIn;
-    
-    @Column(name = "activ")
+
+	@Column(name = "activ")
 	@Builder.Default
-    private boolean activ = true;
+	private boolean activ = true;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@OneToMany(mappedBy="to",
-    		fetch = FetchType.LAZY,
-    		cascade = CascadeType.ALL,
-    		orphanRemoval = false)
+	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Builder.Default
 	private Set<Plane> planes = new HashSet<>();
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 	@Builder.Default
 	private Set<User> employees = new HashSet<>();
-	
-	
+
 }

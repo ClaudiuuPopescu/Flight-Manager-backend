@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,7 +25,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-
 @Entity(name = "Address")
 @Table(name = "address")
 @Data
@@ -36,28 +35,29 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Address {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "idAddress")
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GenericGenerator(name = "native", strategy = "native")
+	@Column(name = "idAddress")
 	private Long idAddress;
-    
-    @Column(name = "country", nullable = false)
+
+	@Column(name = "country", nullable = false)
 	private String country;
-    
-    @Column(name = "city", nullable = false)
+
+	@Column(name = "city", nullable = false)
 	private String city;
-    
-    @Column(name = "street", nullable = false)
+
+	@Column(name = "street", nullable = false)
 	private String street;
-    
-    @Column(name = "streetNumber", nullable = false)
+
+	@Column(name = "streetNumber", nullable = false)
 	private int streetNumber;
-    
+
 	@Nullable
 	private int apartment;
 
 	@OneToMany(mappedBy = "address", orphanRemoval = true, cascade = CascadeType.PERSIST)
+	@Builder.Default
 	private Set<User> users = new HashSet<>();
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST })

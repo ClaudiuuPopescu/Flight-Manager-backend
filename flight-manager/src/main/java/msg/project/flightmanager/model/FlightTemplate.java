@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.util.Set;
 
@@ -64,18 +64,13 @@ public class FlightTemplate {
 	@Column(name = "gate")
 	@Builder.Default
 	private boolean gate = false;
-	
+
 	@Column(name = "duration")
 	@Builder.Default
 	private boolean duration = false;
 
-    @OneToMany(mappedBy="flightTemplate",
-    		fetch = FetchType.LAZY,
-    		cascade = CascadeType.ALL,
-    		orphanRemoval = true)
+	@OneToMany(mappedBy = "flightTemplate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Column(name = "flights")
 	private Set<Flight> flights;
-    
-
 
 }

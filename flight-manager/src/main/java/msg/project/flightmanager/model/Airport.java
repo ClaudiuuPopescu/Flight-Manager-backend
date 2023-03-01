@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.util.Set;
 
