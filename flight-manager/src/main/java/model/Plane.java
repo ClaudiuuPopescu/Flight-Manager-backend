@@ -1,11 +1,12 @@
 package model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import enums.PlaneSize;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -36,26 +37,26 @@ public class Plane {
     @Column(name = "idPlane")
 	private Long idPlane;
     
-    @Column(name = "model", nullable = false, unique = true)
+    @Column(name = "model", nullable = false, unique = true, length = 20)
 	private String model;
     
     @Column(name = "capacity", nullable = false)
 	private int capacity;
     
-    @Column(name = "range", nullable = false)
-	private Long range;
-    
     @Column(name = "fuelTankCapacity", nullable = false)
 	private int fuelTankCapacity;
     
     @Column(name = "manufacturingDate")
-	private Date manufacturingDate;
+	private LocalDate manufacturingDate;
     
     @Column(name = "firstFlight")
-	private Date firstFlight;
+	private LocalDate firstFlight;
     
     @Column(name = "lastRevision")
-	private Date lastRevision;
+	private LocalDate lastRevision;
+    
+    @Column(name = "size", nullable = false)
+	private PlaneSize size;
 
 	@ManyToOne
 	@JoinColumn(name = "company_id")

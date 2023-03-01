@@ -1,7 +1,8 @@
 package dto;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
+import enums.PlaneSize;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,9 +12,9 @@ public class PlaneDto {
 
 	private String model;
 	private int capacity;
-	private Long range;
 	private int fuelTankCapacity;
-	private Date manufacturingDate;
-	private Date firstFlight;
-	private Date lastRevision;
+	private LocalDate manufacturingDate;
+	private LocalDate firstFlight;
+	private LocalDate lastRevision;
+	private PlaneSize size;
 }
