@@ -31,7 +31,7 @@ public class User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
+	@Column(name = "id_user")
 	private Long id;
 
 	@Column(unique = true)
@@ -56,7 +56,8 @@ public class User {
 	private Date birthDate;
 
 	@Column
-	private boolean isActive;
+	@Builder.Default
+	private boolean isActive = true;
 
 	@ManyToOne
 	@JoinColumn(name = "address_id")

@@ -54,7 +54,6 @@ public class UserService implements IUserService {
 		this.userValidator.validateCreateUserModel(createUserModel);
 
 		User user = this.userConverter.createUserModelToUser(createUserModel);
-		user.setActive(true);
 
 		String username = generateUsername(createUserModel.getFirstName(), createUserModel.getLastName());
 		user.setUsername(username);
