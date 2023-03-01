@@ -16,8 +16,8 @@ public class AddressConverter implements IConverter<Address, AddressDto> {
 	@Override
 	public Address convertToEntity(AddressDto addressDto) {
 
-		return Address.builder().idAddress(addressDto.getIdAddress()).country(addressDto.getCoutry())
-				.city(addressDto.getCity()).street(addressDto.getStreet()).streetNumber(addressDto.getStreetNumber())
+		return Address.builder().country(addressDto.getCoutry()).city(addressDto.getCity())
+				.street(addressDto.getStreet()).streetNumber(addressDto.getStreetNumber())
 				.apartment(addressDto.getApartment()).build();
 	}
 

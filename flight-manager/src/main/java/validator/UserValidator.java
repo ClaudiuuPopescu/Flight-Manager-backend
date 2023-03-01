@@ -46,6 +46,10 @@ public class UserValidator {
 		if (firstName.length() < 2) {
 			throw new FlightManagerException(HttpStatus.LENGTH_REQUIRED, "First name requires characters");
 		}
+
+		if (firstName.chars().anyMatch(Character::isDigit)) {
+			throw new FlightManagerException(HttpStatus.FORBIDDEN, "First name can not contain numbers");
+		}
 	}
 
 	public void validateLastName(String lastName) {
@@ -56,6 +60,10 @@ public class UserValidator {
 
 		if (lastName.length() < 2) {
 			throw new FlightManagerException(HttpStatus.LENGTH_REQUIRED, "Last name requires characters");
+		}
+
+		if (lastName.chars().anyMatch(Character::isDigit)) {
+			throw new FlightManagerException(HttpStatus.FORBIDDEN, "Last name can not contain numbers");
 		}
 	}
 
@@ -71,7 +79,7 @@ public class UserValidator {
 					"The email entered does not match our convension");
 		}
 
-		Optional<User> user = userRepository.findByEmail(email);
+		Optional<User> user = this.userRepository.findByEmail(email);
 
 		if (user.isPresent()) {
 			throw new FlightManagerException(HttpStatus.IM_USED, "The email is already exists");
@@ -89,7 +97,7 @@ public class UserValidator {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The phone number must be romanian");
 		}
 
-		Optional<User> user = userRepository.findByPhoneNumber(phoneNumber);
+		Optional<User> user = this.userRepository.findByPhoneNumber(phoneNumber);
 
 		if (user.isPresent()) {
 			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already exists");
