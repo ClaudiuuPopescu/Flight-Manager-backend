@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder(toBuilder = true)
-public class flightTemplateDto {
+public class FlightTemplateDto {
 
 	private Long idFlightTemplate;
 

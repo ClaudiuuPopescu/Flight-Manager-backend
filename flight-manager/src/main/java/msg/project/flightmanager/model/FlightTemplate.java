@@ -1,5 +1,6 @@
 package msg.project.flightmanager.model;
 
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -72,5 +73,24 @@ public class FlightTemplate {
 	@OneToMany(mappedBy = "flightTemplate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Column(name = "flights")
 	private Set<Flight> flights;
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FlightTemplate other = (FlightTemplate) obj;
+		return boardingTime == other.boardingTime && date == other.date && duration == other.duration
+				&& flightName == other.flightName && from == other.from && gate == other.gate && plane == other.plane
+				&& to == other.to;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(boardingTime, date, duration, flightName, flights, from, gate, idFlightTemplate, plane, to);
+	}
 
 }
