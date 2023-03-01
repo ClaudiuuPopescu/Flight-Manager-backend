@@ -2,20 +2,20 @@ package validator;
 
 import org.springframework.stereotype.Component;
 
+import dto.AddressDto;
 import exceptions.ErrorCode;
 import exceptions.ValidatorException;
-import modelHelper.CreateAddressModel;
 
 @Component
 public class AddressValidator {
 
-	public void validateCreateAddressModel(CreateAddressModel createAddressModel) throws ValidatorException {
+	public void validateAddress(AddressDto addressDto) throws ValidatorException {
 
-		validateCountry(createAddressModel.getCoutry());
-		validateCity(createAddressModel.getCity());
-		validateStreet(createAddressModel.getStreet());
-		validateStreetNumber(createAddressModel.getStreetNumber());
-		validateApartament(createAddressModel.getApartment());
+		validateCountry(addressDto.getCoutry());
+		validateCity(addressDto.getCity());
+		validateStreet(addressDto.getStreet());
+		validateStreetNumber(addressDto.getStreetNumber());
+		validateApartament(addressDto.getApartment());
 	}
 
 	public void validateCountry(String country) throws ValidatorException {

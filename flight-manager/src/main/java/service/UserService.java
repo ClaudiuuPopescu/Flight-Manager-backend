@@ -12,8 +12,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import converter.UserConverter;
+import dto.AddressDto;
 import dto.UserDto;
 import exceptions.FlightManagerException;
+import exceptions.ValidatorException;
 import modelHelper.CreateUserModel;
 import modelHelper.EditUserModel;
 import msg.project.flightmanager.model.User;
@@ -32,6 +34,8 @@ public class UserService implements IUserService {
 	private UserConverter userConverter;
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	@Autowired
+	private AddressService addressService;
 
 	@Override
 	public List<UserDto> getAll() {
@@ -47,7 +51,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public UserDto createUser(CreateUserModel createUserModel) {
+	public boolean createUser(CreateUserModel createUserModel) {
 		// TODO sa aiba permisiuni
 		// TODO sa i se atribuie adresa, daca exista deja adresa, pe aia, daca nu, noua
 
@@ -62,9 +66,7 @@ public class UserService implements IUserService {
 		user.setPassword(encodedPass);
 
 		this.userRepository.save(user);
-
-		UserDto userDto = this.userConverter.convertToDTO(user);
-		return userDto;
+		return true;
 	}
 
 	@Override
@@ -78,7 +80,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public UserDto editUserDetails(EditUserModel editUserModel) {
+	public boolean editUserDetails(EditUserModel editUserModel) {
 		// TODO verificare daca current user ii acelasi cu cel pe care vrea sa il
 		// schimbe
 		// de facut dupa ce se face Login ul
@@ -93,15 +95,16 @@ public class UserService implements IUserService {
 
 		this.userRepository.save(userToEdit);
 
-		UserDto userDtoEdited = this.userConverter.convertToDTO(userToEdit);
-		return userDtoEdited;
+		return true;
 	}
 
 	@Override
-	public UserDto editUserAddress() {
-		// TODO de verificat ca la edit, current user
-		// TODO nevoie de adresa
-		return null;
+	public boolean editUserAddress(AddressDto addressDto) throws ValidatorException {
+		this.addressService.editAddress(addressDto);
+
+		// TODO sa vedem cum luam userul de la care modificam adresa
+		//
+		return false;
 	}
 
 	@Override
