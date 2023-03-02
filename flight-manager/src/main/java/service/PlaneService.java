@@ -14,6 +14,7 @@ import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
 import modelHelper.CreatePlaneModel;
 import modelHelper.EditLastRevisionPlaneModel;
+import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Plane;
 import repository.PlaneRepository;
 import service.interfaces.IPlaneService;
@@ -26,6 +27,8 @@ public class PlaneService implements IPlaneService {
 	private PlaneValidator planeValidator;
 	@Autowired
 	private PlaneConverter planeConverter;
+	@Autowired
+	private CompanyService companyService;
 
 	@Override
 	public List<PlaneDto> getAll() {
@@ -68,6 +71,7 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public boolean removePlane(int tailNumber) {
+		// TODO verificare rol current user
 
 		Plane plane = this.planeRepository.findByTailNumber(tailNumber)
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -78,8 +82,22 @@ public class PlaneService implements IPlaneService {
 	}
 
 	@Override
-	public boolean movePlaneToAnotherCompany(int tailNumber, String companyName) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean movePlaneToAnotherCompany(int tailNumber, String to_companyName) {
+		// TODO verificare rol current user
+
+		Plane plane = this.planeRepository.findByTailNumber(tailNumber)
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Plane with tail number [{0}] not found", tailNumber)));
+
+		Company to_company = this.companyService.findByCompanyName(to_companyName);
+
+		if (plane.getCompany().equals(to_company)) {
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
+					MessageFormat.format("Company [{0}] already has this plane", to_company.getName()));
+		}
+
+		plane.setCompany(to_company);
+		this.planeRepository.save(plane);
+		return true;
 	}
 }

@@ -17,5 +17,5 @@ public interface IPlaneService {
 
 	boolean removePlane(int tailNumber);
 
-	boolean movePlaneToAnotherCompany(int tailNumber, String companyName);
+	boolean movePlaneToAnotherCompany(int tailNumber, String to_companyName);
 }
