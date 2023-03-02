@@ -3,6 +3,7 @@ package service.interfaces;
 import java.util.List;
 
 import dto.CompanyDto;
+import exceptions.CompanyException;
 import msg.project.flightmanager.model.Company;
 
 public interface ICompanyService {
@@ -11,10 +12,10 @@ public interface ICompanyService {
 
 	void updateCompany(CompanyDto companyDTO) throws Exception;
 
-	void dezactivateCompany(String companyName);
+	void dezactivateCompany(String companyName) throws CompanyException;
 
 	List<CompanyDto> findAll();
 
-	Company findByCompanyName(String companyName);
+	Company findByCompanyName(String companyName) throws CompanyException;
 
 }

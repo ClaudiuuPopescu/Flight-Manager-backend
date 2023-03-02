@@ -40,7 +40,7 @@ public class Flight {
 	@Column(name = "idFlight")
 	private Long idFlight;
 
-	@Column(name = "flightName", length = 30)
+	@Column(name = "flightName", length = 30, unique = true)
 	private String flightName;
 
 	@Column(name = "date")

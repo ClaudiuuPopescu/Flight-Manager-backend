@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 
 import converter.CompanyConverter;
 import dto.CompanyDto;
+import exceptions.CompanyException;
+import exceptions.ErrorCode;
+import exceptions.ValidatorException;
 import msg.project.flightmanager.model.Company;
 import repository.CompanyRepository;
 import service.interfaces.ICompanyService;
@@ -27,7 +30,7 @@ public class CompanyService implements ICompanyService {
 	private CompanyValidator companyValidator;
 
 	@Override
-	public void addCompany(CompanyDto companyDTO) throws Exception {
+	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
 			if (findByCompanyName(companyDTO.getName()) == null) {
@@ -36,14 +39,14 @@ public class CompanyService implements ICompanyService {
 				Company companyToSave = companyConverter.convertToEntity(companyDTO);
 				this.companyRepository.save(companyToSave);
 			} else
-				throw new IllegalArgumentException("A company with this name does exist!");
+				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
 		} else
-			throw new IllegalArgumentException("A company shoul have a name!");
+			throw new CompanyException("A company shoul have a name!", ErrorCode.EMPTY_FIELD);
 
 	}
 
 	@Override
-	public void updateCompany(CompanyDto companyDTO) throws Exception {
+	public void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
 			Company oldCompany = findByCompanyName(companyDTO.getName());
@@ -64,13 +67,13 @@ public class CompanyService implements ICompanyService {
 
 				this.companyRepository.save(companyToUpdate);
 			} else
-				throw new IllegalArgumentException("A company with this name does exist!");
+				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
 		} else
-			throw new IllegalArgumentException("A company shoul have a name!");
+			throw new CompanyException("A company shoul have a name!", ErrorCode.EMPTY_FIELD);
 	}
 
 	@Override
-	public void dezactivateCompany(String companyName) {
+	public void dezactivateCompany(String companyName) throws CompanyException {
 
 		Company companyToDezactivate = findByCompanyName(companyName);
 		companyToDezactivate.setActiv(false);
@@ -84,11 +87,12 @@ public class CompanyService implements ICompanyService {
 	}
 
 	@Override
-	public Company findByCompanyName(String companyName) {
+	public Company findByCompanyName(String companyName) throws CompanyException {
 
 		Optional<Company> companyOptional = this.companyRepository.findCompanyByName(companyName);
 		if (companyOptional.isEmpty()) {
-			throw new IllegalArgumentException("A company with this name does not exist!");
+			throw new CompanyException("A company with this name does not exist!",
+					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 		}
 		return companyOptional.get();
 	}
