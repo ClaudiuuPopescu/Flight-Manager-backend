@@ -23,17 +23,11 @@ public class RoleService implements IRoleService {
 
 	@Override
 	public boolean addRole(String roleEnumLabel) {
-		try {
 			RoleEnum roleEnum = RoleEnum.fromLabel(roleEnumLabel);
 			
 			Role role = Role.builder().roleEnum(roleEnum).build();
 			this.roleRepository.save(role);
-
 			return true;
-		} catch (FlightManagerException e) {
-			throw new FlightManagerException(HttpStatus.NOT_FOUND,
-					MessageFormat.format("Can not add role. The enum label [{0}] does not exist", roleEnumLabel));
-		}
 	}
 
 	@Override
@@ -48,6 +42,7 @@ public class RoleService implements IRoleService {
 						MessageFormat.format("Can not find role by enum [{0}] not found", roleEnum)));
 
 		role.getPermissions().add(permission);
+		this.roleRepository.save(role);
 		return true;
 	}
 
