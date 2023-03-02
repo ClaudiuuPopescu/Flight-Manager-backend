@@ -15,17 +15,19 @@ public class RoleConverter implements IConverter<Role, RoleDto> {
 
 	@Override
 	public RoleDto convertToDTO(Role role) {
-		RoleDto roleDto = RoleDto.builder().roleEnum(role.getRoleEnum()).label(role.getLabel())
+		RoleDto roleDto = RoleDto.builder().roleEnum(role.getRoleEnum())
 				.permissions(role.getPermissions().stream()
-						.map(permission -> permissionConverter.convertToDTO(permission)).collect(Collectors.toSet()))
+						.map(permission -> this.permissionConverter.convertToDTO(permission)).collect(Collectors.toSet()))
 				.build();
 		return roleDto;
 	}
 
 	@Override
-	public Role convertToEntity(RoleDto dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public Role convertToEntity(RoleDto roleDto) {
+		Role role = Role.builder()
+				.roleEnum(roleDto.getRoleEnum()).build();
+
+		return role;
 	}
 
 }
