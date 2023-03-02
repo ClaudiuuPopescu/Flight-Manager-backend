@@ -1,11 +1,15 @@
 package service;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 import converter.PlaneConverter;
 import dto.PlaneDto;
+import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
 import modelHelper.CreatePlaneModel;
 import msg.project.flightmanager.model.Plane;
@@ -23,8 +27,15 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public List<PlaneDto> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false)
+				.collect(Collectors.toList());
+
+		if (planes.isEmpty()) {
+			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No planes found");
+		}
+
+		List<PlaneDto> planeDto = planes.stream().map(this.planeConverter::convertToDTO).collect(Collectors.toList());
+		return planeDto;
 	}
 
 	@Override
