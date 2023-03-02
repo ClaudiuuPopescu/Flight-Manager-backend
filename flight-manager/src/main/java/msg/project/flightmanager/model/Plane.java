@@ -1,4 +1,4 @@
-package model;
+package msg.project.flightmanager.model;
 
 import java.time.LocalDate;
 
@@ -63,10 +63,10 @@ public class Plane {
 	private Company company;
 	
 	public void addToCompany() {
-		company.getPlanes().add(this);
+		this.company.getPlanes().add(this);
 	}
 	
 	public void removeFRomCompany() {
-		company.getPlanes().remove(this);
+		this.company.getPlanes().remove(this);
 	}
 }
