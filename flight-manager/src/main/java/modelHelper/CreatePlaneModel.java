@@ -1,4 +1,4 @@
-package dto;
+package modelHelper;
 
 import java.time.LocalDate;
 
@@ -7,15 +7,13 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder(toBuilder = true)
-public class PlaneDto {
+@Builder
+public class CreatePlaneModel {
 
 	private String model;
 	private int tailNumber;
 	private int capacity;
 	private int fuelTankCapacity;
 	private LocalDate manufacturingDate;
-	private LocalDate firstFlight;
-	private LocalDate lastRevision;
 	private PlaneSize size;
 }

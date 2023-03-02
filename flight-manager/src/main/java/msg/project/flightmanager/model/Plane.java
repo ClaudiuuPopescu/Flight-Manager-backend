@@ -17,13 +17,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity(name = "Plane")
 @Table(name = "plane")
-@Data
+@Getter
+@Setter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,30 +34,33 @@ import lombok.NoArgsConstructor;
 public class Plane {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "idPlane")
+	@Column
 	private Long idPlane;
     
-    @Column(name = "model", nullable = false, unique = true, length = 20)
+	@Column(nullable = false, length = 20)
 	private String model;
-    
-    @Column(name = "capacity", nullable = false)
+
+	@Column(nullable = false, unique = true)
+    private int tailNumber;
+
+	@Column(nullable = false)
 	private int capacity;
     
-    @Column(name = "fuelTankCapacity", nullable = false)
+	@Column(nullable = false)
 	private int fuelTankCapacity;
     
-    @Column(name = "manufacturingDate")
+	@Column(nullable = false)
 	private LocalDate manufacturingDate;
     
-    @Column(name = "firstFlight")
+	@Column(nullable = true)
 	private LocalDate firstFlight;
     
-    @Column(name = "lastRevision")
+	@Column(nullable = true)
 	private LocalDate lastRevision;
     
-    @Column(name = "size", nullable = false)
+	@Column(nullable = false)
 	private PlaneSize size;
 
 	@ManyToOne
@@ -68,5 +73,13 @@ public class Plane {
 	
 	public void removeFRomCompany() {
 		this.company.getPlanes().remove(this);
+	}
+
+	@Override
+	public String toString() {
+		return "Plane [idPlane=" + this.idPlane + ", model=" + this.model + ", capacity=" + this.capacity
+				+ ", fuelTankCapacity=" + this.fuelTankCapacity + ", manufacturingDate=" + this.manufacturingDate
+				+ ", firstFlight=" + this.firstFlight + ", lastRevision=" + this.lastRevision + ", size=" + this.size
+				+ ", company=" + this.company + "]";
 	}
 }
