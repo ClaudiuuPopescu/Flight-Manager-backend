@@ -5,6 +5,7 @@ import java.util.List;
 import dto.PlaneDto;
 import exceptions.ValidatorException;
 import modelHelper.CreatePlaneModel;
+import modelHelper.EditLastRevisionPlaneModel;
 
 public interface IPlaneService {
 
@@ -12,7 +13,7 @@ public interface IPlaneService {
 
 	boolean createPlane(CreatePlaneModel createPlaneModel) throws ValidatorException;
 
-	boolean editPlane(PlaneDto planeDto);
+	boolean editLastRevisionPlane(EditLastRevisionPlaneModel editLastRevisionPlaneModel);
 
 	boolean removePlane(int tailNumber);
 }

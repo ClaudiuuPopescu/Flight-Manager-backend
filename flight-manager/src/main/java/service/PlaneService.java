@@ -1,5 +1,6 @@
 package service;
 
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -12,6 +13,7 @@ import dto.PlaneDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
 import modelHelper.CreatePlaneModel;
+import modelHelper.EditLastRevisionPlaneModel;
 import msg.project.flightmanager.model.Plane;
 import repository.PlaneRepository;
 import service.interfaces.IPlaneService;
@@ -51,9 +53,17 @@ public class PlaneService implements IPlaneService {
 	}
 
 	@Override
-	public boolean editPlane(PlaneDto planeDto) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean editLastRevisionPlane(EditLastRevisionPlaneModel editLastRevisionPlaneModel) {
+		// TODO verificare rol current user
+		// nu vad ce field poate fi modificat in afara de lastRevision
+		Plane plane = this.planeRepository.findByTailNumber(editLastRevisionPlaneModel.getTailNumber())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
+						.format("Plane with tail number [{0}] not found", editLastRevisionPlaneModel.getTailNumber())));
+
+		this.planeValidator.valiateNewRevision(plane.getLastRevision(), editLastRevisionPlaneModel.getNewRevision());
+
+		this.planeRepository.save(plane);
+		return true;
 	}
 
 	@Override
