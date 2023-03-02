@@ -68,6 +68,17 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public boolean removePlane(int tailNumber) {
+
+		Plane plane = this.planeRepository.findByTailNumber(tailNumber)
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Plane with tail number [{0}] not found", tailNumber)));
+
+		this.planeRepository.delete(plane);
+		return true;
+	}
+
+	@Override
+	public boolean movePlaneToAnotherCompany(int tailNumber, String companyName) {
 		// TODO Auto-generated method stub
 		return false;
 	}

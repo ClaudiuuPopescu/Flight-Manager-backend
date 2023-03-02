@@ -16,4 +16,6 @@ public interface IPlaneService {
 	boolean editLastRevisionPlane(EditLastRevisionPlaneModel editLastRevisionPlaneModel);
 
 	boolean removePlane(int tailNumber);
+
+	boolean movePlaneToAnotherCompany(int tailNumber, String companyName);
 }
