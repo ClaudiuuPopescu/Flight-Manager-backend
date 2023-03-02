@@ -23,6 +23,6 @@ public enum RoleEnum {
 				return roleEnum;
 			}
 		}
-		throw new FlightManagerException(HttpStatus.NOT_FOUND, "Invalid label: " + label);
+		throw new FlightManagerException(HttpStatus.NOT_FOUND, "Invalid role label: " + label);
 	}
 }

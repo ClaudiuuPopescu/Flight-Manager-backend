@@ -23,11 +23,12 @@ public class RoleService implements IRoleService {
 
 	@Override
 	public boolean addRole(String roleEnumLabel) {
-			RoleEnum roleEnum = RoleEnum.fromLabel(roleEnumLabel);
+		roleEnumLabel.toLowerCase();
+		RoleEnum roleEnum = RoleEnum.fromLabel(roleEnumLabel);
 			
-			Role role = Role.builder().roleEnum(roleEnum).build();
-			this.roleRepository.save(role);
-			return true;
+		Role role = Role.builder().roleEnum(roleEnum).build();
+		this.roleRepository.save(role);
+		return true;
 	}
 
 	@Override

@@ -19,17 +19,12 @@ public class PermissionService implements IPermissionService {
 	public boolean addPermission(String permissionEnumName) {
 		permissionEnumName.toUpperCase();
 
-		try {
-			PermissionEnum permissionEnum = PermissionEnum.valueOf(permissionEnumName);
+		PermissionEnum permissionEnum = PermissionEnum.fromLabel(permissionEnumName);
 
-			Permission permission = Permission.builder().permissionEnum(permissionEnum).build();
-			this.permissionRepository.save(permission);
+		Permission permission = Permission.builder().permissionEnum(permissionEnum).build();
+		this.permissionRepository.save(permission);
 
-			return true;
-		} catch (FlightManagerException e) {
-			throw new FlightManagerException(HttpStatus.NOT_FOUND,
-					MessageFormat.format("Can not add permission. The enum value does not exist", permissionEnumName));
-		}
+		return true;
 	}
 
 	@Override

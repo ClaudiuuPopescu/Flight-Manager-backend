@@ -1,32 +1,54 @@
 package enums;
 
+import org.springframework.http.HttpStatus;
+
+import exceptions.FlightManagerException;
+
 public enum PermissionEnum {
-	PERSONAL_DATA_EDIT, // CREW, FLIGHT_MANAGER, COMPANY_MANAGER, ADMINISTRATOR
+	PERSONAL_DATA_MANAGEMENT("personal_data_management"), // CREW, FM, CM, ADM
 
-	CREW_DEACTIVATE, CREW_CREATE, FLIGHT_MANAGER_DEACTIVATE, FLIGHT_MANAGER_CREATE, // COMPANY_MANAGER, ADMINISTRATOR
+	CREW_MANAGEMENT("crew_management"), // CM, ADM
 
-	COMPANY_MANAGER_CREATE, COMPANY_MANAGER_DEACTIVATE, ADMINISTRATOR_CREATE, ADMINISTRATOR_DEACTIVATE, // ADMINISTRATOR
+	FLIGHT_MANAGER_MANAGEMENT("flight_manager_management"), // ADM
 
-	AIRPLANE_EDIT, AIRPLANE_REMOVE, AIRPLANE_CREATE, // COMPANY_MANAGER, ADMINISTRATOR
+	ADMINISTRATOR_MANAGEMENT("administrator_management"), // ADM
 
-	FLIGHT_EDIT, FLIGHT_CANCEL, FLIGHT_CREATE, // FLIGHT_MANAGER, ADMINISTRATOR
+	AIRPLANE_MANAGEMENT("airplane_management"), // CM, ADM
 
-	FLIGHT_HISTORY_CREATE, // FLIGHT_MANAGER, COMPANY_MANAGER, ADMINISTRATOR
+	FLIGHT_MANAGEMENT("flight_management"), // FM, ADM
 
-	FLIGHT_TEMPLATE_EDIT, FLIGHT_TEMPLATE_REMOVE, FLIGHT_TEMPLATE_CREATE, // FLIGHT_MANAGER, ADMINISTRATOR
+	FLIGHT_HISTORY_MANAGEMENT("flight_history_management"), // FM, CM, ADM
 
-	ITINERARY_EDIT, ITINERARY_REMOVE, ITINERARY_CREATE, // COMPANY_MANAGER, ADMINISTRATOR
+	FLIGHT_TEMPLATE_MANAGEMENT("flight_template_management"), // FM, ADM
 
-	ADD_CREW_TO_COMPANY, REMOVE_CREW_FROM_COMPANY, // COMPANY_MANAGER, ADMINISTRATOR
+	ITINERARY_MANAGEMENT("itinerary_management"), // CM, ADMINISTRATOR
 
-	COMPANY_EDIT, COMPANY_REMOVE, COMPANY_CREATE, // COMPANY_MANAGER, ADMINISTRATOR
+	COMPANY_MANAGEMENT("company_management"), // CM, ADM
 
-	ADD_MANAGER_TO_COMPANY, REMOVE_MANAGER_FROM_COMPANY, // COMPANY_MANAGER, ADMINISTRATOR
+	AIRPORT_MANAGEMENT("airport_management"), // CM, ADM
 
-	AIRPORT_EDIT, AIRPORT_CREATE, // COMPANY_MANAGER, ADMINISTRATOR
+	GENERATE_REPORT("generate_report"), // CM, ADM
 
-	GENERATE_REPORT, // COMPANY_MANAGER, ADMINISTRATOR
+	EXPORT_DATA("export_data"), // ADM
 
-	EXPORT_DATA, IMPORT_DATA, // ADMINISTRATOR
+	IMPORT_DATA("import_data"); // ADM
 
+	private final String label;
+
+	PermissionEnum(String label) {
+		this.label = label;
+	}
+
+	public String getLabel() {
+		return this.label;
+	}
+
+	public static PermissionEnum fromLabel(String label) {
+		for (PermissionEnum permissionEnum : PermissionEnum.values()) {
+			if (permissionEnum.getLabel().equals(label)) {
+				return permissionEnum;
+			}
+		}
+		throw new FlightManagerException(HttpStatus.NOT_FOUND, "Invalid permission label: " + label);
+	}
 }
