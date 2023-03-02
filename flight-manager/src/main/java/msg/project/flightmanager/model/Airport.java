@@ -33,7 +33,7 @@ public class Airport {
 
 	@Id
 	@GenericGenerator(name = "native", strategy = "native")
-	@Column(name = "airportName")
+	@Column(name = "airportName", length = 30)
 	private String airportName;
 
 	@OneToOne

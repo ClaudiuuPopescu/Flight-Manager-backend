@@ -44,16 +44,8 @@ public class FlightValidator {
 		
 		LocalDate currentDate = java.time.LocalDate.now();
 
-		if (currentDate.getYear() > date.getYear())
-			throw new ValidatorException("The year should be equale with the current year or in the future!", ErrorCode.WRONG_INTERVAL);
-
-		else if (currentDate.getYear() == date.getYear()) {
-			if (currentDate.getMonth().compareTo(date.getMonth()) == 0) {
-				if (currentDate.getDayOfMonth() >= date.getDayOfMonth())
-					throw new ValidatorException("The day should be higher than the current day!", ErrorCode.WRONG_INTERVAL);
-			} else if (currentDate.getMonth().compareTo(date.getMonth()) == 1)
-				throw new ValidatorException("The month should be higher than the current month!", ErrorCode.WRONG_INTERVAL);
-		}
+		if (currentDate.compareTo(date) == 1)
+			throw new ValidatorException("The date should be in the future!", ErrorCode.WRONG_INTERVAL);
 	}
 	
 	private void validateBoardingTime(Time time)  throws ValidatorException {

@@ -1,11 +1,12 @@
-package msg.project.flightmanager.model;
+package model;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import enums.PlaneSize;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,41 +31,41 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 public class Plane {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-	@GenericGenerator(name = "native", strategy = "native")
-	@Column(name = "idPlane")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
+    @Column(name = "idPlane")
 	private Long idPlane;
-
-	@Column(name = "model", nullable = false, unique = true)
+    
+    @Column(name = "model", nullable = false, unique = true, length = 20)
 	private String model;
-
-	@Column(name = "capacity", nullable = false)
+    
+    @Column(name = "capacity", nullable = false)
 	private int capacity;
-
-	@Column(name = "range", nullable = false)
-	private Long range;
-
-	@Column(name = "fuelTankCapacity", nullable = false)
+    
+    @Column(name = "fuelTankCapacity", nullable = false)
 	private int fuelTankCapacity;
-
-	@Column(name = "manufacturingDate")
-	private Date manufacturingDate;
-
-	@Column(name = "firstFlight")
-	private Date firstFlight;
-
-	@Column(name = "lastRevision")
-	private Date lastRevision;
+    
+    @Column(name = "manufacturingDate")
+	private LocalDate manufacturingDate;
+    
+    @Column(name = "firstFlight")
+	private LocalDate firstFlight;
+    
+    @Column(name = "lastRevision")
+	private LocalDate lastRevision;
+    
+    @Column(name = "size", nullable = false)
+	private PlaneSize size;
 
 	@ManyToOne
 	@JoinColumn(name = "company_id")
 	private Company company;
-
+	
 	public void addToCompany() {
 		company.getPlanes().add(this);
 	}
-
+	
 	public void removeFRomCompany() {
 		company.getPlanes().remove(this);
 	}
