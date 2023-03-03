@@ -14,5 +14,5 @@ public interface AirportRepository extends CrudRepository<Airport, Long> {
 	Optional<Airport> findByName(@Param("airportName") String ariportName);
 
 	@Query("SELECT a FROM airport a where a.codeIdentifier = :codeIdentifier")
-	Optional<Airport> findByCodeIdentifier(@Param("codeIdentifier") String codeIdentifire);
+	Optional<Airport> findByCodeIdentifier(@Param("codeIdentifier") String codeIdentifier);
 }
