@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -59,30 +60,30 @@ public class User {
 	@Builder.Default
 	private boolean isActive = true;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "role_id")
 	private Role role;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id")
 	private Company company;
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", username=" + username + ", password=" + password + ", firstName=" + firstName
-				+ ", lastName=" + lastName + ", email=" + email + ", phoneNumber=" + phoneNumber + ", birthDate="
-				+ birthDate + ", isActive=" + isActive + ", address=" + address + ", role=" + role + ", company="
-				+ company + "]";
+		return "User [id=" + this.id + ", username=" + this.username + ", password=" + this.password + ", firstName=" + this.firstName
+				+ ", lastName=" + this.lastName + ", email=" + this.email + ", phoneNumber=" + this.phoneNumber + ", birthDate="
+				+ this.birthDate + ", isActive=" + this.isActive + ", address=" + this.address + ", role=" + this.role + ", company="
+				+ this.company + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(address, birthDate, company, email, firstName, id, isActive, lastName, password,
-				phoneNumber, role, username);
+		return Objects.hash(this.address, this.birthDate, this.company, this.email, this.firstName, this.id, this.isActive, this.lastName, this.password,
+				this.phoneNumber, this.role, this.username);
 	}
 
 	@Override
@@ -94,12 +95,12 @@ public class User {
 		if (getClass() != obj.getClass())
 			return false;
 		User other = (User) obj;
-		return Objects.equals(address, other.address) && Objects.equals(birthDate, other.birthDate)
-				&& Objects.equals(company, other.company) && Objects.equals(email, other.email)
-				&& Objects.equals(firstName, other.firstName) && Objects.equals(id, other.id)
-				&& isActive == other.isActive && Objects.equals(lastName, other.lastName)
-				&& Objects.equals(password, other.password) && Objects.equals(phoneNumber, other.phoneNumber)
-				&& Objects.equals(role, other.role) && Objects.equals(username, other.username);
+		return Objects.equals(this.address, other.address) && Objects.equals(this.birthDate, other.birthDate)
+				&& Objects.equals(this.company, other.company) && Objects.equals(this.email, other.email)
+				&& Objects.equals(this.firstName, other.firstName) && Objects.equals(this.id, other.id)
+				&& this.isActive == other.isActive && Objects.equals(this.lastName, other.lastName)
+				&& Objects.equals(this.password, other.password) && Objects.equals(this.phoneNumber, other.phoneNumber)
+				&& Objects.equals(this.role, other.role) && Objects.equals(this.username, other.username);
 	}
 
 }

@@ -169,6 +169,12 @@ public class PlaneValidator {
 		}
 	}
 
+	public void valiateNewRevision(LocalDate lastRevision, LocalDate newRevision) {
+		validateDate1IsEarlierThanDate2(lastRevision, newRevision);
+
+		validateDate1IsEarlierThanDate2(newRevision, LocalDate.now());
+	}
+
 	private boolean validateFuelCapacityForSmall(int fuelTankCapacity) {
 		return (fuelTankCapacity >= 4000 && fuelTankCapacity <= 5000);
 	}

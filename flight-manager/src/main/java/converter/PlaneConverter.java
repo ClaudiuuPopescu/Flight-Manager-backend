@@ -10,9 +10,13 @@ import msg.project.flightmanager.model.Plane;
 public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 
 	@Override
-	public PlaneDto convertToDTO(Plane entity) {
-		// TODO Auto-generated method stub
-		return null;
+	public PlaneDto convertToDTO(Plane plane) {
+		PlaneDto planeDto = PlaneDto.builder().model(plane.getModel()).tailNumber(plane.getTailNumber())
+				.capacity(plane.getCapacity()).fuelTankCapacity(plane.getFuelTankCapacity())
+				.manufacturingDate(plane.getManufacturingDate()).firstFlight(plane.getFirstFlight())
+				.lastRevision(plane.getLastRevision()).size(plane.getSize()).build();
+
+		return planeDto;
 	}
 
 	@Override
