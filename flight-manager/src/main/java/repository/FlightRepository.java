@@ -14,6 +14,8 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 
 	@Query("SELECT f FROM Flight WHERE f.flightName = name")
 	Optional<Flight> findFlightByName(String name);
-
+	
+	@Query("SELECT f FROM Flight WHERE f.idFlight = flightId")
+	Optional<Flight> findFlightById(Long flightId);
 
 }

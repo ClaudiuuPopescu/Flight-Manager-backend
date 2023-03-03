@@ -20,5 +20,6 @@ public class FlightDto {
 	private AirportDto from;
 	private AirportDto to;
 	private PlaneDto plane;
+	private Long flightTemplateID;
 
 }

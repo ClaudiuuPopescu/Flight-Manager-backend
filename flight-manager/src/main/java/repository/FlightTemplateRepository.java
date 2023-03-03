@@ -3,6 +3,7 @@ package repository;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,5 +17,8 @@ public interface FlightTemplateRepository extends CrudRepository<FlightTemplate,
 	List<FlightTemplate> findAll();
 
 	Optional<FlightTemplate> findFlightTemplateByID(Long idFlightTEmplate);
+	
+	@Query("SELECT ft.idFlight FROM FlightTemplate")
+	List<Long> getTemplatesIds();
 
 }

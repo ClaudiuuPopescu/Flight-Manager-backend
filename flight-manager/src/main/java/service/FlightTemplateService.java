@@ -56,8 +56,7 @@ public class FlightTemplateService implements IFlightTemplateService {
 		else {
 			
 			FlightTemplate oldFlightTemplate = findFlightTemplateBYID(flightTemplateDto.getIdFlightTemplate());
-			
-			//cand dau update la Flight Template fac update si la flight la field-uri
+
 			List<Flight> flights = this.flightService.getFlightsByFlightTemplate(oldFlightTemplate);
 			
 			for(Flight flight : flights) {
@@ -102,7 +101,9 @@ public class FlightTemplateService implements IFlightTemplateService {
 
 		FlightTemplate flightTemplate = findFlightTemplateBYID(flightTemplateId);
 
-		//TODO sa dezactivez zboruriile cu tempatul asta
+		List<Flight> flightsWithGivenTemplate = this.flightService.getFlightsByFlightTemplate(flightTemplate);
+		flightsWithGivenTemplate.stream().filter(flight -> flight.getFlightTemplate().equals(flightTemplate)).forEach(flight -> {flight.setActiv(false); flight.setCanceled(true);}); 
+		
 	}
 
 	@Override
@@ -128,11 +129,6 @@ public class FlightTemplateService implements IFlightTemplateService {
 
 		return flightTemplats.stream().anyMatch(flightTemp -> flightTemplate.equals(flightTemp));
 
-//		for (FlightTemplate flightTemp : flightTemplats)
-//			if (flightTemplate.equals(flightTemp))
-//				return true;
-//
-//		return false;
 	}
 
 }

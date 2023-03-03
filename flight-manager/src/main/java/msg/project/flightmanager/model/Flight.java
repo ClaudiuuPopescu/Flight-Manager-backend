@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties("hibernateLazyInitializer")
 
 //daca un aeroport e sters --> anulez zborul si pun aeroportul pe null
-//daca un plane e sters --> anulez zborul si pun plane pe null
+//daca un plane e sters --> anulez zborul, pun activ pe false si pun plane pe null
 public class Flight {
 
 	@Id
