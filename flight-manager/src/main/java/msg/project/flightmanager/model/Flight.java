@@ -64,42 +64,39 @@ public class Flight {
 	private double duration;
 
 	@ManyToOne
-	@JoinColumn(name = "from", nullable = false)
-	@Builder.Default
-	private Airport from = new Airport();
+	@JoinColumn(name = "from")
+	private Airport from;
 
 	public void addFlightToAirportStart() {
-		from.getFlightsStart().add(this);
+		this.from.getFlightsStart().add(this);
 	}
 
 	public void removeFlightFromAirportStart() {
-		from.getFlightsStart().remove(this);
+		this.from.getFlightsStart().remove(this);
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "to", nullable = false)
-	@Builder.Default
-	private Airport to = new Airport();
+	@JoinColumn(name = "to")
+	private Airport to;
 
 	public void addFlightToAirportEnd() {
-		to.getFlightsEnd().add(this);
+		this.to.getFlightsEnd().add(this);
 	}
 
 	public void removeFlightFromAirportEndt() {
-		to.getFlightsEnd().remove(this);
+		this.to.getFlightsEnd().remove(this);
 	}
 
 	@ManyToOne
-	@JoinColumn(name = "plane", nullable = false)
-	@Builder.Default
-	private Plane plane = new Plane();
+	@JoinColumn(name = "plane")
+	private Plane plane;
 
 	@ManyToOne
 	@JoinColumn(name = "idFlightTemplate", nullable = false)
 	private FlightTemplate flightTemplate;
 
 	public void addFlightToTemplate() {
-		flightTemplate.getFlights().add(this);
+		this.flightTemplate.getFlights().add(this);
 	}
 
 }

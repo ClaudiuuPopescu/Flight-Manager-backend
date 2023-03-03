@@ -77,6 +77,7 @@ public class PlaneService implements IPlaneService {
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 						MessageFormat.format("Plane with tail number [{0}] not found", tailNumber)));
 
+		// TODO anulez zborul
 		this.planeRepository.delete(plane);
 		return true;
 	}
