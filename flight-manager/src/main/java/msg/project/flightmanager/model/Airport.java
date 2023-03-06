@@ -62,6 +62,10 @@ public class Airport {
 	@JoinTable(name = "airport_company", joinColumns = @JoinColumn(name = "airport_id"), inverseJoinColumns = @JoinColumn(name = "company_id"))
 	@Builder.Default
 	private Set<Company> companiesCollab = new HashSet<>();
+	
+	public void removeCollab(Company company) {
+		companiesCollab.remove(company);
+	}
 
 	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_start")

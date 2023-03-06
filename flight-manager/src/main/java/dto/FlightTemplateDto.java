@@ -32,4 +32,7 @@ public class FlightTemplateDto {
 
 	@Builder.Default
 	private boolean duration = false;
+	
+	@Builder.Default
+	private boolean company = false;
 }
