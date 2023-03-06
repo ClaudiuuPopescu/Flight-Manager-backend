@@ -14,8 +14,12 @@ import converter.AirportConverter;
 import dto.AirportDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
+import modelHelper.ActionCompanyAirportCollab;
+import modelHelper.EditAirportModel;
 import msg.project.flightmanager.model.Airport;
+import msg.project.flightmanager.model.Company;
 import repository.AirportRepository;
+import repository.CompanyRepository;
 import service.interfaces.IAirportService;
 import validator.AirportValidator;
 
@@ -26,6 +30,8 @@ public class AirportService implements IAirportService {
 	private AirportConverter airportConverter;
 	@Autowired
 	private AirportValidator airportValidator;
+	@Autowired
+	private CompanyRepository companyRepository;
 
 	@Override
 	public List<AirportDto> getAll() {
@@ -58,17 +64,71 @@ public class AirportService implements IAirportService {
 	}
 
 	@Override
-	public boolean removeAirport(String airportName) {
+	public boolean editAirport(EditAirportModel editAirportModel) {
 		// TODO verificare rol current user
 
-		Airport airport = this.airportRepository.findByName(airportName)
+		Airport airport = this.airportRepository.findByCodeIdentifier(editAirportModel.getCodeIdentifier())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
-						MessageFormat.format("Can not delete airport. Airport [{0}] not found", airportName)));
+						MessageFormat.format("Can not perform the edit action. Airport [{0}] not found",
+								editAirportModel.getCodeIdentifier())));
+
+		this.airportValidator.validateEditAirport(editAirportModel);
+
+		airport.setRunWays(editAirportModel.getRunWarys());
+		airport.setGateWays(editAirportModel.getGateWays());
+
+		this.airportRepository.save(airport);
+		return true;
+	}
+
+	@Override
+	public boolean removeAirport(String codeIdentifier) {
+		// TODO verificare rol current user
+
+		Airport airport = this.airportRepository.findByCodeIdentifier(codeIdentifier)
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not delete airport. Airport [{0}] not found", codeIdentifier)));
 
 		// TODO set field false in flight template.
 		// TODO delete flight
 
 		this.airportRepository.delete(airport);
+		return true;
+	}
+
+	@Override
+	public boolean addCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
+		Airport airport = this.airportRepository
+				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not add company collaboration to airport. Airport [{0}] not found",
+								actionCompanyAirportCollab.getAirportCodeIdentifier())));
+		
+		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getCompanyName())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not add company collaboration to airport. Company [{0}] not found",
+								actionCompanyAirportCollab.getCompanyName())));
+
+		airport.getCompaniesCollab().add(company);
+		this.airportRepository.save(airport);
+		return true;
+	}
+
+	@Override
+	public boolean removeCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
+		Airport airport = this.airportRepository
+				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not remove company collaboration to airport. Airport [{0}] not found",
+								actionCompanyAirportCollab.getAirportCodeIdentifier())));
+
+		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getCompanyName())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not remove company collaboration to airport. Company [{0}] not found",
+								actionCompanyAirportCollab.getCompanyName())));
+
+		airport.getCompaniesCollab().remove(company);
+		this.airportRepository.save(airport);
 		return true;
 	}
 
@@ -96,7 +156,6 @@ public class AirportService implements IAirportService {
 			char letter = (char) (random.nextInt(26) + 'A');
 
 			codeIdentifier += String.valueOf(letter);
-
 		}
 	}
 

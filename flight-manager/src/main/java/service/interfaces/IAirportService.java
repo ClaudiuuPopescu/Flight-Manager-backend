@@ -4,6 +4,8 @@ import java.util.List;
 
 import dto.AirportDto;
 import exceptions.ValidatorException;
+import modelHelper.ActionCompanyAirportCollab;
+import modelHelper.EditAirportModel;
 
 public interface IAirportService {
 
@@ -11,5 +13,12 @@ public interface IAirportService {
 
 	boolean createAirport(AirportDto airportDto) throws ValidatorException;
 	
-	boolean removeAirport(String airportName);
+	boolean editAirport(EditAirportModel airportModel);
+
+	boolean removeAirport(String codeIdentifier);
+
+	boolean addCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab);
+
+	boolean removeCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab);
+
 }
