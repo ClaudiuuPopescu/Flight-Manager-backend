@@ -1,5 +1,6 @@
 package repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,7 @@ public interface PlaneRepository extends CrudRepository<Plane, Long> {
 
 	@Query("SELECT p FROM plane p where p.tailNumber = :tailNumber")
 	Optional<Plane> findByTailNumber(@Param("tailNumber") int tailNumber);
+	
+	@Query("SELCET p FROM plane")
+	List<Plane> getAll();
 }

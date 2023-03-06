@@ -70,9 +70,29 @@ public class Airport {
 	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_start")
 	private Set<Flight> flightsStart;
+	
+	public void addFlightStart(Flight flight) {
+		this.flightsStart.add(flight);
+		flight.setFrom(this);
+	}
+	
+	public void removeFlightStart(Flight flight) {
+		this.flightsStart.remove(flight);
+		flight.setFrom(null);
+	}
 
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_end")
 	private Set<Flight> flightsEnd;
+	
+	public void addFlightTo(Flight flight) {
+		this.flightsEnd.add(flight);
+		flight.setTo(this);
+	}
+	
+	public void removeFlightTo(Flight flight) {
+		this.flightsEnd.remove(flight);
+		flight.setTo(null);
+	}
 
 }

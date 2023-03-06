@@ -1,6 +1,7 @@
 package msg.project.flightmanager.model;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -68,16 +69,26 @@ public class Plane {
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id")
 	private Company company;
-
-	@OneToMany(mappedBy = "plane", fetch = FetchType.LAZY)
-	private Flight flight;
-
+	
 	public void addToCompany() {
 		this.company.getPlanes().add(this);
 	}
 
-	public void removeFRomCompany() {
+	public void removeFromCompany() {
 		this.company.getPlanes().remove(this);
+	}
+	
+	@OneToMany(mappedBy = "plane", fetch = FetchType.LAZY)
+	private Set<Flight> flights;
+	
+	public void addFlight(Flight flight) {
+		flights.add(flight);
+		flight.setPlane(this);
+	}
+	
+	public void removeFlight(Flight flight) {
+		flights.remove(flight);
+		flight.setPlane(null);
 	}
 
 	@Override
