@@ -1,8 +1,10 @@
 package msg.project.flightmanager.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,6 +14,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -33,12 +37,31 @@ public class Airport {
 
 	@Id
 	@GenericGenerator(name = "native", strategy = "native")
-	@Column(name = "airportName", length = 30)
+	@Column
+	private Long id_airport;
+
+	@Column(unique = true, length = 30)
 	private String airportName;
+
+	@Column(unique = true)
+	private String codeIdentifier; // name = John F. Kennedy International Airport -> code = JFKIA
+
+	@Length(min = 1, max = 8)
+	@Column
+	private int runWays;
+
+	@Length(min = 1, max = 200)
+	@Column
+	private int gateWays;
 
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
+
+	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+	@JoinTable(name = "airport_company", joinColumns = @JoinColumn(name = "airport_id"), inverseJoinColumns = @JoinColumn(name = "company_id"))
+	@Builder.Default
+	private Set<Company> companiesCollab = new HashSet<>();
 
 	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_start")

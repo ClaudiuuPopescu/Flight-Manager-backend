@@ -3,6 +3,8 @@ package msg.project.flightmanager.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import enums.RoleEnum;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -29,6 +31,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Role {
 
 	@Id
@@ -37,14 +40,14 @@ public class Role {
 	private Long id;
 	@Column
 	private RoleEnum roleEnum;
-	@Column
-	private String label;
 
 	@ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-	@JoinTable(name = "Role_Permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	@JoinTable(name = "role_permission", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
+	@Builder.Default
 	private Set<Permission> permissions = new HashSet<>();
 
 	@OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+	@Builder.Default
 	private Set<User> user = new HashSet<>();
 
 }

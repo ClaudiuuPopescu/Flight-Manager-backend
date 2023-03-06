@@ -10,6 +10,7 @@ import converter.AddressConverter;
 import dto.AddressDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.model.Address;
 import repository.AddressRepository;
 import service.interfaces.IAddressService;
@@ -23,6 +24,7 @@ public class AddressService implements IAddressService {
 	@Autowired
 	private AddressConverter addressConverter;
 
+	@Transactional
 	@Override
 	public AddressDto createAddress(AddressDto addressDto) throws ValidatorException {
 		this.addressValidator.validateAddress(addressDto);
@@ -41,6 +43,7 @@ public class AddressService implements IAddressService {
 		return address.isPresent() ? true : false;
 	}
 
+	@Transactional
 	@Override
 	public AddressDto editAddress(AddressDto addressDto) throws ValidatorException {
 		Address address = this.addressRepository.findById(addressDto.getIdAddress())

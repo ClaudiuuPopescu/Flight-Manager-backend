@@ -16,6 +16,7 @@ import dto.AddressDto;
 import dto.UserDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
+import jakarta.transaction.Transactional;
 import modelHelper.CreateUserModel;
 import modelHelper.EditUserModel;
 import msg.project.flightmanager.model.User;
@@ -50,6 +51,7 @@ public class UserService implements IUserService {
 		return usersDto;
 	}
 
+	@Transactional
 	@Override
 	public boolean createUser(CreateUserModel createUserModel) {
 		// TODO sa aiba permisiuni
@@ -79,6 +81,7 @@ public class UserService implements IUserService {
 		return userDto;
 	}
 
+	@Transactional
 	@Override
 	public boolean editUserDetails(EditUserModel editUserModel) {
 		// TODO verificare daca current user ii acelasi cu cel pe care vrea sa il
@@ -98,6 +101,7 @@ public class UserService implements IUserService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean editUserAddress(AddressDto addressDto) throws ValidatorException {
 		this.addressService.editAddress(addressDto);
@@ -107,6 +111,7 @@ public class UserService implements IUserService {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public boolean deactivateUser(String username) {
 		User user = this.userRepository.findByUsername(username)
@@ -140,7 +145,7 @@ public class UserService implements IUserService {
 	private boolean checkIfUsernameExists(String username) {
 		Optional<User> user = this.userRepository.findByUsername(username);
 
-		return user.isEmpty() ? true : false;
+		return user.isPresent();
 	}
 
 	private void checkDifferencesAndSetValues(EditUserModel editUserModel, User userToEdit) {

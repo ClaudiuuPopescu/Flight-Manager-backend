@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -67,6 +68,10 @@ public class Company {
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
+
+	@ManyToMany(mappedBy = "companiesCollab")
+	@Builder.Default
+	private Set<Airport> airportsCollab = new HashSet<>();
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Builder.Default
