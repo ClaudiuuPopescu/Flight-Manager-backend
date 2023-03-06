@@ -98,6 +98,8 @@ public class AirportService implements IAirportService {
 
 	@Override
 	public boolean addCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
+		// TODO verificare rol current user
+
 		Airport airport = this.airportRepository
 				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -116,6 +118,8 @@ public class AirportService implements IAirportService {
 
 	@Override
 	public boolean removeCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
+		// TODO verificare rol current user
+
 		Airport airport = this.airportRepository
 				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
