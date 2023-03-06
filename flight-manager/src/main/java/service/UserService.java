@@ -145,7 +145,7 @@ public class UserService implements IUserService {
 	private boolean checkIfUsernameExists(String username) {
 		Optional<User> user = this.userRepository.findByUsername(username);
 
-		return user.isEmpty() ? true : false;
+		return user.isPresent();
 	}
 
 	private void checkDifferencesAndSetValues(EditUserModel editUserModel, User userToEdit) {
