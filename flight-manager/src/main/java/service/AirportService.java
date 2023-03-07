@@ -22,7 +22,6 @@ import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
 import repository.AirportRepository;
 import repository.CompanyRepository;
-import repository.FlightRepository;
 import service.interfaces.IAirportService;
 import validator.AirportValidator;
 
@@ -35,12 +34,6 @@ public class AirportService implements IAirportService {
 	private AirportValidator airportValidator;
 	@Autowired
 	private CompanyRepository companyRepository;
-	@Autowired
-	private FlightRepository flightRepository;
-	@Autowired
-	private FlightService flightService;
-	@Autowired
-	private FlightTemplateService flightTemplateService;
 
 	@Override
 	public List<AirportDto> getAll() {
@@ -103,9 +96,10 @@ public class AirportService implements IAirportService {
 		airportFlights.addAll(airport.getFlightsEnd());
 
 		for (Flight flight : airportFlights) {
-			flight.getFlightTemplate().setPlane(false);
-			flight.setActiv(false);
-			flight.setCanceled(true);
+			if (flight.isActiv()) {
+				flight.getFlightTemplate().setPlane(false);
+				flight.setCanceled(true);
+			}
 		}
 
 		this.airportRepository.delete(airport);
