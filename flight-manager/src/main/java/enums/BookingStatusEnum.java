@@ -1,7 +1,0 @@
-package enums;
-
-public enum BookingStatusEnum {
-	BOOKING_PENDING, BOOKING_CONFIRMED, BOOKING_CANCELED,
-	FLIGHT_CHECKED_IN, FLIGHT_COMPLETED
-
-}

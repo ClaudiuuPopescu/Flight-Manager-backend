@@ -1,11 +1,11 @@
 package msg.project.flightmanager.model;
 
+import java.sql.Time;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import enums.BookingPaymentEnum;
-import enums.BookingStatusEnum;
+import enums.ItineraryFlightStatusEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -37,27 +37,24 @@ public class Itinerary {
 	private Long id_itinerary;
 
 	@Column
-	private String passengerName;
-
-
-	@Column
-	private int seatsReserved;
+	private int seatsReserved; // out of plane capacity
 
 	@Column
 	@Builder.Default
-	private BookingStatusEnum bookingStatus = BookingStatusEnum.BOOKING_PENDING;
-
-	@Column
-	@Builder.Default
-	private BookingPaymentEnum paymentStatus = BookingPaymentEnum.BOOKING_NOT_PAID;
-
-	@Column
-	private int totalCost; // NU I SIGUR
-
+	private ItineraryFlightStatusEnum flightStatus = ItineraryFlightStatusEnum.FLIGHT_ACTIVE;
 
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "flight_id")
 	private Flight flight;
+
+	@Column
+	private Time boardingTime;
+
+	@Column
+	private double duration;
+
+	@Column
+	private int seatsTotal; // plane capacity
 
 	@Column
 	private String fromCountry;
