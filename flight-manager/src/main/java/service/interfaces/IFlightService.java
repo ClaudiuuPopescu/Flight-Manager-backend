@@ -16,7 +16,7 @@ public interface IFlightService {
 	
 	void updateFlight(FlightDto flightDto) throws FlightException, ValidatorException, PlaneException, AirportException;
 	
-	void deleteFlight(Long flightID);
+	void deleteFlight(Long flightID) throws FlightException;
 	
 	List<Flight> getAllFlights();
 	

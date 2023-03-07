@@ -68,8 +68,10 @@ public class FlightService implements IFlightService {
 		Flight flight = this.flightConverter.convertToEntity(flightDto);
 
 		this.flightRepository.save(flight);
-
 		// bag in liste si salvez
+		flight.getFlightTemplate().addFlight(flight);
+		this.flightTemplateRepository.save(flight.getFlightTemplate());
+
 		if (flight.getFrom() != null) {
 			from.addFlightStart(flight);
 			this.airportRepository.save(from);
@@ -100,56 +102,57 @@ public class FlightService implements IFlightService {
 	}
 
 	@Override
-	public void updateFlight(FlightDto flightDto) throws FlightException, ValidatorException, PlaneException, AirportException {
+	public void updateFlight(FlightDto flightDto)
+			throws FlightException, ValidatorException, PlaneException, AirportException {
 
-		if (getFlightById(flightDto.getIdFlight()) == null) 
-			throw new FlightException("An flight with this ID is NOT in the DB!",
-					ErrorCode.NOT_AN_EXISTING_FLIGHT);
+		if (getFlightById(flightDto.getIdFlight()) == null)
+			throw new FlightException("An flight with this ID is NOT in the DB!", ErrorCode.NOT_AN_EXISTING_FLIGHT);
 		else {
 			this.flightValidator.validateFlight(flightDto);
 			Flight oldFlight = getFlightById(flightDto.getIdFlight());
-			
+
 			Airport from = this.verifyAirport(flightDto.getFrom());
 			Airport to = this.verifyAirport(flightDto.getTo());
 			Plane plane = this.verifyPlane(flightDto.getPlane());
-			
+
 			Airport oldFrom = oldFlight.getFrom();
 			Airport oldTo = oldFlight.getTo();
 			Plane oldPlane = oldFlight.getPlane();
 			LocalDate oldDate = oldFlight.getDate();
-			
+
 			Flight newFlight = this.flightConverter.convertToEntity(flightDto);
 
 			this.flightRepository.save(newFlight);
 
-			//verificare la from, to si plane daca sunt altele scot din liste alea veci si pun pe alea noi
-			if(!from.equals(oldFrom)) {
-				//fac scoatere si adaugare
+			// verificare la from, to si plane daca sunt altele scot din liste alea veci si
+			// pun pe alea noi
+			if (!from.equals(oldFrom)) {
+				// fac scoatere si adaugare
 				oldFrom.removeFlightStart(oldFlight);
 				from.addFlightStart(newFlight);
 
 				this.airportRepository.save(oldFrom);
 				this.airportRepository.save(from);
 			}
-			
-			if(!to.equals(oldTo)) {
+
+			if (!to.equals(oldTo)) {
 				oldTo.removeFlightTo(oldFlight);
 				to.addFlightTo(newFlight);
 				this.airportRepository.save(oldTo);
 				this.airportRepository.save(to);
 			}
-			
-			if(!plane.equals(oldPlane)) {
+
+			if (!plane.equals(oldPlane)) {
 				oldPlane.removeFlight(oldFlight);
 				oldPlane.addFlight(newFlight);
-				//verific firstFlight
-				if(!oldDate.equals(newFlight.getDate()) && plane.getFirstFlight().equals(oldDate)) 
+				// verific firstFlight
+				if (!oldDate.equals(newFlight.getDate()) && plane.getFirstFlight().equals(oldDate))
 					plane.setFirstFlight(newFlight.getDate());
-	
+
 				this.planeRepository.save(oldPlane);
 				this.planeRepository.save(plane);
 			}
-			
+
 		}
 	}
 
@@ -185,8 +188,32 @@ public class FlightService implements IFlightService {
 	}
 
 	@Override
-	public void deleteFlight(Long flightID) {
-		// TODO Auto-generated method stub
+	public void deleteFlight(Long flightID) throws FlightException {
+
+		if (getFlightById(flightID) == null)
+			throw new FlightException("An flight with this ID is NOT in the DB!", ErrorCode.NOT_AN_EXISTING_FLIGHT);
+		else {
+			Flight flight = getFlightById(flightID);
+
+			Airport from = flight.getFrom();
+			Airport to = flight.getTo();
+			Plane plane = flight.getPlane();
+
+			from.removeFlightStart(flight);
+			to.removeFlightTo(flight);
+			plane.removeFlight(flight);
+
+			if (plane.getFirstFlight().equals(flight.getDate()))
+				plane.setFirstFlight(null);
+
+			this.planeRepository.save(plane);
+			this.airportRepository.save(to);
+			this.airportRepository.save(from);
+			FlightTemplate template = flight.getFlightTemplate();
+			template.removeFlight(flight);
+			this.flightTemplateRepository.save(template);
+			this.flightRepository.delete(flight);
+		}
 
 	}
 
