@@ -1,12 +1,15 @@
 package service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import converter.FlightConverter;
+import dto.AirportDto;
 import dto.FlightDto;
+import dto.PlaneDto;
 import exceptions.AirportException;
 import exceptions.ErrorCode;
 import exceptions.FlightException;
@@ -57,38 +60,13 @@ public class FlightService implements IFlightService {
 
 		this.flightValidator.validateFlight(flightDto);
 
-		Airport from = null;
-		Airport to = null;
-		Plane plane = null;
-
 		// verific sa existe aeropoartele si avionul
-		if (flightDto.getFrom() != null) {
-			from = this.airportRepository.findByCodeIdentifier(flightDto.getFrom().getCodeIdentifier()).get();
-			if (from == null)
-				throw new AirportException(
-						String.format("An airport with the given code %s for Start does not exist in the DB",
-								flightDto.getFrom().getCodeIdentifier()),
-						ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-		}
-
-		if (flightDto.getTo() != null) {
-			to = this.airportRepository.findByCodeIdentifier(flightDto.getTo().getCodeIdentifier()).get();
-			if (to == null)
-				throw new AirportException(
-						String.format("An airport with the given code %s for End does not exist in the DB",
-								flightDto.getTo().getCodeIdentifier()),
-						ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-		}
-
-		if (flightDto.getPlane() != null) {
-			plane = this.planeRepository.findByTailNumber(flightDto.getPlane().getTailNumber()).get();
-			if (plane == null)
-				throw new PlaneException(String.format("A plane with this tail number %d does not exist",
-						flightDto.getPlane().getTailNumber()), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-		}
+		Airport from = this.verifyAirport(flightDto.getFrom());
+		Airport to = this.verifyAirport(flightDto.getTo());
+		Plane plane = this.verifyPlane(flightDto.getPlane());
 
 		Flight flight = this.flightConverter.convertToEntity(flightDto);
-		
+
 		this.flightRepository.save(flight);
 
 		// bag in liste si salvez
@@ -107,24 +85,103 @@ public class FlightService implements IFlightService {
 			if (flight.getDate() != null) {
 
 				plane.setFirstFlight(flight.getDate());
-	
+
 			} else {
 
 				plane.setFirstFlight(java.time.LocalDate.now());
-			
+
 			}
-			
+
 			plane.addFlight(flight);
 			this.planeRepository.save(plane);
-			
+
 		}
 
 	}
 
 	@Override
-	public void updateFlight(FlightDto flightDto) {
-		// TODO Auto-generated method stub
+	public void updateFlight(FlightDto flightDto) throws FlightException, ValidatorException, PlaneException, AirportException {
 
+		if (getFlightById(flightDto.getIdFlight()) == null) 
+			throw new FlightException("An flight with this ID is NOT in the DB!",
+					ErrorCode.NOT_AN_EXISTING_FLIGHT);
+		else {
+			this.flightValidator.validateFlight(flightDto);
+			Flight oldFlight = getFlightById(flightDto.getIdFlight());
+			
+			Airport from = this.verifyAirport(flightDto.getFrom());
+			Airport to = this.verifyAirport(flightDto.getTo());
+			Plane plane = this.verifyPlane(flightDto.getPlane());
+			
+			Airport oldFrom = oldFlight.getFrom();
+			Airport oldTo = oldFlight.getTo();
+			Plane oldPlane = oldFlight.getPlane();
+			LocalDate oldDate = oldFlight.getDate();
+			
+			Flight newFlight = this.flightConverter.convertToEntity(flightDto);
+
+			this.flightRepository.save(newFlight);
+
+			//verificare la from, to si plane daca sunt altele scot din liste alea veci si pun pe alea noi
+			if(!from.equals(oldFrom)) {
+				//fac scoatere si adaugare
+				oldFrom.removeFlightStart(oldFlight);
+				from.addFlightStart(newFlight);
+
+				this.airportRepository.save(oldFrom);
+				this.airportRepository.save(from);
+			}
+			
+			if(!to.equals(oldTo)) {
+				oldTo.removeFlightTo(oldFlight);
+				to.addFlightTo(newFlight);
+				this.airportRepository.save(oldTo);
+				this.airportRepository.save(to);
+			}
+			
+			if(!plane.equals(oldPlane)) {
+				oldPlane.removeFlight(oldFlight);
+				oldPlane.addFlight(newFlight);
+				//verific firstFlight
+				if(!oldDate.equals(newFlight.getDate()) && plane.getFirstFlight().equals(oldDate)) 
+					plane.setFirstFlight(newFlight.getDate());
+	
+				this.planeRepository.save(oldPlane);
+				this.planeRepository.save(plane);
+			}
+			
+		}
+	}
+
+	private Plane verifyPlane(PlaneDto planeDto) throws PlaneException {
+
+		Plane planeToReturn;
+		if (planeDto != null) {
+			planeToReturn = this.planeRepository.findByTailNumber(planeDto.getTailNumber()).get();
+			if (planeToReturn == null)
+				throw new PlaneException(
+						String.format("A plane with this tail number %d does not exist", planeDto.getTailNumber()),
+						ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+			else
+				return planeToReturn;
+		} else
+			return null;
+	}
+
+	private Airport verifyAirport(AirportDto airportDto) throws AirportException {
+
+		Airport airportToSend;
+		if (airportDto != null) {
+			airportToSend = this.airportRepository.findByCodeIdentifier(airportDto.getCodeIdentifier()).get();
+			if (airportToSend == null)
+				throw new AirportException(
+						String.format("An airport with the given code %s for End does not exist in the DB",
+								airportDto.getCodeIdentifier()),
+						ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
+			else
+				return airportToSend;
+		} else
+			return null;
 	}
 
 	@Override

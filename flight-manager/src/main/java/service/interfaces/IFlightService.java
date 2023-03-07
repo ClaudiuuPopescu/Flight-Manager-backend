@@ -14,7 +14,7 @@ public interface IFlightService {
 	
 	void addFlight(FlightDto flightDto) throws FlightException, ValidatorException, AirportException, PlaneException;
 	
-	void updateFlight(FlightDto flightDto);
+	void updateFlight(FlightDto flightDto) throws FlightException, ValidatorException, PlaneException, AirportException;
 	
 	void deleteFlight(Long flightID);
 	
