@@ -104,7 +104,8 @@ public class AirportService implements IAirportService {
 
 		for (Flight flight : airportFlights) {
 			flight.getFlightTemplate().setPlane(false);
-			this.flightService.deleteFlight(flight.getIdFlight());
+			flight.setActiv(false);
+			flight.setCanceled(true);
 		}
 
 		this.airportRepository.delete(airport);
