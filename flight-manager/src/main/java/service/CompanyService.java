@@ -29,6 +29,9 @@ public class CompanyService implements ICompanyService {
 	@Autowired
 	private CompanyValidator companyValidator;
 
+	@Autowired
+	private PlaneService planeService;
+
 	@Override
 	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
@@ -69,15 +72,35 @@ public class CompanyService implements ICompanyService {
 			} else
 				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
 		} else
-			throw new CompanyException("A company shoul have a name!", ErrorCode.EMPTY_FIELD);
+			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
 	}
 
+	// aici anulez zborul si sterg avioanele
 	@Override
 	public void dezactivateCompany(String companyName) throws CompanyException {
 
 		Company companyToDezactivate = findByCompanyName(companyName);
-		companyToDezactivate.setActiv(false);
-		this.companyRepository.save(companyToDezactivate);
+
+		if (companyToDezactivate != null) {
+
+			companyToDezactivate.setActiv(false);
+			this.companyRepository.save(companyToDezactivate);
+
+			// sterg avioane
+			companyToDezactivate.getPlanes().stream()
+					.forEach(plane -> this.planeService.removePlane(plane.getTailNumber()));
+
+			// pun la angajati pe null
+			companyToDezactivate.getEmployees().stream().forEach(employee -> employee.setCompany(null));
+
+			// scot colaborarea cu aeroportul
+			companyToDezactivate.getAirportsCollab().stream()
+					.forEach(airport -> airport.removeCollab(companyToDezactivate));
+
+		} else
+			throw new CompanyException("A company with this name does not exist",
+					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+
 	}
 
 	@Override

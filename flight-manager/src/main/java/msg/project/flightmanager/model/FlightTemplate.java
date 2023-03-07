@@ -71,6 +71,16 @@ public class FlightTemplate {
 	@OneToMany(mappedBy = "flightTemplate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@Column(name = "flights")
 	private Set<Flight> flights;
+	
+	public void addFlight(Flight flight) {
+		flights.add(flight);
+		flight.setFlightTemplate(this);
+	}
+	
+	public void removeFlight(Flight flight) {
+		flights.remove(flight);
+		flight.setCanceled(true);
+	}
 
 	@Override
 	public boolean equals(Object obj) {

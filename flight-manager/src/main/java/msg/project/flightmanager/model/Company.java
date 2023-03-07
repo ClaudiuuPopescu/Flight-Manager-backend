@@ -72,13 +72,43 @@ public class Company {
 	@ManyToMany(mappedBy = "companiesCollab")
 	@Builder.Default
 	private Set<Airport> airportsCollab = new HashSet<>();
+	
+	public void removeCollab(Airport airport) {
+		this.airportsCollab.remove(airport);
+		airport.getCompaniesCollab().remove(this);
+	}
+	
+	public void addCollab(Airport airport) {
+		this.airportsCollab.add(airport);
+		airport.getCompaniesCollab().add(this);
+	}
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Builder.Default
 	private Set<Plane> planes = new HashSet<>();
+	
+	public void addPlanes(Plane plane) {
+		this.planes.add(plane);
+		plane.setCompany(this);
+	}
+	
+	public void removePlanes(Plane plane) {
+		this.planes.remove(plane);
+		plane.setCompany(null);
+	}
 
 	@OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
 	@Builder.Default
 	private Set<User> employees = new HashSet<>();
+	
+	public void addEmployee(User user) {
+		this.employees.add(user);
+		user.setCompany(this);
+	}
+	
+	public void removeEmployee(User user) {
+		this.employees.remove(user);
+		user.setCompany(null);
+	}
 
 }

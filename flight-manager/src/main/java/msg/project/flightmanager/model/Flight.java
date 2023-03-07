@@ -73,6 +73,7 @@ public class Flight {
 
 	public void removeFlightFromAirportStart() {
 		this.from.getFlightsStart().remove(this);
+		this.setFrom(null);
 	}
 
 	@ManyToOne
@@ -85,6 +86,7 @@ public class Flight {
 
 	public void removeFlightFromAirportEndt() {
 		this.to.getFlightsEnd().remove(this);
+		this.setTo(null);
 	}
 
 	@ManyToOne

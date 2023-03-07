@@ -1,5 +1,6 @@
 package repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -15,4 +16,7 @@ public interface AirportRepository extends CrudRepository<Airport, Long> {
 
 	@Query("SELECT a FROM airport a where a.codeIdentifier = :codeIdentifier")
 	Optional<Airport> findByCodeIdentifier(@Param("codeIdentifier") String codeIdentifier);
+	
+	@Query("SELECT a FROM airport")
+	List<Airport> getAll();
 }
