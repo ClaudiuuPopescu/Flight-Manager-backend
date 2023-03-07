@@ -1,6 +1,7 @@
 package service;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -18,6 +19,7 @@ import modelHelper.ActionCompanyAirportCollab;
 import modelHelper.EditAirportModel;
 import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.model.Company;
+import msg.project.flightmanager.model.Flight;
 import repository.AirportRepository;
 import repository.CompanyRepository;
 import service.interfaces.IAirportService;
@@ -89,8 +91,16 @@ public class AirportService implements IAirportService {
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not delete airport. Airport [{0}] not found", codeIdentifier)));
 
-		// TODO set field false in flight template.
-		// TODO delete flight
+		List<Flight> airportFlights = new ArrayList<>();
+		airportFlights.addAll(airport.getFlightsStart());
+		airportFlights.addAll(airport.getFlightsEnd());
+
+		for (Flight flight : airportFlights) {
+			if (flight.isActiv()) {
+				flight.getFlightTemplate().setPlane(false);
+				flight.setCanceled(true);
+			}
+		}
 
 		this.airportRepository.delete(airport);
 		return true;

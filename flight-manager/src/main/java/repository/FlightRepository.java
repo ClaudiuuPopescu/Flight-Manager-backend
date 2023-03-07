@@ -10,6 +10,7 @@ import msg.project.flightmanager.model.Flight;
 
 public interface FlightRepository extends CrudRepository<Flight, Long> {
 
+	@Override
 	List<Flight> findAll();
 
 	@Query("SELECT f FROM Flight WHERE f.flightName = name")
@@ -17,5 +18,4 @@ public interface FlightRepository extends CrudRepository<Flight, Long> {
 	
 	@Query("SELECT f FROM Flight WHERE f.idFlight = flightId")
 	Optional<Flight> findFlightById(Long flightId);
-
 }
