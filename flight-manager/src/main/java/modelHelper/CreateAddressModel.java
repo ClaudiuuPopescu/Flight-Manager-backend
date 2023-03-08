@@ -8,7 +8,7 @@ import lombok.Getter;
 @Builder
 public class CreateAddressModel {
 
-	private String coutry;
+	private String country;
 	private String city;
 	private String street;
 	private int streetNumber;

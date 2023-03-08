@@ -5,13 +5,21 @@ import org.springframework.stereotype.Component;
 import dto.AddressDto;
 import exceptions.ErrorCode;
 import exceptions.ValidatorException;
+import modelHelper.CreateAddressModel;
 
 @Component
 public class AddressValidator {
 
-	public void validateAddress(AddressDto addressDto) throws ValidatorException {
+	public void validateCreateModel(CreateAddressModel createAddressModel) throws ValidatorException {
+		validateCountry(createAddressModel.getCountry());
+		validateCity(createAddressModel.getCity());
+		validateStreet(createAddressModel.getStreet());
+		validateStreetNumber(createAddressModel.getStreetNumber());
+		validateApartament(createAddressModel.getApartment());
+	}
 
-		validateCountry(addressDto.getCoutry());
+	public void validateAddressDto(AddressDto addressDto) throws ValidatorException {
+		validateCountry(addressDto.getCountry());
 		validateCity(addressDto.getCity());
 		validateStreet(addressDto.getStreet());
 		validateStreetNumber(addressDto.getStreetNumber());
@@ -59,10 +67,10 @@ public class AddressValidator {
 
 	public void validateApartament(int apartment) throws ValidatorException {
 
-		if (apartment < 0 || apartment > 1000)
-			throw new ValidatorException("Street Number cannot be negativ or higher than 1000!",
-					ErrorCode.WRONG_INTERVAL);
-
+		if (Integer.valueOf(apartment) != null) {
+			if (apartment < 0 || apartment > 1000)
+				throw new ValidatorException("Street Number cannot be negativ or higher than 1000!",
+						ErrorCode.WRONG_INTERVAL);
+		}
 	}
-
 }

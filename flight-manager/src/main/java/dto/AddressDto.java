@@ -1,5 +1,6 @@
 package dto;
 
+import io.micrometer.common.lang.Nullable;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -8,9 +9,10 @@ import lombok.Getter;
 public class AddressDto {
 
 	private Long idAddress;
-	private String coutry;
+	private String country;
 	private String city;
 	private String street;
 	private int streetNumber;
+	@Nullable
 	private int apartment;
 }
