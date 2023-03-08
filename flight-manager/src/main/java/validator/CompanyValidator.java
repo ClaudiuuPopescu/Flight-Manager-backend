@@ -29,7 +29,7 @@ public class CompanyValidator {
 
 	public void validateAddress(AddressDto addressDto) throws ValidatorException {
 
-		addressValidator.validateAddress(addressDto);
+		this.addressValidator.validateAddressDto(addressDto);
 	}
 
 	public void validateName(String name) throws ValidatorException {

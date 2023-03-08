@@ -39,7 +39,7 @@ public class AirportValidator {
 	}
 		
 	private void validateAddress(AddressDto addressDto) throws ValidatorException {
-		this.addressValidator.validateAddress(addressDto);
+		this.addressValidator.validateAddressDto(addressDto);
 	}
 
 	private void validateAirportName(String airportName) throws ValidatorException {
