@@ -44,7 +44,7 @@ public class CompanyService implements ICompanyService {
 			} else
 				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
 		} else
-			throw new CompanyException("A company shoul have a name!", ErrorCode.EMPTY_FIELD);
+			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
 
 	}
 

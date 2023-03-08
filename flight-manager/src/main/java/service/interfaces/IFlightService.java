@@ -23,4 +23,10 @@ public interface IFlightService {
 	List<Flight> getFlightsByFlightTemplate(FlightTemplate flightTemplate);
 
 	Flight getFlightById(Long flightID);
+	
+	List<Flight> getCanceledAndNotActivFlights();
+	
+	List<Flight> getAllActiv();
+	
+	
 }

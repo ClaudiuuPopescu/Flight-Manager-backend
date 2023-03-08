@@ -1,7 +1,7 @@
 package service;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.List;import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -238,6 +238,28 @@ public class FlightService implements IFlightService {
 	public Flight getFlightById(Long flightID) {
 
 		return this.flightRepository.findById(flightID).get();
+	}
+	
+	private void verifyDateOfTheFlights(List<Flight> flights) {
+		
+		LocalDate currentDate = java.time.LocalDate.now();
+		flights.stream().filter(flight -> flight.getDate().isBefore(currentDate))
+		.forEach(flight -> {flight.setActiv(false); this.flightRepository.save(flight);});
+	}
+
+	@Override
+	public List<Flight> getCanceledAndNotActivFlights() {
+		
+		verifyDateOfTheFlights(getAllFlights());
+		return  getAllFlights().stream().filter(flight -> !flight.isActiv() || flight.isCanceled())
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Flight> getAllActiv() {
+		verifyDateOfTheFlights(getAllFlights());
+		return  getAllFlights().stream().filter(flight -> flight.isActiv() && !flight.isCanceled())
+				.collect(Collectors.toList());
 	}
 
 }
