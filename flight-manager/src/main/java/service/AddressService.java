@@ -11,6 +11,7 @@ import dto.AddressDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
 import jakarta.transaction.Transactional;
+import modelHelper.CreateAddressModel;
 import msg.project.flightmanager.model.Address;
 import repository.AddressRepository;
 import service.interfaces.IAddressService;
@@ -26,21 +27,22 @@ public class AddressService implements IAddressService {
 
 	@Transactional
 	@Override
-	public AddressDto createAddress(AddressDto addressDto) throws ValidatorException {
-		this.addressValidator.validateAddress(addressDto);
+	public AddressDto createAddress(CreateAddressModel createAddressModel) throws ValidatorException {
+		this.addressValidator.validateCreateModel(createAddressModel);
 
-		Address address = this.addressConverter.convertToEntity(addressDto);
+		Address address = this.addressConverter.converCreateModeltToEntity(createAddressModel);
 
 		this.addressRepository.save(address);
 		return this.addressConverter.convertToDTO(address);
 	}
 
-	public boolean getAddressByAllFields(AddressDto addressDto) {
+	public Optional<Address> getAddressByAllFields(CreateAddressModel createAddressModel) {
 
-		Optional<Address> address = this.addressRepository.findByAllAttributes(addressDto.getCoutry(),
-				addressDto.getCity(), addressDto.getStreet(), addressDto.getStreetNumber(), addressDto.getApartment());
+		Optional<Address> address = this.addressRepository.findByAllAttributes(createAddressModel.getCountry(),
+				createAddressModel.getCity(), createAddressModel.getStreet(), createAddressModel.getStreetNumber(),
+				createAddressModel.getApartment());
 
-		return address.isPresent() ? true : false;
+		return address;
 	}
 
 	@Transactional
@@ -56,12 +58,12 @@ public class AddressService implements IAddressService {
 		// other person
 		// and creates a new one
 		if (address.getUsers().size() > 1) {
-			AddressDto addressDtoCreated = createAddress(addressDto);
+			AddressDto addressDtoCreated = createAddress(this.addressConverter.converCreateModeltToEntity(addressDto));
 			return addressDtoCreated;
 		}
 
 		// scenario the only one with this address
-		this.addressValidator.validateAddress(addressDto);
+		this.addressValidator.validateAddressDto(addressDto);
 
 		address = this.addressConverter.convertToEntity(addressDto);
 		this.addressRepository.save(address);

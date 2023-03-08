@@ -19,7 +19,9 @@ import exceptions.ValidatorException;
 import jakarta.transaction.Transactional;
 import modelHelper.CreateUserModel;
 import modelHelper.EditUserModel;
+import msg.project.flightmanager.model.Address;
 import msg.project.flightmanager.model.User;
+import repository.AddressRepository;
 import repository.UserRepository;
 import service.interfaces.IUserService;
 import validator.UserValidator;
@@ -37,6 +39,8 @@ public class UserService implements IUserService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private AddressService addressService;
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Override
 	public List<UserDto> getAll() {
@@ -53,7 +57,7 @@ public class UserService implements IUserService {
 
 	@Transactional
 	@Override
-	public boolean createUser(CreateUserModel createUserModel) {
+	public boolean createUser(CreateUserModel createUserModel) throws ValidatorException {
 		// TODO sa aiba permisiuni
 		// TODO sa i se atribuie adresa, daca exista deja adresa, pe aia, daca nu, noua
 
@@ -66,6 +70,20 @@ public class UserService implements IUserService {
 
 		String encodedPass = this.passwordEncoder.encode(createUserModel.getPassword());
 		user.setPassword(encodedPass);
+
+		Optional<Address> optionalAddress = this.addressService.getAddressByAllFields(createUserModel.getAddress());
+
+		Address address;
+		if (optionalAddress.isEmpty()) {
+			// if the address does not match another address with all the fields, create new
+			// one
+			AddressDto addressDto = this.addressService.createAddress(createUserModel.getAddress());
+			address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+			user.setAddress(address);
+		}
+
+		// if the address matches another address based on all the fields, assign that
+		user.setAddress(optionalAddress.get());
 
 		this.userRepository.save(user);
 		return true;
@@ -107,7 +125,6 @@ public class UserService implements IUserService {
 		this.addressService.editAddress(addressDto);
 
 		// TODO sa vedem cum luam userul de la care modificam adresa
-		//
 		return false;
 	}
 

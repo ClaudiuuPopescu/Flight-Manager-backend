@@ -12,7 +12,7 @@ public interface IUserService {
 
 	List<UserDto> getAll();
 
-	boolean createUser(CreateUserModel createUserModel);
+	boolean createUser(CreateUserModel createUserModel) throws ValidatorException;
 
 	UserDto getByUsername(String username);
 
