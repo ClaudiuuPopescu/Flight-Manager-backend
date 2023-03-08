@@ -5,15 +5,16 @@ import java.util.List;
 import dto.AirportDto;
 import exceptions.ValidatorException;
 import modelHelper.ActionCompanyAirportCollab;
+import modelHelper.CreateAirportModel;
 import modelHelper.EditAirportModel;
 
 public interface IAirportService {
 
 	List<AirportDto> getAll();
 
-	boolean createAirport(AirportDto airportDto) throws ValidatorException;
+	boolean createAirport(CreateAirportModel createAirportModel) throws ValidatorException;
 	
-	boolean editAirport(EditAirportModel airportModel);
+	boolean editAirport(EditAirportModel airportModel) throws ValidatorException;
 
 	boolean removeAirport(String codeIdentifier);
 

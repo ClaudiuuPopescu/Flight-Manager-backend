@@ -3,6 +3,7 @@ package converter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import dto.AirportDto;
+import modelHelper.CreateAirportModel;
 import msg.project.flightmanager.model.Airport;
 
 
@@ -27,5 +28,11 @@ public class AirportConverter implements IConverter<Airport, AirportDto> {
 		 return Airport.builder().airportName(airportDto.getAirportName())
 					.runWays(airportDto.getRunWarys()).gateWays(airportDto.getGateWays())
 					.address(this.addressConverter.convertToEntity(airportDto.getAddressDto())).build();
+	}
+
+	public Airport convertCreateModelToEntity(CreateAirportModel airportModel) {
+		return Airport.builder().airportName(airportModel.getAirportName()).runWays(airportModel.getRunWarys())
+				.gateWays(airportModel.getGateWays())
+				.address(this.addressConverter.converCreateModeltToEntity(airportModel.getAddress())).build();
 	}
 }

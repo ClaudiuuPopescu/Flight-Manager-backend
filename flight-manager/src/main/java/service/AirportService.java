@@ -12,14 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import converter.AirportConverter;
+import dto.AddressDto;
 import dto.AirportDto;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
 import modelHelper.ActionCompanyAirportCollab;
+import modelHelper.CreateAirportModel;
 import modelHelper.EditAirportModel;
+import msg.project.flightmanager.model.Address;
 import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
+import repository.AddressRepository;
 import repository.AirportRepository;
 import repository.CompanyRepository;
 import service.interfaces.IAirportService;
@@ -34,6 +38,10 @@ public class AirportService implements IAirportService {
 	private AirportValidator airportValidator;
 	@Autowired
 	private CompanyRepository companyRepository;
+	@Autowired
+	private AddressService addressService;
+	@Autowired
+	private AddressRepository addressRepository;
 
 	@Override
 	public List<AirportDto> getAll() {
@@ -50,13 +58,18 @@ public class AirportService implements IAirportService {
 	}
 
 	@Override
-	public boolean createAirport(AirportDto airportDto) throws ValidatorException {
+	public boolean createAirport(CreateAirportModel createAirportModel) throws ValidatorException {
 		// TODO verificare rol current user
 		// TODO we get the company from the current user to add it to
 
-		this.airportValidator.validateAirport(airportDto);
+		this.airportValidator.validateCreateAiportModel(createAirportModel);
 
-		Airport airport = this.airportConverter.convertToEntity(airportDto);
+		Airport airport = this.airportConverter.convertCreateModelToEntity(createAirportModel);
+
+		AddressDto addressDto = this.addressService.createAddress(createAirportModel.getAddress());
+		Address address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+
+		airport.setAddress(address);
 
 		String codeIdentifier = generateCodeIdentifier(airport.getAirportName());
 		airport.setCodeIdentifier(codeIdentifier);
@@ -66,7 +79,7 @@ public class AirportService implements IAirportService {
 	}
 
 	@Override
-	public boolean editAirport(EditAirportModel editAirportModel) {
+	public boolean editAirport(EditAirportModel editAirportModel) throws ValidatorException {
 		// TODO verificare rol current user
 
 		Airport airport = this.airportRepository.findByCodeIdentifier(editAirportModel.getCodeIdentifier())
@@ -75,6 +88,13 @@ public class AirportService implements IAirportService {
 								editAirportModel.getCodeIdentifier())));
 
 		this.airportValidator.validateEditAirport(editAirportModel);
+
+		if (editAirportModel.getAddressModel() != null) {
+			AddressDto addressDto = this.addressService.createAddress(editAirportModel.getAddressModel());
+			Address address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+
+			airport.setAddress(address);
+		}
 
 		airport.setRunWays(editAirportModel.getRunWarys());
 		airport.setGateWays(editAirportModel.getGateWays());

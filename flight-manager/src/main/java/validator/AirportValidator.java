@@ -12,6 +12,7 @@ import dto.AirportDto;
 import exceptions.ErrorCode;
 import exceptions.FlightManagerException;
 import exceptions.ValidatorException;
+import modelHelper.CreateAirportModel;
 import modelHelper.EditAirportModel;
 import msg.project.flightmanager.model.Airport;
 import repository.AirportRepository;
@@ -33,10 +34,19 @@ public class AirportValidator {
 		validateAddress(airportDto.getAddressDto());
 	}
 	
+	public void validateCreateAiportModel(CreateAirportModel createAirportModel) throws ValidatorException {
+		validateAirportName(createAirportModel.getAirportName());
+		validateRunWays(createAirportModel.getRunWarys());
+		validateGateWays(createAirportModel.getGateWays());
+		this.addressValidator.validateCreateModel(createAirportModel.getAddress());
+
+	}
+
 	public void validateEditAirport(EditAirportModel editAirportModel) {
 		validateRunWays(editAirportModel.getRunWarys());
 		validateGateWays(editAirportModel.getGateWays());
 	}
+
 		
 	private void validateAddress(AddressDto addressDto) throws ValidatorException {
 		this.addressValidator.validateAddressDto(addressDto);
