@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -104,7 +105,7 @@ public class Flight {
 		this.flightTemplate.getFlights().add(this);
 	}
 
-	@OneToMany(mappedBy = "flight")
+	@OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE)
 	@Builder.Default
 	private Set<Itinerary> itineraries = new HashSet<>();
 

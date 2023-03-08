@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import enums.ItineraryFlightStatusEnum;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -40,10 +41,13 @@ public class Itinerary {
 	private int seatsReserved; // out of plane capacity
 
 	@Column
+	private String notes;
+
+	@Column
 	@Builder.Default
 	private ItineraryFlightStatusEnum flightStatus = ItineraryFlightStatusEnum.FLIGHT_ACTIVE;
 
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "flight_id")
 	private Flight flight;
 

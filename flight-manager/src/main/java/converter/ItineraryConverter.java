@@ -31,7 +31,8 @@ public class ItineraryConverter implements IConverter<Itinerary, ItineraryDto> {
 	}
 
 	public Itinerary convertCreateModelToItinerary(ItineraryHelperModel itineraryHelperModel, Flight flight) {
-		return Itinerary.builder().seatsReserved(itineraryHelperModel.getSeatsReserved()).flight(flight)
+		return Itinerary.builder().seatsReserved(itineraryHelperModel.getSeatsReserved())
+				.flight(flight)
 				.boardingTime(flight.getBoardingTime()).duration(flight.getDuration())
 				.seatsTotal(flight.getPlane().getCapacity()).fromCountry(flight.getFrom().getAddress().getCountry())
 				.fromCity(flight.getFrom().getAddress().getCity()).toCountry(flight.getTo().getAddress().getCountry())
