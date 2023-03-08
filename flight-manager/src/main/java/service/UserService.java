@@ -149,10 +149,15 @@ public class UserService implements IUserService {
 	}
 
 	private void checkDifferencesAndSetValues(EditUserModel editUserModel, User userToEdit) {
-		this.userValidator.validateFirstName(editUserModel.getFirstName());
-		this.userValidator.validateLastName(editUserModel.getLastName());
-		userToEdit.setFirstName(editUserModel.getFirstName());
-		userToEdit.setLastName(editUserModel.getLastName());
+		if (!userToEdit.getFirstName().equals(editUserModel.getFirstName())) {
+			this.userValidator.validateFirstName(editUserModel.getFirstName());
+			userToEdit.setFirstName(editUserModel.getFirstName());
+		}
+
+		if (!userToEdit.getLastName().equals(editUserModel.getLastName())) {
+			this.userValidator.validateLastName(editUserModel.getLastName());
+			userToEdit.setLastName(editUserModel.getLastName());
+		}
 
 		if (!editUserModel.getEmail().equals(userToEdit.getEmail())) {
 			this.userValidator.validateEmail(editUserModel.getEmail());
