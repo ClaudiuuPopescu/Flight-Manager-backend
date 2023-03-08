@@ -1,15 +1,13 @@
 package modelHelper;
 
-import io.micrometer.common.lang.Nullable;
 import lombok.Getter;
 
 @Getter
-public class EditAirportModel {
+public class CreateAirportModel {
 
+	private String airportName;
 	private String codeIdentifier;
 	private int runWarys;
 	private int gateWays;
-
-	@Nullable
-	private CreateAddressModel addressModel;
+	private CreateAddressModel address;
 }
