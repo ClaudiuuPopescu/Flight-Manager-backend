@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import converter.PlaneConverter;
 import dto.PlaneDto;
@@ -21,6 +22,7 @@ import repository.PlaneRepository;
 import service.interfaces.IPlaneService;
 import validator.PlaneValidator;
 
+@Service
 public class PlaneService implements IPlaneService {
 	@Autowired
 	private PlaneRepository planeRepository;

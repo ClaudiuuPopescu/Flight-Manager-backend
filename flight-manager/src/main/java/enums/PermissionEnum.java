@@ -23,7 +23,7 @@ public enum PermissionEnum {
 
 	ITINERARY_MANAGEMENT("itinerary_management"), // CM, ADMINISTRATOR
 
-	COMPANY_MANAGEMENT("company_management"), // CM, ADM
+	COMPANY_MANAGEMENT("company_management"), // ADM
 
 	AIRPORT_MANAGEMENT("airport_management"), // CM, ADM
 

@@ -61,15 +61,11 @@ public class Company {
 	@Column(name = "foundedIn")
 	private LocalDate foundedIn;
 
-	@Column(name = "activ")
-	@Builder.Default
-	private boolean activ = true;
-
 	@OneToOne
 	@JoinColumn(name = "address_id")
 	private Address address;
 
-	@ManyToMany(mappedBy = "companiesCollab")
+	@ManyToMany(mappedBy = "companiesCollab", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@Builder.Default
 	private Set<Airport> airportsCollab = new HashSet<>();
 	

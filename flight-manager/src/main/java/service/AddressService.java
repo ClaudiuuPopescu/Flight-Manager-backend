@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import converter.AddressConverter;
 import dto.AddressDto;
@@ -17,6 +18,7 @@ import repository.AddressRepository;
 import service.interfaces.IAddressService;
 import validator.AddressValidator;
 
+@Service
 public class AddressService implements IAddressService {
 	@Autowired
 	private AddressRepository addressRepository;
