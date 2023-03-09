@@ -1,13 +1,17 @@
 package service;
 
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import enums.RoleEnum;
+import exceptions.ErrorCode;
 import exceptions.FlightManagerException;
+import exceptions.RoleException;
 import modelHelper.AddPermissionToRoleModel;
 import msg.project.flightmanager.model.Permission;
 import msg.project.flightmanager.model.Role;
@@ -46,5 +50,23 @@ public class RoleService implements IRoleService {
 		this.roleRepository.save(role);
 		return true;
 	}
+
+	@Override
+	public List<Role> getAll() {
+	
+		return this.roleRepository.getAll();
+	}
+
+	@Override
+	public Role getRoleByEnum(RoleEnum roleEnum) throws RoleException {
+		
+		Optional<Role> role = this.roleRepository.findByEnum(roleEnum);
+		if(role.isPresent())
+			return role.get();
+		else
+			throw new RoleException("There is no role witn this Enum!", ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+	}
+
+
 
 }

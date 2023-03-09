@@ -1,5 +1,6 @@
 package repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -12,5 +13,8 @@ public interface PermissionRepository extends CrudRepository<Permission, Long> {
 
 	@Query("SELECT p FROM permission p where p.permissionEnum = :permissionEnum")
 	Optional<Permission> findByEnum(@Param("permisionEnum") String permissionEnum);
+	
+	@Query("SELECT p FROM permission p")
+	List<Permission> getAll();
 
 }

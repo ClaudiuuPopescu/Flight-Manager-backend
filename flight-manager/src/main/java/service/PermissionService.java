@@ -1,6 +1,7 @@
 package service;
 
 import java.text.MessageFormat;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,12 @@ public class PermissionService implements IPermissionService {
 						MessageFormat.format("Permission with enum [{0}] not found", enumValue)));
 
 		return permission;
+	}
+
+	@Override
+	public List<Permission> getAll() {
+		
+		return this.permissionRepository.getAll();
 	}
 
 }
