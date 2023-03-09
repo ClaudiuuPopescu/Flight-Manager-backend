@@ -3,6 +3,7 @@ package service;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -14,11 +15,18 @@ import org.springframework.stereotype.Service;
 import converter.UserConverter;
 import dto.AddressDto;
 import dto.UserDto;
+import enums.PermissionEnum;
+import enums.RoleEnum;
+import exceptions.ErrorCode;
 import exceptions.FlightManagerException;
+import exceptions.RoleException;
+import exceptions.UserException;
 import exceptions.ValidatorException;
 import jakarta.transaction.Transactional;
 import modelHelper.CreateUserModel;
 import modelHelper.EditUserModel;
+import msg.project.flightmanager.model.Permission;
+import msg.project.flightmanager.model.Role;
 import msg.project.flightmanager.model.User;
 import repository.UserRepository;
 import service.interfaces.IUserService;
@@ -37,6 +45,10 @@ public class UserService implements IUserService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private AddressService addressService;
+	@Autowired
+	private TokenService tokenService;
+	@Autowired
+	private RoleService roleService;
 
 	@Override
 	public List<UserDto> getAll() {
@@ -163,6 +175,25 @@ public class UserService implements IUserService {
 			this.userValidator.validatePhoneNumber(editUserModel.getPhoneNumber());
 			userToEdit.setPhoneNumber(editUserModel.getPhoneNumber());
 		}
+
+	}
+
+	@Override
+	public void checkPermission(String token, PermissionEnum permissionEnum) throws RoleException, UserException {
+
+		final String userName = this.tokenService.getCurrentUserUsername(token);
+		Optional<User> user = this.userRepository.findByUsername(userName);
+		if(user.isEmpty())
+			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+		final RoleEnum roleEnum = RoleEnum.fromLabel(this.tokenService.getCurrentRol(token));
+		Role role = this.roleService.getRoleByEnum(roleEnum);
+		Set<Permission> permissionOfRole = role.getPermissions();
+
+		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getPermissionEnum().equals(permissionEnum))
+				.collect(Collectors.toList());
+		
+		if(permissionExistence.isEmpty())
+			throw new RoleException(String.format("The user %d does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
 
 	}
 }
