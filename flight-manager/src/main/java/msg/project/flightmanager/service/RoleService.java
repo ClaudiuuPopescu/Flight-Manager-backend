@@ -1,7 +1,9 @@
 package msg.project.flightmanager.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,6 +24,12 @@ public class RoleService implements IRoleService {
 	private RoleRepository roleRepository;
 	@Autowired
 	private PermissionService permissionService;
+	
+	@Override
+	public List<Role> getAll() {
+	
+		return StreamSupport.stream(this.roleRepository.findAll().spliterator(), false).toList();
+	}
 
 	@Transactional
 	@Override
@@ -67,5 +75,7 @@ public class RoleService implements IRoleService {
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not find role by title [{0}] not found", roleTitle)));
 	}
+	
+	
 
 }

@@ -9,7 +9,6 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,8 +16,6 @@ import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.UserConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.UserDto;
-import msg.project.flightmanager.enums.PermissionEnum;
-import msg.project.flightmanager.enums.RoleEnum;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.RoleException;
@@ -221,17 +218,21 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public void checkPermission(String token, PermissionEnum permissionEnum) throws RoleException, UserException {
+	public void checkPermission(String token, String permissionTitle) throws RoleException, UserException {
 
 		final String userName = this.tokenService.getCurrentUserUsername(token);
+		
 		Optional<User> user = this.userRepository.findByUsername(userName);
-		if(user.isEmpty())
-			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-		final RoleEnum roleEnum = RoleEnum.fromLabel(this.tokenService.getCurrentRol(token));
-		Role role = this.roleService.getRoleByEnum(roleEnum);
+		
+		if(user.isEmpty()) {
+			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);			
+		}
+		
+		Role role = this.roleService.getRoleByTitle(this.tokenService.getCurrentRol(token));
+		
 		Set<Permission> permissionOfRole = role.getPermissions();
 
-		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getPermissionEnum().equals(permissionEnum))
+		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getTitle().equals(permissionTitle))
 				.collect(Collectors.toList());
 		
 		if(permissionExistence.isEmpty())

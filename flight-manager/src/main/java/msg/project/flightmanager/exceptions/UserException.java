@@ -1,4 +1,4 @@
-package exceptions;
+package msg.project.flightmanager.exceptions;
 
 public class UserException extends ErrorCodeException{
 

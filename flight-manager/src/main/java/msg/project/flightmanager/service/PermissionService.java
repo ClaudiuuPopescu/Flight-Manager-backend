@@ -1,7 +1,9 @@
 package msg.project.flightmanager.service;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,12 @@ import msg.project.flightmanager.service.interfaces.IPermissionService;
 public class PermissionService implements IPermissionService {
 	@Autowired
 	private PermissionRepository permissionRepository;
+	
+	@Override
+	public List<Permission> getAll() {
+		
+		return StreamSupport.stream(this.permissionRepository.findAll().spliterator(), false).toList();
+	}
 	
 	@Transactional
 	@Override
