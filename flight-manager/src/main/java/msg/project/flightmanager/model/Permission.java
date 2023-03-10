@@ -5,7 +5,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import enums.PermissionEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,6 +17,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import msg.project.flightmanager.enums.PermissionEnum;
 
 @Entity
 @Table(name = "permission")
@@ -34,8 +34,11 @@ public class Permission {
 	@Column
 	private Long id;
 
-	@Column
+	@Column(unique = true)
 	private PermissionEnum permissionEnum;
+	
+	@Column(unique = true)
+	private String title;
 
 	@ManyToMany(mappedBy = "permissions")
 	@Builder.Default

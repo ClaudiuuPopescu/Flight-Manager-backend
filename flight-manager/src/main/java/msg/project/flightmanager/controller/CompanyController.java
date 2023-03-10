@@ -1,0 +1,10 @@
+package msg.project.flightmanager.controller;
+
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class CompanyController {
+
+
+   
+}
