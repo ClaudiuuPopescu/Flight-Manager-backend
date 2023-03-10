@@ -15,6 +15,7 @@ public class CreateUserModel {
 	private String email;
 	private String phoneNumber;
 	private Date birthDate;
+	private String roleTitle;
 
 	private CreateAddressModel address;
 }

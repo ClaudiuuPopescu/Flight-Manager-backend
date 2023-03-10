@@ -18,6 +18,7 @@ import msg.project.flightmanager.dto.UserDto;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.model.Address;
+import msg.project.flightmanager.model.Role;
 import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.modelHelper.EditUserModel;
@@ -41,6 +42,8 @@ public class UserService implements IUserService {
 	private AddressService addressService;
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private RoleService roleService;
 
 	@Override
 	public List<UserDto> getAll() {
@@ -70,6 +73,9 @@ public class UserService implements IUserService {
 
 		String encodedPass = this.passwordEncoder.encode(createUserModel.getPassword());
 		user.setPassword(encodedPass);
+		
+		Role role = this.roleService.getRoleByTitle(createUserModel.getRoleTitle());
+		user.setRole(role);
 
 		Optional<Address> optionalAddress = this.addressService.getAddressByAllFields(createUserModel.getAddress());
 
@@ -110,12 +116,28 @@ public class UserService implements IUserService {
 
 		User userToEdit = this.userRepository.findByUsername(editUserModel.getUsernameToEdit())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
-						.format("Can not edit user. User {0} not found", editUserModel.getUsernameToEdit())));
+						.format("Can not edit user's details. User {0} not found", editUserModel.getUsernameToEdit())));
 
 		checkDifferencesAndSetValues(editUserModel, userToEdit);
 
 		this.userRepository.save(userToEdit);
 
+		return true;
+	}
+	
+	@Transactional
+	@Override
+	public boolean editUserRole(String usernameToEdit, String newRoleTitle) {
+		// TODO Auto-generated method stub
+		
+		User userToEdit = this.userRepository.findByUsername(usernameToEdit)
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
+						.format("Can not edit user's role. User {0} not found", usernameToEdit)));
+		
+		Role role =  this.roleService.getRoleByTitle(newRoleTitle);
+		userToEdit.setRole(role);
+		
+		this.userRepository.save(userToEdit);
 		return true;
 	}
 

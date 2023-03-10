@@ -7,11 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.transaction.Transactional;
 import msg.project.flightmanager.model.Airport;
 
 @Repository
-@Transactional
 public interface AirportRepository extends CrudRepository<Airport, Long> {
 
 	@Query("SELECT a FROM Airport a where a.airportName = :airportName")

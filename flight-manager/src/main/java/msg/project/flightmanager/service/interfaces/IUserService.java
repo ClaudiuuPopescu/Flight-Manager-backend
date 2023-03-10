@@ -17,6 +17,8 @@ public interface IUserService {
 	UserDto getByUsername(String username);
 
 	boolean editUserDetails(EditUserModel editUserModel);
+	
+	boolean editUserRole(String usernameToEdit, String newRoleTitle);
 
 	boolean editUserAddress(AddressDto addressDto) throws ValidatorException;
 

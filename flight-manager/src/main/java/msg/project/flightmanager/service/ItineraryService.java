@@ -7,6 +7,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.ItineraryConverter;
 import msg.project.flightmanager.dto.ItineraryDto;
 import msg.project.flightmanager.exceptions.FlightManagerException;
@@ -34,6 +35,7 @@ public class ItineraryService implements IItineraryService {
 		return itineraries.stream().map(this.itineraryConverter::convertToDTO).toList();
 	}
 
+	@Transactional
 	@Override
 	public boolean createItinerary(ItineraryHelperModel itineraryHelperModel) {
 		// TODO check role current user
@@ -61,6 +63,7 @@ public class ItineraryService implements IItineraryService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean editItinerary(EditItineraryModel editItineraryModel) {
 		// TODO check role current user
@@ -110,6 +113,7 @@ public class ItineraryService implements IItineraryService {
 		return false;
 	}
 
+	@Transactional
 	@Override
 	public boolean removeItinerary(Long idItinerary) {
 		// TODO check role current user

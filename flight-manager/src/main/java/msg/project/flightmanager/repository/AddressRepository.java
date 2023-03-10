@@ -7,11 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.transaction.Transactional;
 import msg.project.flightmanager.model.Address;
 
 @Repository
-@Transactional
 public interface AddressRepository extends CrudRepository<Address, Long> {
 
 	@Override

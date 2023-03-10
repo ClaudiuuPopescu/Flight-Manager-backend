@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.enums.RoleEnum;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.model.Permission;
@@ -22,6 +23,7 @@ public class RoleService implements IRoleService {
 	@Autowired
 	private PermissionService permissionService;
 
+	@Transactional
 	@Override
 	public boolean addRole(String roleEnumLabel) {
 		roleEnumLabel.toLowerCase();
@@ -44,6 +46,7 @@ public class RoleService implements IRoleService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean addPermissionToRole(AddPermissionToRoleModel addPermissionToRoleModel) {
 		Permission permission = this.permissionService
@@ -51,11 +54,18 @@ public class RoleService implements IRoleService {
 
 		Role role = this.roleRepository.findByTitle(addPermissionToRoleModel.getRoleTitle().toUpperCase())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
-						MessageFormat.format("Can not find role by title [{0}] not found", addPermissionToRoleModel.getRoleTitle())));
+						MessageFormat.format("Adding permission to role failed. Can not find role by title [{0}] not found", addPermissionToRoleModel.getRoleTitle())));
 
 		role.getPermissions().add(permission);
 		this.roleRepository.save(role);
 		return true;
+	}
+
+	@Override
+	public Role getRoleByTitle(String roleTitle) {
+		return this.roleRepository.findByTitle(roleTitle.toUpperCase())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not find role by title [{0}] not found", roleTitle)));
 	}
 
 }

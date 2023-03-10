@@ -7,11 +7,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import jakarta.transaction.Transactional;
 import msg.project.flightmanager.model.Plane;
 
 @Repository
-@Transactional
 public interface PlaneRepository extends CrudRepository<Plane, Long> {
 
 	@Query("SELECT p FROM Plane p where p.tailNumber = :tailNumber")

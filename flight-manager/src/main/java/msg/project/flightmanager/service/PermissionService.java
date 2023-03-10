@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.enums.PermissionEnum;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.model.Permission;
@@ -17,7 +18,8 @@ import msg.project.flightmanager.service.interfaces.IPermissionService;
 public class PermissionService implements IPermissionService {
 	@Autowired
 	private PermissionRepository permissionRepository;
-
+	
+	@Transactional
 	@Override
 	public boolean addPermission(String permissionEnumName) {
 		permissionEnumName.toLowerCase();

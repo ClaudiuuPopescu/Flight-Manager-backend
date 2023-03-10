@@ -11,6 +11,7 @@ import java.util.stream.StreamSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.AirportConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.AirportDto;
@@ -57,6 +58,7 @@ public class AirportService implements IAirportService {
 		return airportsDto;
 	}
 
+	@Transactional
 	@Override
 	public boolean createAirport(CreateAirportModel createAirportModel) throws ValidatorException {
 		// TODO verificare rol current user
@@ -78,6 +80,7 @@ public class AirportService implements IAirportService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean editAirport(EditAirportModel editAirportModel) throws ValidatorException {
 		// TODO verificare rol current user
@@ -103,6 +106,7 @@ public class AirportService implements IAirportService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean removeAirport(String codeIdentifier) {
 		// TODO verificare rol current user
@@ -126,6 +130,7 @@ public class AirportService implements IAirportService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean addCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
 		// TODO verificare rol current user
@@ -146,6 +151,7 @@ public class AirportService implements IAirportService {
 		return true;
 	}
 
+	@Transactional
 	@Override
 	public boolean removeCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
 		// TODO verificare rol current user
