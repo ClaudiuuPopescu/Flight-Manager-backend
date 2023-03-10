@@ -3,11 +3,13 @@ package msg.project.flightmanager.service;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +17,15 @@ import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.UserConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.UserDto;
+import msg.project.flightmanager.enums.PermissionEnum;
+import msg.project.flightmanager.enums.RoleEnum;
+import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
+import msg.project.flightmanager.exceptions.RoleException;
+import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.model.Address;
+import msg.project.flightmanager.model.Permission;
 import msg.project.flightmanager.model.Role;
 import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
@@ -42,6 +50,8 @@ public class UserService implements IUserService {
 	private AddressService addressService;
 	@Autowired
 	private AddressRepository addressRepository;
+	@Autowired
+	private TokenService tokenService;
 	@Autowired
 	private RoleService roleService;
 
@@ -207,6 +217,25 @@ public class UserService implements IUserService {
 			this.userValidator.validatePhoneNumber(editUserModel.getPhoneNumber());
 			userToEdit.setPhoneNumber(editUserModel.getPhoneNumber());
 		}
+
+	}
+
+	@Override
+	public void checkPermission(String token, PermissionEnum permissionEnum) throws RoleException, UserException {
+
+		final String userName = this.tokenService.getCurrentUserUsername(token);
+		Optional<User> user = this.userRepository.findByUsername(userName);
+		if(user.isEmpty())
+			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+		final RoleEnum roleEnum = RoleEnum.fromLabel(this.tokenService.getCurrentRol(token));
+		Role role = this.roleService.getRoleByEnum(roleEnum);
+		Set<Permission> permissionOfRole = role.getPermissions();
+
+		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getPermissionEnum().equals(permissionEnum))
+				.collect(Collectors.toList());
+		
+		if(permissionExistence.isEmpty())
+			throw new RoleException(String.format("The user %d does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
 
 	}
 }

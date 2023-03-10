@@ -55,6 +55,9 @@ public class User {
 
 	@Column
 	private Date birthDate;
+	
+	@Column(name = "token")
+	private Token token;
 
 	@Column
 	@Builder.Default
