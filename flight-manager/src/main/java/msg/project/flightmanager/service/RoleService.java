@@ -15,6 +15,7 @@ import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.model.Permission;
 import msg.project.flightmanager.model.Role;
 import msg.project.flightmanager.modelHelper.AddPermissionToRoleModel;
+import msg.project.flightmanager.repository.PermissionRepository;
 import msg.project.flightmanager.repository.RoleRepository;
 import msg.project.flightmanager.service.interfaces.IRoleService;
 
@@ -23,7 +24,7 @@ public class RoleService implements IRoleService {
 	@Autowired
 	private RoleRepository roleRepository;
 	@Autowired
-	private PermissionService permissionService;
+	private PermissionRepository permissionRepository;
 	
 	@Override
 	public List<Role> getAll() {
@@ -57,8 +58,9 @@ public class RoleService implements IRoleService {
 	@Transactional
 	@Override
 	public boolean addPermissionToRole(AddPermissionToRoleModel addPermissionToRoleModel) {
-		Permission permission = this.permissionService
-				.getPermissionByTitle(addPermissionToRoleModel.getPermissionTitle());
+		Permission permission = this.permissionRepository.findByTitle(addPermissionToRoleModel.getPermissionTitle().toUpperCase())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Adding permission to role failed. Permission with title [{0}] not found", (addPermissionToRoleModel.getPermissionTitle()))));
 
 		Role role = this.roleRepository.findByTitle(addPermissionToRoleModel.getRoleTitle().toUpperCase())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
