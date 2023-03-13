@@ -54,7 +54,7 @@ public class Airport {
 	@Column
 	private int gateWays;
 
-	@OneToOne
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "address_id")
 	private Address address;
 
@@ -64,7 +64,7 @@ public class Airport {
 	private Set<Company> companiesCollab = new HashSet<>();
 	
 	public void removeCollab(Company company) {
-		companiesCollab.remove(company);
+		this.companiesCollab.remove(company);
 	}
 
 	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)

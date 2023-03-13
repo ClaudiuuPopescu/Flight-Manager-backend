@@ -11,11 +11,9 @@ import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -60,11 +58,9 @@ public class Address {
 	@Builder.Default
 	private Set<User> users = new HashSet<>();
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
-	@JoinColumn(name = "company_id")
+	@OneToOne(mappedBy = "address")
 	private Company company;
 
-	@OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
-	@JoinColumn(name = "airport_id")
+	@OneToOne(mappedBy = "address")
 	private Airport airport;
 }
