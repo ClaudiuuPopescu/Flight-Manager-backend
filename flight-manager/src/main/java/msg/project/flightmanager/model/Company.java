@@ -61,7 +61,11 @@ public class Company {
 	@Column(name = "foundedIn")
 	private LocalDate foundedIn;
 
-	@OneToOne
+	@Column(name = "activ")
+	@Builder.Default
+	private boolean activ = true;
+
+	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "address_id")
 	private Address address;
 
