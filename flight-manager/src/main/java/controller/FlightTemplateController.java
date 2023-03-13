@@ -13,52 +13,54 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import dto.CompanyDto;
+import dto.FlightTemplateDto;
 import enums.PermissionEnum;
 import exceptions.CompanyException;
 import exceptions.ErrorCodeException;
+import exceptions.FlightTemplateException;
 import exceptions.RoleException;
 import exceptions.UserException;
 import exceptions.ValidatorException;
-import service.interfaces.ICompanyService;
+import msg.project.flightmanager.model.FlightTemplate;
+import service.interfaces.IFlightTemplateService;
 import service.interfaces.IUserService;
 
 @RestController
-public class CompanyController {
+public class FlightTemplateController {
 
-	private static final String COMPANY_PATH = "/companies";
-	private static final String COMPANY_PATH_UPDATE = "/companies/update";
-	private static final String COMPANY_PATH_DELETE = "/companies/{companyName}";
-
-	private final ICompanyService companyService;
-
-	private final IUserService userService;
-
+	private static final String FLIGHT_TEMPLATE_PATH = "/templates";
+	private static final String FLIGHT_TEMPLATE_PATH_UPDATE = "/templates/update";
+	private static final String FLIGHT_TEMPLATE_PATH_DELETE = "/templates/{flightTemplateId}";
+	
+	private IUserService userService;
+	private IFlightTemplateService flightTemplateService;
+	
 	@Autowired
-	public CompanyController(ICompanyService companyService, IUserService userService) {
-		this.companyService = companyService;
+	public FlightTemplateController(IUserService userService, IFlightTemplateService flightTemplateService) {
+		this.flightTemplateService = flightTemplateService;
 		this.userService = userService;
 	}
-
-	@GetMapping(COMPANY_PATH)
+	
+	@GetMapping(FLIGHT_TEMPLATE_PATH)
 	public ResponseEntity<?> findAll(@RequestHeader(name = "Authorization") String token) {
 		try {
-			this.userService.checkPermission(token, PermissionEnum.COMPANY_MANAGEMENT);
+			this.userService.checkPermission(token, PermissionEnum.FLIGHT_TEMPLATE_MANAGEMENT);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON)
-					.body(this.companyService.findAll());
+					.body(this.flightTemplateService.getAllFlightTemplates());
 
 		} catch (ErrorCodeException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON)
 					.body(e);
 		}
 	}
-
-	@PostMapping(COMPANY_PATH)
-	public ResponseEntity<?> save(@RequestBody CompanyDto companyDto,
-			@RequestHeader(name = "Authorization") String token) throws CompanyException, ValidatorException{
+	
+	@PostMapping(FLIGHT_TEMPLATE_PATH)
+	public ResponseEntity<?> save(@RequestBody FlightTemplateDto flightTemplateDto,
+			@RequestHeader(name = "Authorization") String token) throws FlightTemplateException{
 
 		try {
-			this.userService.checkPermission(token, PermissionEnum.COMPANY_MANAGEMENT);
-			this.companyService.addCompany(companyDto);
+			this.userService.checkPermission(token, PermissionEnum.FLIGHT_TEMPLATE_MANAGEMENT);
+			this.flightTemplateService.addFlightTemplate(flightTemplateDto);
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(null);
 		} catch (RoleException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
@@ -66,14 +68,14 @@ public class CompanyController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
 		}
 	}
-
-	@PostMapping(COMPANY_PATH_UPDATE)
-	public ResponseEntity<?> update(@RequestBody CompanyDto companyDto,
-			@RequestHeader(name = "Authorization") String token) throws CompanyException, ValidatorException{
+	
+	@PostMapping(FLIGHT_TEMPLATE_PATH_UPDATE)
+	public ResponseEntity<?> update(@RequestBody FlightTemplateDto flightTemplateDto,
+			@RequestHeader(name = "Authorization") String token) throws FlightTemplateException{
 
 		try {
-			this.userService.checkPermission(token, PermissionEnum.COMPANY_MANAGEMENT);
-			this.companyService.updateCompany(companyDto);
+			this.userService.checkPermission(token, PermissionEnum.FLIGHT_TEMPLATE_MANAGEMENT);
+			this.flightTemplateService.updateFlightTemplate(flightTemplateDto);
 			return ResponseEntity.status(HttpStatus.CREATED).contentType(MediaType.APPLICATION_JSON).body(null);
 		} catch (RoleException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
@@ -81,14 +83,14 @@ public class CompanyController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
 		}
 	}
-
-	@DeleteMapping(COMPANY_PATH_DELETE)
-	public ResponseEntity<?> delete(@PathVariable String companyName,
-			@RequestHeader(name = "Authorization") String token) throws CompanyException {
+	
+	@DeleteMapping(FLIGHT_TEMPLATE_PATH_DELETE)
+	public ResponseEntity<?> delete(@PathVariable Long flightTemplateId,
+			@RequestHeader(name = "Authorization") String token) throws FlightTemplateException{
 
 		try {
 			this.userService.checkPermission(token, PermissionEnum.COMPANY_MANAGEMENT);
-			this.companyService.deleteCompany(companyName);
+			this.flightTemplateService.deleteFlightTemplate(flightTemplateId);
 			return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.APPLICATION_JSON).body(null);
 		} catch (RoleException | UserException e) {
 			return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).contentType(MediaType.APPLICATION_JSON).body(e);
@@ -96,5 +98,6 @@ public class CompanyController {
 		}
 
 	}
-
+	
+	
 }
