@@ -4,6 +4,7 @@ import java.util.List;
 
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.UserDto;
+import msg.project.flightmanager.enums.PermissionEnum;
 import msg.project.flightmanager.exceptions.RoleException;
 import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.exceptions.ValidatorException;
@@ -26,5 +27,5 @@ public interface IUserService {
 
 	boolean deactivateUser(String username);
 	
-	void checkPermission(String token, String permissionTitle) throws RoleException, UserException; 
+	void checkPermission(String token, PermissionEnum permissionTitle) throws RoleException, UserException; 
 }

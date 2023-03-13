@@ -12,18 +12,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.CompanyDto;
-import dto.FlightTemplateDto;
-import enums.PermissionEnum;
-import exceptions.CompanyException;
-import exceptions.ErrorCodeException;
-import exceptions.FlightTemplateException;
-import exceptions.RoleException;
-import exceptions.UserException;
-import exceptions.ValidatorException;
-import msg.project.flightmanager.model.FlightTemplate;
-import service.interfaces.IFlightTemplateService;
-import service.interfaces.IUserService;
+import msg.project.flightmanager.dto.FlightTemplateDto;
+import msg.project.flightmanager.enums.PermissionEnum;
+import msg.project.flightmanager.exceptions.ErrorCodeException;
+import msg.project.flightmanager.exceptions.FlightTemplateException;
+import msg.project.flightmanager.exceptions.RoleException;
+import msg.project.flightmanager.exceptions.UserException;
+import msg.project.flightmanager.service.interfaces.IFlightTemplateService;
+import msg.project.flightmanager.service.interfaces.IUserService;
 
 @RestController
 public class FlightTemplateController {

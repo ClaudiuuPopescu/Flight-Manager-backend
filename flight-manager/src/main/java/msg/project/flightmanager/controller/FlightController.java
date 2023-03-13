@@ -12,19 +12,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-import dto.CompanyDto;
-import dto.FlightDto;
-import enums.PermissionEnum;
-import exceptions.AirportException;
-import exceptions.CompanyException;
-import exceptions.ErrorCodeException;
-import exceptions.FlightException;
-import exceptions.PlaneException;
-import exceptions.RoleException;
-import exceptions.UserException;
-import exceptions.ValidatorException;
-import service.interfaces.IFlightService;
-import service.interfaces.IUserService;
+import msg.project.flightmanager.dto.FlightDto;
+import msg.project.flightmanager.enums.PermissionEnum;
+import msg.project.flightmanager.exceptions.AirportException;
+import msg.project.flightmanager.exceptions.ErrorCodeException;
+import msg.project.flightmanager.exceptions.FlightException;
+import msg.project.flightmanager.exceptions.PlaneException;
+import msg.project.flightmanager.exceptions.RoleException;
+import msg.project.flightmanager.exceptions.UserException;
+import msg.project.flightmanager.exceptions.ValidatorException;
+import msg.project.flightmanager.service.interfaces.IFlightService;
+import msg.project.flightmanager.service.interfaces.IUserService;
+
+
 
 @RestController
 public class FlightController {

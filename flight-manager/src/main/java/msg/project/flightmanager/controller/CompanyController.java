@@ -12,16 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-<<<<<<<HEAD:flight-manager/src/main/java/controller/CompanyController.java
-import dto.CompanyDto;
-import enums.PermissionEnum;
-import exceptions.CompanyException;
-import exceptions.ErrorCodeException;
-import exceptions.RoleException;
-import exceptions.UserException;
-import exceptions.ValidatorException;
-import service.interfaces.ICompanyService;
-import service.interfaces.IUserService;=======
+import msg.project.flightmanager.dto.CompanyDto;
+import msg.project.flightmanager.enums.PermissionEnum;
+import msg.project.flightmanager.exceptions.CompanyException;
+import msg.project.flightmanager.exceptions.ErrorCodeException;
+import msg.project.flightmanager.exceptions.RoleException;
+import msg.project.flightmanager.exceptions.UserException;
+import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.service.interfaces.ICompanyService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 

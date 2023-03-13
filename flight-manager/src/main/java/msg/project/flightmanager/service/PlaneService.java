@@ -10,20 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-
-import converter.PlaneConverter;
-import dto.PlaneDto;
-import exceptions.CompanyException;
-import exceptions.FlightManagerException;
-import exceptions.ValidatorException;
-import modelHelper.CreatePlaneModel;
-import modelHelper.EditLastRevisionPlaneModel;
-import msg.project.flightmanager.model.Company;
-import msg.project.flightmanager.model.Plane;
-import repository.PlaneRepository;
-import service.interfaces.IPlaneService;
-import validator.PlaneValidator;
-
 import msg.project.flightmanager.converter.PlaneConverter;
 import msg.project.flightmanager.dto.PlaneDto;
 import msg.project.flightmanager.exceptions.CompanyException;

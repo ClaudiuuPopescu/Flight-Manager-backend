@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.UserConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.UserDto;
+import msg.project.flightmanager.enums.PermissionEnum;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.RoleException;
@@ -218,7 +219,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public void checkPermission(String token, String permissionTitle) throws RoleException, UserException {
+	public void checkPermission(String token, PermissionEnum permissionTitle) throws RoleException, UserException {
 
 		final String userName = this.tokenService.getCurrentUserUsername(token);
 		
