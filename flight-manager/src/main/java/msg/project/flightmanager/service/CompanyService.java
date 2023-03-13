@@ -59,7 +59,6 @@ public class CompanyService implements ICompanyService {
 				Company companyToUpdate = companyConverter.convertToEntity(companyDTO);
 
 				companyToUpdate.setIdCompany(oldCompany.getIdCompany());
-				companyToUpdate.setActiv(oldCompany.isActiv());
 
 				if (oldCompany.getAddress() != null) {
 					companyToUpdate.setAddress(oldCompany.getAddress());
@@ -77,25 +76,24 @@ public class CompanyService implements ICompanyService {
 
 	// aici anulez zborul si sterg avioanele
 	@Override
-	public void dezactivateCompany(String companyName) throws CompanyException {
+	public void deleteCompany(String companyName) throws CompanyException {
 
 		Company companyToDezactivate = findByCompanyName(companyName);
 
 		if (companyToDezactivate != null) {
 
-			companyToDezactivate.setActiv(false);
-			this.companyRepository.save(companyToDezactivate);
+			this.companyRepository.delete(companyToDezactivate);
 
-			// sterg avioane
-			companyToDezactivate.getPlanes().stream()
-					.forEach(plane -> this.planeService.removePlane(plane.getTailNumber()));
-
-			// pun la angajati pe null
-			companyToDezactivate.getEmployees().stream().forEach(employee -> employee.setCompany(null));
-
-			// scot colaborarea cu aeroportul
-			companyToDezactivate.getAirportsCollab().stream()
-					.forEach(airport -> airport.removeCollab(companyToDezactivate));
+//			// sterg avioane
+//			companyToDezactivate.getPlanes().stream()
+//					.forEach(plane -> this.planeService.removePlane(plane.getTailNumber()));
+//
+//			// pun la angajati pe null
+//			companyToDezactivate.getEmployees().stream().forEach(employee -> employee.setCompany(null));
+//
+//			// scot colaborarea cu aeroportul
+//			companyToDezactivate.getAirportsCollab().stream()
+//					.forEach(airport -> airport.removeCollab(companyToDezactivate));
 
 		} else
 			throw new CompanyException("A company with this name does not exist",

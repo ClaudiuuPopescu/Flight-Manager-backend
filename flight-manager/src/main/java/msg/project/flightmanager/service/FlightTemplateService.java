@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import msg.project.flightmanager.converter.FlightTemplateConverter;
 import msg.project.flightmanager.dto.FlightTemplateDto;
@@ -14,6 +15,7 @@ import msg.project.flightmanager.model.FlightTemplate;
 import msg.project.flightmanager.repository.FlightTemplateRepository;
 import msg.project.flightmanager.service.interfaces.IFlightTemplateService;
 
+@Service
 public class FlightTemplateService implements IFlightTemplateService {
 
 	@Autowired

@@ -10,6 +10,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.AirportConverter;
@@ -30,6 +31,7 @@ import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.service.interfaces.IAirportService;
 import msg.project.flightmanager.validator.AirportValidator;
 
+@Service
 public class AirportService implements IAirportService {
 	@Autowired
 	private AirportRepository airportRepository;
