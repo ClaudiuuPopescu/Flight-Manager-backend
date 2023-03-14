@@ -63,8 +63,7 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public boolean editLastRevisionPlane(EditLastRevisionPlaneModel editLastRevisionPlaneModel) {
-		// TODO verificare rol current user
-		// nu vad ce field poate fi modificat in afara de lastRevision
+		
 		Plane plane = this.planeRepository.findByTailNumber(editLastRevisionPlaneModel.getTailNumber())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
 						.format("Plane with tail number [{0}] not found", editLastRevisionPlaneModel.getTailNumber())));
@@ -77,7 +76,6 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public boolean removePlane(int tailNumber) {
-		// TODO verificare rol current user
 
 		Plane plane = this.planeRepository.findByTailNumber(tailNumber)
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -99,7 +97,6 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public boolean movePlaneToAnotherCompany(int tailNumber, String to_companyName) throws CompanyException, FlightManagerException {
-		// TODO verificare rol current user
 
 		Plane plane = this.planeRepository.findByTailNumber(tailNumber)
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
