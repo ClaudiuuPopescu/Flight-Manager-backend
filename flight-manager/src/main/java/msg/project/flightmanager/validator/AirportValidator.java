@@ -1,6 +1,7 @@
 package msg.project.flightmanager.validator;
 
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,15 +17,16 @@ import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.modelHelper.CreateAirportModel;
 import msg.project.flightmanager.modelHelper.EditAirportModel;
 import msg.project.flightmanager.repository.AirportRepository;
+import msg.project.flightmanager.repository.CompanyRepository;
 
 @Component
 public class AirportValidator {
 	@Autowired
 	private AirportRepository airportRepository;
-	
-	
 	@Autowired
 	private AddressValidator addressValidator;
+	@Autowired
+	private CompanyRepository companyRepository;
 
 	public void validateAirport(AirportDto airportDto) throws ValidatorException {
 
@@ -38,8 +40,19 @@ public class AirportValidator {
 		validateAirportName(createAirportModel.getAirportName());
 		validateRunWays(createAirportModel.getRunWarys());
 		validateGateWays(createAirportModel.getGateWays());
+		validateCompanyNamesToCollab(createAirportModel.getCompanyNames_toCollab());
 		this.addressValidator.validateCreateModel(createAirportModel.getAddress());
 
+	}
+
+	private void validateCompanyNamesToCollab(List<String> companyNames) {
+		for(String companyName : companyNames) {
+			this.companyRepository.findCompanyByName(companyName)
+			.orElseThrow(() -> new FlightManagerException(
+					HttpStatus.NOT_FOUND,
+					MessageFormat.format("Company [{0}] can not be added to collaboration. It does not exist.", companyName)));
+		}
+		
 	}
 
 	public void validateEditAirport(EditAirportModel editAirportModel) {

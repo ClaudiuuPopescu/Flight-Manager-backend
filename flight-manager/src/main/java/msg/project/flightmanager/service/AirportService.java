@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,25 +45,22 @@ public class AirportService implements IAirportService {
 	@Autowired
 	private AddressRepository addressRepository;
 
+
 	@Override
 	public List<AirportDto> getAll() {
-		List<Airport> airports = StreamSupport.stream(this.airportRepository.findAll().spliterator(), false)
-				.collect(Collectors.toList());
+		List<Airport> airports = StreamSupport.stream(this.airportRepository.findAll().spliterator(), false).toList();
 
 		if (airports.isEmpty()) {
 			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No airports found");
 		}
 
-		List<AirportDto> airportsDto = airports.stream().map(this.airportConverter::convertToDTO)
-				.collect(Collectors.toList());
+		List<AirportDto> airportsDto = airports.stream().map(this.airportConverter::convertToDTO).toList();
 		return airportsDto;
 	}
 
 	@Transactional
 	@Override
 	public boolean createAirport(CreateAirportModel createAirportModel) throws ValidatorException {
-		// TODO verificare rol current user
-		// TODO we get the company from the current user to add it to
 
 		this.airportValidator.validateCreateAiportModel(createAirportModel);
 
@@ -77,6 +73,10 @@ public class AirportService implements IAirportService {
 
 		String codeIdentifier = generateCodeIdentifier(airport.getAirportName());
 		airport.setCodeIdentifier(codeIdentifier);
+		
+		for(String companyName : createAirportModel.getCompanyNames_toCollab()) {
+			airport.getCompaniesCollab().add(this.companyRepository.findCompanyByName(companyName).get());
+		}
 
 		this.airportRepository.save(airport);
 		return true;
@@ -85,7 +85,6 @@ public class AirportService implements IAirportService {
 	@Transactional
 	@Override
 	public boolean editAirport(EditAirportModel editAirportModel) throws ValidatorException {
-		// TODO verificare rol current user
 
 		Airport airport = this.airportRepository.findByCodeIdentifier(editAirportModel.getCodeIdentifier())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -111,7 +110,6 @@ public class AirportService implements IAirportService {
 	@Transactional
 	@Override
 	public boolean removeAirport(String codeIdentifier) {
-		// TODO verificare rol current user
 
 		Airport airport = this.airportRepository.findByCodeIdentifier(codeIdentifier)
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -137,7 +135,6 @@ public class AirportService implements IAirportService {
 	@Transactional
 	@Override
 	public boolean addCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
-		// TODO verificare rol current user
 
 		Airport airport = this.airportRepository
 				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
@@ -158,7 +155,6 @@ public class AirportService implements IAirportService {
 	@Transactional
 	@Override
 	public boolean removeCompanyCollab(ActionCompanyAirportCollab actionCompanyAirportCollab) {
-		// TODO verificare rol current user
 
 		Airport airport = this.airportRepository
 				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())

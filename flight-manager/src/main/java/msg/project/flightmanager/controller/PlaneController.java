@@ -21,8 +21,8 @@ import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.modelHelper.CreatePlaneModel;
 import msg.project.flightmanager.modelHelper.EditLastRevisionPlaneModel;
-import msg.project.flightmanager.service.PlaneService;
-import msg.project.flightmanager.service.UserService;
+import msg.project.flightmanager.service.interfaces.IPlaneService;
+import msg.project.flightmanager.service.interfaces.IUserService;
 
 @RestController
 @RequestMapping("/api/plane")
@@ -35,9 +35,9 @@ public class PlaneController {
 	public static final String MOVE_PLANE_TO_COMPANY = "/move/{move-tailNumber}/{to-companyName}";
 
 	@Autowired
-	private PlaneService planeService;
+	private IPlaneService planeService;
 	@Autowired
-	private UserService userService; 
+	private IUserService userService; 
 	
 	@GetMapping(GET_ALL)
 	public ResponseEntity<?> getAll(){
