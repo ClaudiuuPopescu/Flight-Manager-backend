@@ -33,6 +33,10 @@ public class ItineraryService implements IItineraryService {
 	public List<ItineraryDto> getAll() {
 		List<Itinerary> itineraries = StreamSupport.stream(this.itineraryRepository.findAll().spliterator(), false)
 				.toList();
+		
+		if(itineraries.isEmpty()) {
+			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No itineraries found"); 
+		}
 
 		return itineraries.stream().map(this.itineraryConverter::convertToDTO).toList();
 	}
@@ -40,7 +44,6 @@ public class ItineraryService implements IItineraryService {
 	@Transactional
 	@Override
 	public boolean createItinerary(ItineraryHelperModel itineraryHelperModel) {
-		// TODO check role current user
 
 		Flight flight = this.flightRepository.findById(itineraryHelperModel.getFlightId())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -68,7 +71,6 @@ public class ItineraryService implements IItineraryService {
 	@Transactional
 	@Override
 	public boolean editItinerary(EditItineraryModel editItineraryModel) {
-		// TODO check role current user
 
 		Itinerary itinerary = this.itineraryRepository.findById(editItineraryModel.getItineraryId())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
@@ -118,7 +120,6 @@ public class ItineraryService implements IItineraryService {
 	@Transactional
 	@Override
 	public boolean removeItinerary(Long idItinerary) {
-		// TODO check role current user
 
 		Itinerary itinerary = this.itineraryRepository.findById(idItinerary)
 				.orElseThrow(() -> new FlightManagerException(
