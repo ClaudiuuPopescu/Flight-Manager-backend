@@ -1,6 +1,7 @@
 package msg.project.flightmanager.service;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.model.Company;
+import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.Plane;
 import msg.project.flightmanager.modelHelper.CreatePlaneModel;
 import msg.project.flightmanager.modelHelper.EditLastRevisionPlaneModel;
@@ -38,8 +40,7 @@ public class PlaneService implements IPlaneService {
 
 	@Override
 	public List<PlaneDto> getAll() {
-		List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false)
-				.collect(Collectors.toList());
+		List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false).toList();
 
 		if (planes.isEmpty()) {
 			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No planes found");
@@ -52,7 +53,6 @@ public class PlaneService implements IPlaneService {
 	@Override
 	public boolean createPlane(CreatePlaneModel createPlaneModel) throws ValidatorException {
 
-		// TODO verficare rol current user
 		this.planeValidator.validateCreatePlaneModel(createPlaneModel);
 
 		Plane plane = this.planeConverter.createModelToEntity(createPlaneModel);
@@ -83,8 +83,15 @@ public class PlaneService implements IPlaneService {
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 						MessageFormat.format("Plane with tail number [{0}] not found", tailNumber)));
 
-		// TODO set field false in flight template.
-		// TODO delete flight
+		List<Flight> planeFlights = new ArrayList<>();
+		planeFlights.addAll(plane.getFlights());
+
+		for (Flight flight : planeFlights) {
+			if (flight.isActiv()) {
+				flight.getFlightTemplate().setPlane(false);
+				flight.setCanceled(true);
+			}
+		}
 
 		this.planeRepository.delete(plane);
 		return true;

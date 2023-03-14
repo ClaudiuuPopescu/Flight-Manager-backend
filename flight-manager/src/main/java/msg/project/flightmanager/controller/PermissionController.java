@@ -28,6 +28,8 @@ public class PermissionController {
 					HttpStatus.EXPECTATION_FAILED);
 		}
 
-		return ResponseEntity.ok().body(MessageFormat.format("Permission [{0}] added successfully", permissionName));
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body(MessageFormat.format("Permission [{0}] added successfully", permissionName));
 	}
 }

@@ -123,11 +123,13 @@ public class AirportService implements IAirportService {
 
 		for (Flight flight : airportFlights) {
 			if (flight.isActiv()) {
-				flight.getFlightTemplate().setPlane(false);
+				// TODO sa la dau false si la from si la true?
+				flight.getFlightTemplate().setFrom(false);
+				flight.getFlightTemplate().setTo(false);
 				flight.setCanceled(true);
 			}
 		}
-
+		
 		this.airportRepository.delete(airport);
 		return true;
 	}

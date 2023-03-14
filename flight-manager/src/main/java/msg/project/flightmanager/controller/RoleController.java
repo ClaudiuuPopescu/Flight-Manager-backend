@@ -32,7 +32,7 @@ public class RoleController {
 		}
 
 		return ResponseEntity
-				.ok()
+				.status(HttpStatus.CREATED)
 				.body(MessageFormat.format("Role [{0}] added successfully", roleTitle));
 	}
 	
@@ -45,7 +45,7 @@ public class RoleController {
 		}
 		
 		return ResponseEntity
-				.ok()
+				.status(HttpStatus.ACCEPTED)
 				.body(MessageFormat.format("Role [{0}] assigned with permission [{1}] successfully",
 						addPermissionToRoleModel.getRoleTitle(), addPermissionToRoleModel.getPermissionTitle()));
 		
