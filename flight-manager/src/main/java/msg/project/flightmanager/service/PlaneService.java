@@ -65,8 +65,11 @@ public class PlaneService implements IPlaneService {
 	public boolean editLastRevisionPlane(EditLastRevisionPlaneModel editLastRevisionPlaneModel) {
 		
 		Plane plane = this.planeRepository.findByTailNumber(editLastRevisionPlaneModel.getTailNumber())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
-						.format("Plane with tail number [{0}] not found", editLastRevisionPlaneModel.getTailNumber())));
+				.orElseThrow(() -> 
+				new FlightManagerException(
+						HttpStatus.NOT_FOUND, 
+						MessageFormat.format("Plane with tail number [{0}] not found", editLastRevisionPlaneModel.getTailNumber())
+						));
 
 		this.planeValidator.valiateNewRevision(plane.getLastRevision(), editLastRevisionPlaneModel.getNewRevision());
 
