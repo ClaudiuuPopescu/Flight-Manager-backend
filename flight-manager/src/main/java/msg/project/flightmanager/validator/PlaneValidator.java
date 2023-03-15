@@ -45,6 +45,9 @@ public class PlaneValidator {
 
 	private void validateModel(String model) throws ValidatorException {
 
+		if(model  == null) {
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The model fileld can not be null");
+		}
 		if (model.isEmpty())
 			throw new ValidatorException("The model field cannot be empty", ErrorCode.EMPTY_FIELD);
 		if (model.length() > 20)
@@ -52,13 +55,9 @@ public class PlaneValidator {
 	}
 
 	private void validateTailNumber(int tailNumber) {
-		if (Integer.valueOf(tailNumber) == null) {
-			throw new FlightManagerException(HttpStatus.FORBIDDEN, "Tail number must not be null");
-		}
-
-		if (tailNumber < 0) {
+		if (tailNumber <= 0) {
 			throw new FlightManagerException(HttpStatus.IM_USED,
-					MessageFormat.format("Tail number [{0}] invalid, negative numbers are not accepted", tailNumber));
+					MessageFormat.format("Tail number [{0}] invalid, numbers bellow 0 are not accepted", tailNumber));
 		}
 
 		Optional<Plane> plane = this.planeRepository.findByTailNumber(tailNumber);

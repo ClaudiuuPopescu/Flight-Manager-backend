@@ -2,12 +2,14 @@ package msg.project.flightmanager.modelHelper;
 
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import msg.project.flightmanager.enums.PlaneSize;
 
 @Getter
 @Builder
+@AllArgsConstructor
 public class CreatePlaneModel {
 
 	private String model;

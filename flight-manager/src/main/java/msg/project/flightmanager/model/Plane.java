@@ -1,6 +1,7 @@
 package msg.project.flightmanager.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -79,15 +80,16 @@ public class Plane {
 	}
 	
 	@OneToMany(mappedBy = "plane", fetch = FetchType.LAZY)
-	private Set<Flight> flights;
+	@Builder.Default
+	private Set<Flight> flights = new HashSet<>();
 	
 	public void addFlight(Flight flight) {
-		flights.add(flight);
+		this.flights.add(flight);
 		flight.setPlane(this);
 	}
 	
 	public void removeFlight(Flight flight) {
-		flights.remove(flight);
+		this.flights.remove(flight);
 		flight.setPlane(null);
 	}
 
