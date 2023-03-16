@@ -1,35 +1,69 @@
 package msg.project.flightmanager.service;
 
+import java.time.Instant;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
+import msg.project.flightmanager.exceptions.ErrorCode;
+import msg.project.flightmanager.exceptions.RefreshTokenException;
 import msg.project.flightmanager.model.RefreshToken;
 import msg.project.flightmanager.model.User;
+import msg.project.flightmanager.repository.RefreshTokenRepositoy;
+import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IRefreshTokenService;
 
-public class RefreshTokenService implements IRefreshTokenService{
+public class RefreshTokenService implements IRefreshTokenService {
+
+	@Value("${spring.app.jwtRefreshExpirationMs}")
+	private int refreshTokenTime;
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private RefreshTokenRepositoy refreshTokenRepositoy;
+
+	@Autowired
+	private TokenService tokenService;
 
 	@Override
 	public Optional<RefreshToken> findByToken(String token) {
-		// TODO Auto-generated method stub
-		return Optional.empty();
+		return this.refreshTokenRepositoy.getRefreshTokenByToken(token);
 	}
 
 	@Override
-	public RefreshToken createRefreshToken(User user) {
-		// TODO Auto-generated method stub
+	public RefreshToken createRefreshToken(String username) {
+		Optional<User> userOptional = this.userRepository.findByUsername(username);
+		if (userOptional.isPresent()) {
+			User user = userOptional.get();
+			String token = this.tokenService.getJWTToken(username, user.getRole().getTitle());
+			RefreshToken refreshToken = new RefreshToken(user, Instant.now().plusMillis(refreshTokenTime), token);
+
+			this.refreshTokenRepositoy.save(refreshToken);
+			return refreshToken;
+		}
 		return null;
 	}
 
 	@Override
-	public void verifyExpiration(RefreshToken token) {
-		// TODO Auto-generated method stub
-		
+	public void verifyExpiration(RefreshToken token) throws RefreshTokenException {
+		if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+			this.refreshTokenRepositoy.delete(token);
+			throw new RefreshTokenException(
+					String.format("Refresh token for the user %d was expired", token.getUser().getUsername()),
+					ErrorCode.EXPIRED);
+		}
 	}
 
 	@Override
-	public int deleteByUserName(String username) {
-		// TODO Auto-generated method stub
-		return 0;
+	public void deleteByUserName(String username) {
+
+		Optional<User> user = this.userRepository.findByUsername(username);
+		if (user.isPresent()) {
+			this.refreshTokenRepositoy.deleteRefreshTokenByUser(user.get());
+		}
 	}
 
 }

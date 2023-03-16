@@ -16,6 +16,12 @@ import lombok.Data;
 @Data
 public class RefreshToken {
 
+	public RefreshToken(User user, Instant plusMillis, String token) {
+		this.user = user;
+		this.expiryDate = plusMillis;
+		this.token = token;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;

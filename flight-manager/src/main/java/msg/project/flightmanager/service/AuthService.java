@@ -53,7 +53,7 @@ public class AuthService implements IAuthService {
 				
 				ResponseCookie jwtCookie = this.jwtUtils.generateJwtCookie(user);
 				
-			    RefreshToken refreshToken = this.refreshTokenService.createRefreshToken(userDetails.getId());
+			    RefreshToken refreshToken = this.refreshTokenService.createRefreshToken(user.getUsername());
 			    
 			    ResponseCookie jwtRefreshCookie = this.jwtUtils.generateRefreshCookie(refreshToken.getToken());
 
@@ -68,6 +68,8 @@ public class AuthService implements IAuthService {
 
 	@Override
 	public ResponseCookie logout() {
+		
+		//TODO
 		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
 		return cookie;
 	}

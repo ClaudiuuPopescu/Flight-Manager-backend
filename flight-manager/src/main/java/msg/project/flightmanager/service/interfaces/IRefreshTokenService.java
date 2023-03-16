@@ -2,13 +2,13 @@ package msg.project.flightmanager.service.interfaces;
 
 import java.util.Optional;
 
+import msg.project.flightmanager.exceptions.RefreshTokenException;
 import msg.project.flightmanager.model.RefreshToken;
-import msg.project.flightmanager.model.User;
 
 public interface IRefreshTokenService {
 
 	Optional<RefreshToken> findByToken(String token);
-	RefreshToken createRefreshToken(User user);
-	void verifyExpiration(RefreshToken token);
-	int deleteByUserName(String username);
+	RefreshToken createRefreshToken(String username);
+	void verifyExpiration(RefreshToken token) throws RefreshTokenException;
+	void deleteByUserName(String username);
 }
