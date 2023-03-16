@@ -1,15 +1,23 @@
 package msg.project.flightmanager.service;
 
 import java.util.Optional;
-
-import javax.security.auth.login.LoginException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import msg.project.flightmanager.exceptions.ErrorCode;
+import jakarta.validation.Valid;
 import msg.project.flightmanager.exceptions.AuthException;
+import msg.project.flightmanager.exceptions.ErrorCode;
+import msg.project.flightmanager.model.RefreshToken;
 import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IAuthService;
@@ -22,20 +30,35 @@ public class AuthService implements IAuthService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 	@Autowired
-	JwtUtils jwtUtils;
+	private JwtUtils jwtUtils;
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
+	private RefreshTokenService refreshTokenService;
 
 	@Override
-	public String login(String userName, String password) throws AuthException {
+	public ResponseCookie login(String userName, String password) throws AuthException {
 
-		Optional<User> user = this.userRepository.findByUsername(userName);
-		if (user.isPresent()) {
+		Optional<User> userOptional = this.userRepository.findByUsername(userName);
+		if (userOptional.isPresent()) {
 			String encodedPassword = this.passwordEncoder.encode(password);
-			if (user.get().getPassword().equals(encodedPassword)) {
+			User user = userOptional.get();
+			if (user.getPassword().equals(encodedPassword)) {
 				// creez cookie si token
 
-				ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+				Authentication authentication = authenticationManager.authenticate(
+						new UsernamePasswordAuthenticationToken(userName, password));
+				
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				
+				ResponseCookie jwtCookie = this.jwtUtils.generateJwtCookie(user);
+				
+			    RefreshToken refreshToken = this.refreshTokenService.createRefreshToken(userDetails.getId());
+			    
+			    ResponseCookie jwtRefreshCookie = this.jwtUtils.generateRefreshCookie(refreshToken.getToken());
 
-				return null;
+				
+				return jwtCookie;
 			} else
 				throw new AuthException(String.format("Wrong password for %d", userName), ErrorCode.WRONG_PASSWORD);
 		} else
@@ -44,9 +67,9 @@ public class AuthService implements IAuthService {
 	}
 
 	@Override
-	public void logout() {
-		// TODO Auto-generated method stub
-
+	public ResponseCookie logout() {
+		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+		return cookie;
 	}
 
 	@Override
@@ -54,5 +77,6 @@ public class AuthService implements IAuthService {
 		// TODO Auto-generated method stub
 
 	}
+
 
 }

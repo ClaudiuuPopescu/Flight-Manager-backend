@@ -54,17 +54,8 @@ public class JwtUtils {
 		return generateCookie(token, jwtCookie, LOGIN_PATH);
 	}
 
-	public ResponseCookie generateRefreshCookie(User user) {
-		String token = this.tokenService.getJWTToken(user.getUsername(), user.getRole().getTitle());
-		return generateCookie(token, jwtRefreshCookie, REFRESH_PATH);
-	}
-
-	public String getJwtFromCookies(HttpServletRequest request) {
-		return getCookieValueByName(request, jwtCookie);
-	}
-
-	public String getJwtRefreshFromCookies(HttpServletRequest request) {
-		return getCookieValueByName(request, jwtRefreshCookie);
+	public ResponseCookie generateRefreshCookie(String refreshToken) {
+		return generateCookie(refreshToken, jwtRefreshCookie, REFRESH_PATH);
 	}
 
 	private String getCookieValueByName(HttpServletRequest request, String name) {
@@ -104,4 +95,13 @@ public class JwtUtils {
 
 		return false;
 	}
+	
+	public String getJwtFromCookies(HttpServletRequest request) {
+		return getCookieValueByName(request, jwtCookie);
+	}
+
+	public String getJwtRefreshFromCookies(HttpServletRequest request) {
+		return getCookieValueByName(request, jwtRefreshCookie);
+	}
+
 }
