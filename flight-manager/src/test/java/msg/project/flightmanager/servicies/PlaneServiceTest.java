@@ -50,7 +50,7 @@ public class PlaneServiceTest {
 	private CompanyRepository companyRepository;
 
 	@Test
-	void getAll_returnsFlightManagerException_whenNoPlaneFound() {
+	void getAll_throwsFlightManagerException_whenNoPlaneFound() {
 		
 		Mockito.when(this.repository.findAll()).thenReturn(Collections.emptyList());
 		
@@ -72,7 +72,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsFlightManagerException_whenPlaneModelNull() throws ValidatorException {
+	void createPlane_throwsFlightManagerException_whenPlaneModelNull() throws ValidatorException {
 		CreatePlaneModel model = new CreatePlaneModel(null , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
 		Mockito.doThrow(new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The model fileld can not be null")).when(this.validator).validateCreatePlaneModel(model);
@@ -85,7 +85,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenPlaneModelEmpty() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenPlaneModelEmpty() throws ValidatorException {
 		CreatePlaneModel model = new CreatePlaneModel("" , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
 		Mockito.doThrow(new ValidatorException("The model field cannot be empty", ErrorCode.EMPTY_FIELD)).when(this.validator).validateCreatePlaneModel(model);
@@ -98,7 +98,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenPlaneModelTooLong() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenPlaneModelTooLong() throws ValidatorException {
 		String planeModel = "thisIsAVeryLongString";
 		CreatePlaneModel model = new CreatePlaneModel(planeModel , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
@@ -112,7 +112,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsFlightManagerException_whenTailNumberNull() throws ValidatorException {
+	void createPlane_throwsFlightManagerException_whenTailNumberNull() throws ValidatorException {
 		int tailNumber = -5;
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, LocalDate.now(), PlaneSize.SMALL);
@@ -130,7 +130,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsFlightManagerException_whenTailNumberAlreadyExists() throws ValidatorException {
+	void createPlane_throwsFlightManagerException_whenTailNumberAlreadyExists() throws ValidatorException {
 		int tailNumber = 1;
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, LocalDate.now(), PlaneSize.SMALL);
@@ -148,7 +148,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenCapacityOutOfRange() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenCapacityOutOfRange() throws ValidatorException {
 		int capacity = 853;
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, capacity, 3, LocalDate.now(), PlaneSize.SMALL);
@@ -164,7 +164,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeSMALL() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeSMALL() throws ValidatorException {
 		int fuelCapacity = 6000; 
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.now(), PlaneSize.SMALL);
@@ -182,7 +182,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeMID() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeMID() throws ValidatorException {
 		int fuelCapacity = 45000; 
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.now(), PlaneSize.MID);
@@ -200,7 +200,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeWIDE() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeWIDE() throws ValidatorException {
 		int fuelCapacity = 45000; 
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.now(), PlaneSize.WIDE);
@@ -218,7 +218,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeJUMBO() throws ValidatorException {
+	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeJUMBO() throws ValidatorException {
 		int fuelCapacity = 500000; 
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.now(), PlaneSize.JUMBO);
@@ -236,7 +236,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsFlightManagerException_whenManufacturingDateNull() throws ValidatorException {
+	void createPlane_throwsFlightManagerException_whenManufacturingDateNull() throws ValidatorException {
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, 2000, null, PlaneSize.SMALL);
 
 		Mockito.doThrow(new FlightManagerException(
@@ -251,7 +251,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void createPlane_returnsFlightManagerException_whenManufacturingDateIsNotInThePast() throws ValidatorException {
+	void createPlane_throwsFlightManagerException_whenManufacturingDateIsNotInThePast() throws ValidatorException {
 		LocalDate manufactuingDate = LocalDate.of(2024, Month.JULY, 10);
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, 2000, manufactuingDate, PlaneSize.SMALL);
@@ -276,7 +276,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void editLastRevisionPlane_returnsFlightManagerException_whenPlaneNotFound() {
+	void editLastRevisionPlane_throwsFlightManagerException_whenPlaneNotFound() {
 		EditLastRevisionPlaneModel editModel = new EditLastRevisionPlaneModel(99, LocalDate.of(2023, Month.APRIL, 3));
 		
 		Mockito.when(this.repository.findByTailNumber(editModel.getTailNumber())).thenReturn(Optional.empty());
@@ -300,7 +300,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void removePlane_returnsFlightManagerException_whenPlaneNotFound() {
+	void removePlane_throwsFlightManagerException_whenPlaneNotFound() {
 		int tailNumber = 99;
 		
 		Mockito.when(this.repository.findByTailNumber(tailNumber)).thenReturn(Optional.empty());
@@ -355,7 +355,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void movePlaneToAnotherCompany_returnsFlightManagerException_whenPlaneNotFound() {
+	void movePlaneToAnotherCompany_throwsFlightManagerException_whenPlaneNotFound() {
 		int tailNumber = 99;
 		String companyName = "someName";
 		
@@ -369,7 +369,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void movePlaneToAnotherCompany_returnsCompanyException_whenCompanyNotFound() {
+	void movePlaneToAnotherCompany_throwsCompanyException_whenCompanyNotFound() {
 		int tailNumber = 99;
 		String companyName = "someName";
 		
@@ -386,7 +386,7 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void movePlaneToAnotherCompany_returnsFlightManagerException_whenPlaneCompanySameAsRequestedCompany() {
+	void movePlaneToAnotherCompany_throwsFlightManagerException_whenPlaneCompanySameAsRequestedCompany() {
 		int tailNumber = 99;
 		String name = "someName";
 		

@@ -59,11 +59,12 @@ public class ItineraryService implements IItineraryService {
 
 		Itinerary itinerary = this.itineraryConverter.convertCreateModelToItinerary(itineraryHelperModel, flight);
 
-		if (itineraryHelperModel.getNotes().equals("") || itineraryHelperModel == null) {
+		if (itineraryHelperModel.getNotes() == "" || itineraryHelperModel.getNotes() == null) {
 			itinerary.setNotes("No notes yet");
+		}else{
+			itinerary.setNotes(itineraryHelperModel.getNotes());
 		}
-
-		itinerary.setNotes(itinerary.getNotes());
+		
 		this.itineraryRepository.save(itinerary);
 		return true;
 	}
@@ -77,32 +78,25 @@ public class ItineraryService implements IItineraryService {
 						MessageFormat.format("Can not edit itinerary. Itinerary with id [{0}] not found",
 								editItineraryModel.getItineraryId())));
 
-		Flight currentFlight = this.flightRepository.findById(editItineraryModel.getCurrentFlight())
+		Flight currentFlight = this.flightRepository.findById(editItineraryModel.getCurrentFlightId())
 					.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 							MessageFormat.format("Can not edit itinerary. Flight with id [{0}] not found",
-								editItineraryModel.getCurrentFlight())));
+								editItineraryModel.getCurrentFlightId())));
 
 
-		if (editItineraryModel.getNewFlightId() == null) {
-			if (editItineraryModel.getSeatsReserved() > currentFlight.getPlane().getCapacity()) {
-				throw new FlightManagerException(HttpStatus.CONFLICT, MessageFormat.format(
-						"Can not update itinerary. The number of seats reserved [{0}] can not be higher than the current plane's capacity [{1}]",
-						editItineraryModel.getSeatsReserved(), currentFlight.getPlane().getCapacity()));
-			}
+		if (editItineraryModel.getNewFlightId() == null || editItineraryModel.getCurrentFlightId() == editItineraryModel.getNewFlightId()) {		
 
 			validateEditItineraryReservedSeats(editItineraryModel, currentFlight.getPlane().getCapacity());
 
 			itinerary.setSeatsReserved(editItineraryModel.getSeatsReserved());
 			this.itineraryRepository.save(itinerary);
 			return true;
-		}
-
-
-		if (editItineraryModel.getNewFlightId() != null) {
-
+			
+		} else {
+		
 			Flight newFlight = this.flightRepository.findById(editItineraryModel.getNewFlightId())
 					.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
-							MessageFormat.format("Can not edit itinerary. New flight with id [{0}] not found",
+							MessageFormat.format("Can not edit itinerary. The new flight with id [{0}] not found",
 									editItineraryModel.getNewFlightId())));
 
 			validateEditItineraryReservedSeats(editItineraryModel, newFlight.getPlane().getCapacity());
@@ -113,8 +107,6 @@ public class ItineraryService implements IItineraryService {
 			this.itineraryRepository.save(itinerary);
 			return true;
 		}
-
-		return false;
 	}
 
 	@Transactional
@@ -134,7 +126,7 @@ public class ItineraryService implements IItineraryService {
 
 		if (editItineraryModel.getSeatsReserved() > capacity) {
 			throw new FlightManagerException(HttpStatus.CONFLICT, MessageFormat.format(
-					"Can not edit itinerary. The number of seats reserved [{0}] can not be higher than the plane's capacity [{1}]",
+					"Can not update itinerary. The number of seats reserved [{0}] can not be higher than the plane's capacity [{1}]",
 					editItineraryModel.getSeatsReserved(), capacity));
 		}
 	}
