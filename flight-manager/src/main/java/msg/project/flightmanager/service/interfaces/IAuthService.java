@@ -2,11 +2,13 @@ package msg.project.flightmanager.service.interfaces;
 
 import org.springframework.http.ResponseCookie;
 
+import jakarta.servlet.http.HttpServletRequest;
 import msg.project.flightmanager.exceptions.AuthException;
+import msg.project.flightmanager.exceptions.RefreshTokenException;
 
 public interface IAuthService {
 
 	ResponseCookie login(String userName, String password) throws AuthException;
-	ResponseCookie logout();
-	void refreshToken();
+	void logout() throws AuthException;
+	void refreshToken(HttpServletRequest request) throws RefreshTokenException;
 }

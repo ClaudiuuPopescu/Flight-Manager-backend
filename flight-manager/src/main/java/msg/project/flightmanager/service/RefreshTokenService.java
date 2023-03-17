@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.RefreshTokenException;
@@ -14,6 +15,7 @@ import msg.project.flightmanager.repository.RefreshTokenRepositoy;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IRefreshTokenService;
 
+@Service
 public class RefreshTokenService implements IRefreshTokenService {
 
 	@Value("${spring.app.jwtRefreshExpirationMs}")
@@ -48,13 +50,14 @@ public class RefreshTokenService implements IRefreshTokenService {
 	}
 
 	@Override
-	public void verifyExpiration(RefreshToken token) throws RefreshTokenException {
+	public boolean verifyExpiration(RefreshToken token) throws RefreshTokenException {
 		if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
 			this.refreshTokenRepositoy.delete(token);
 			throw new RefreshTokenException(
 					String.format("Refresh token for the user %d was expired", token.getUser().getUsername()),
 					ErrorCode.EXPIRED);
 		}
+		return true;
 	}
 
 	@Override

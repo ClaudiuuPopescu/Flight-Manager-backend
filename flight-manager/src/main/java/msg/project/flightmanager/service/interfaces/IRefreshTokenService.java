@@ -9,6 +9,6 @@ public interface IRefreshTokenService {
 
 	Optional<RefreshToken> findByToken(String token);
 	RefreshToken createRefreshToken(String username);
-	void verifyExpiration(RefreshToken token) throws RefreshTokenException;
+	boolean verifyExpiration(RefreshToken token) throws RefreshTokenException;
 	void deleteByUserName(String username);
 }
