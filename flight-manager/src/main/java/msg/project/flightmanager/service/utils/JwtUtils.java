@@ -23,7 +23,7 @@ import msg.project.flightmanager.service.TokenService;
 @Component
 public class JwtUtils {
 
-	private static final String LOGIN_PATH = "/auth";
+	private static final String LOGIN_PATH = "/auth/login";
 	private static final String REFRESH_PATH = "/auth/refresh";
 
 	@Autowired

@@ -67,7 +67,7 @@ public class AuthService implements IAuthService {
 	}
 
 	@Override
-	public void logout() throws AuthException {
+	public void logout() throws AuthException, RefreshTokenException {
 
 		String userName;
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

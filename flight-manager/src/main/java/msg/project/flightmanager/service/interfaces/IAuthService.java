@@ -9,6 +9,6 @@ import msg.project.flightmanager.exceptions.RefreshTokenException;
 public interface IAuthService {
 
 	ResponseCookie login(String userName, String password) throws AuthException;
-	void logout() throws AuthException;
+	void logout() throws AuthException, RefreshTokenException;
 	void refreshToken(HttpServletRequest request) throws RefreshTokenException;
 }

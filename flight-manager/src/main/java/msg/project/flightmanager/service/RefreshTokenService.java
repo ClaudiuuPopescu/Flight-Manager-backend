@@ -61,12 +61,20 @@ public class RefreshTokenService implements IRefreshTokenService {
 	}
 
 	@Override
-	public void deleteByUserName(String username) {
+	public void deleteByUserName(String username) throws RefreshTokenException {
 
 		Optional<User> user = this.userRepository.findByUsername(username);
 		if (user.isPresent()) {
-			this.refreshTokenRepositoy.deleteRefreshTokenByUser(user.get());
+			Optional<RefreshToken> refreshTokenOptional = this.refreshTokenRepositoy.getRefreshTokenByUser(user.get());
+			if(refreshTokenOptional.isPresent()) {
+				this.refreshTokenRepositoy.delete(refreshTokenOptional.get());
+			}
+			else
+				throw new RefreshTokenException(String.format("there is no User with the username: %d, that has this refresh token!", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 		}
+		else
+			throw new RefreshTokenException(String.format("there is no User with the username: %d", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+		
 	}
 
 }
