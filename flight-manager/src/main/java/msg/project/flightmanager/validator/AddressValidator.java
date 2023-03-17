@@ -6,6 +6,7 @@ import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.modelHelper.CreateAddressModel;
+import msg.project.flightmanager.service.utils.StringUtils;
 
 @Component
 public class AddressValidator {
