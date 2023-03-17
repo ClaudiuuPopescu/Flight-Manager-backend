@@ -40,8 +40,11 @@ public class AddressService implements IAddressService {
 
 	public Optional<Address> getAddressByAllFields(CreateAddressModel createAddressModel) {
 
-		Optional<Address> address = this.addressRepository.findByAllAttributes(createAddressModel.getCountry(),
-				createAddressModel.getCity(), createAddressModel.getStreet(), createAddressModel.getStreetNumber(),
+		Optional<Address> address = this.addressRepository.findByAllAttributes(
+				createAddressModel.getCountry(),
+				createAddressModel.getCity(), 
+				createAddressModel.getStreet(), 
+				createAddressModel.getStreetNumber(),
 				createAddressModel.getApartment());
 
 		return address;
@@ -62,15 +65,17 @@ public class AddressService implements IAddressService {
 		if (address.getUsers().size() > 1) {
 			AddressDto addressDtoCreated = createAddress(this.addressConverter.converCreateModeltToEntity(addressDto));
 			return addressDtoCreated;
+			
+		} else {
+			
+			// scenario the only one with this address
+			this.addressValidator.validateAddressDto(addressDto);
+
+			address = this.addressConverter.convertToEntity(addressDto);
+			this.addressRepository.save(address);
+
+			AddressDto addressDtoEdited = this.addressConverter.convertToDTO(address);
+			return addressDtoEdited;
 		}
-
-		// scenario the only one with this address
-		this.addressValidator.validateAddressDto(addressDto);
-
-		address = this.addressConverter.convertToEntity(addressDto);
-		this.addressRepository.save(address);
-
-		AddressDto addressDtoEdited = this.addressConverter.convertToDTO(address);
-		return addressDtoEdited;
 	}
 }

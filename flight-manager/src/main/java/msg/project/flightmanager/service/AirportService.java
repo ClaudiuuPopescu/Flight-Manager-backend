@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.AirportConverter;
-import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.AirportDto;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
@@ -22,6 +21,7 @@ import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.modelHelper.ActionCompanyAirportCollab;
+import msg.project.flightmanager.modelHelper.CreateAddressModel;
 import msg.project.flightmanager.modelHelper.CreateAirportModel;
 import msg.project.flightmanager.modelHelper.EditAirportModel;
 import msg.project.flightmanager.repository.AddressRepository;
@@ -66,8 +66,8 @@ public class AirportService implements IAirportService {
 
 		Airport airport = this.airportConverter.convertCreateModelToEntity(createAirportModel);
 
-		AddressDto addressDto = this.addressService.createAddress(createAirportModel.getAddress());
-		Address address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+		this.addressService.createAddress(createAirportModel.getAddress());
+		Address address = getCreatedAddress(createAirportModel.getAddress());
 
 		airport.setAddress(address);
 
@@ -87,15 +87,16 @@ public class AirportService implements IAirportService {
 	public boolean editAirport(EditAirportModel editAirportModel) throws ValidatorException {
 
 		Airport airport = this.airportRepository.findByCodeIdentifier(editAirportModel.getCodeIdentifier())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+				.orElseThrow(() -> new FlightManagerException(
+						HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not perform the edit action. Airport [{0}] not found",
 								editAirportModel.getCodeIdentifier())));
 
 		this.airportValidator.validateEditAirport(editAirportModel);
 
 		if (editAirportModel.getAddressModel() != null) {
-			AddressDto addressDto = this.addressService.createAddress(editAirportModel.getAddressModel());
-			Address address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+			this.addressService.createAddress(editAirportModel.getAddressModel());
+			Address address =  getCreatedAddress(editAirportModel.getAddressModel());
 
 			airport.setAddress(address);
 		}
@@ -121,7 +122,6 @@ public class AirportService implements IAirportService {
 
 		for (Flight flight : airportFlights) {
 			if (flight.isActiv()) {
-				// TODO sa la dau false si la from si la true?
 				flight.getFlightTemplate().setFrom(false);
 				flight.getFlightTemplate().setTo(false);
 				flight.setCanceled(true);
@@ -138,14 +138,16 @@ public class AirportService implements IAirportService {
 
 		Airport airport = this.airportRepository
 				.findByCodeIdentifier(actionCompanyAirportCollab.getAirportCodeIdentifier())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+				.orElseThrow(() -> new FlightManagerException(
+						HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not add company collaboration to airport. Airport [{0}] not found",
 								actionCompanyAirportCollab.getAirportCodeIdentifier())));
 		
-		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getCompanyName())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getNewCompanyName())
+				.orElseThrow(() -> new FlightManagerException(
+						HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not add company collaboration to airport. Company [{0}] not found",
-								actionCompanyAirportCollab.getCompanyName())));
+								actionCompanyAirportCollab.getNewCompanyName())));
 
 		airport.getCompaniesCollab().add(company);
 		this.airportRepository.save(airport);
@@ -162,10 +164,10 @@ public class AirportService implements IAirportService {
 						MessageFormat.format("Can not remove company collaboration to airport. Airport [{0}] not found",
 								actionCompanyAirportCollab.getAirportCodeIdentifier())));
 
-		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getCompanyName())
+		Company company = this.companyRepository.findCompanyByName(actionCompanyAirportCollab.getNewCompanyName())
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not remove company collaboration to airport. Company [{0}] not found",
-								actionCompanyAirportCollab.getCompanyName())));
+								actionCompanyAirportCollab.getNewCompanyName())));
 
 		airport.getCompaniesCollab().remove(company);
 		this.airportRepository.save(airport);
@@ -204,5 +206,14 @@ public class AirportService implements IAirportService {
 
 		return airport.isPresent();
 	}
-
+	
+	private Address getCreatedAddress(CreateAddressModel createAddressModel) {
+		return this.addressRepository.findByAllAttributes(
+				createAddressModel.getCountry(),
+				createAddressModel.getCity(),
+				createAddressModel.getStreet(),
+				createAddressModel.getStreetNumber(),
+				createAddressModel.getApartment())
+				.get();
+	}
 }

@@ -75,10 +75,13 @@ public class PlaneServiceTest {
 	void createPlane_throwsFlightManagerException_whenPlaneModelNull() throws ValidatorException {
 		CreatePlaneModel model = new CreatePlaneModel(null , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
-		Mockito.doThrow(new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The model fileld can not be null")).when(this.validator).validateCreatePlaneModel(model);
+		Mockito.doThrow(new FlightManagerException(
+				HttpStatus.EXPECTATION_FAILED,
+				"The model fileld can not be null"))
+		.when(this.validator).validateCreatePlaneModel(model);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The model fileld can not be null", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.service.createPlane(model));
@@ -88,10 +91,13 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenPlaneModelEmpty() throws ValidatorException {
 		CreatePlaneModel model = new CreatePlaneModel("" , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
-		Mockito.doThrow(new ValidatorException("The model field cannot be empty", ErrorCode.EMPTY_FIELD)).when(this.validator).validateCreatePlaneModel(model);
+		Mockito.doThrow(new ValidatorException(
+				"The model field cannot be empty",
+				ErrorCode.EMPTY_FIELD))
+		.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The model field cannot be empty", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -102,10 +108,13 @@ public class PlaneServiceTest {
 		String planeModel = "thisIsAVeryLongString";
 		CreatePlaneModel model = new CreatePlaneModel(planeModel , 1, 2, 3, LocalDate.now(), PlaneSize.SMALL);
 		
-		Mockito.doThrow(new ValidatorException("The model is too long", ErrorCode.IS_TOO_LONG)).when(this.validator).validateCreatePlaneModel(model);
+		Mockito.doThrow(new ValidatorException(
+				"The model is too long",
+				ErrorCode.IS_TOO_LONG))
+		.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The model is too long", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -123,7 +132,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals(MessageFormat.format("Tail number [{0}] invalid, numbers bellow 0 are not accepted", tailNumber), thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.service.createPlane(model));
@@ -141,7 +150,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals(MessageFormat.format("Tail number [{0}] taken, take another one", tailNumber), thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.service.createPlane(model));
@@ -153,11 +162,13 @@ public class PlaneServiceTest {
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, capacity, 3, LocalDate.now(), PlaneSize.SMALL);
 		
-		Mockito.doThrow(new ValidatorException("The capacity should be between 2 and 852", ErrorCode.WRONG_INTERVAL))
+		Mockito.doThrow(new ValidatorException(
+				"The capacity should be between 2 and 852",
+				ErrorCode.WRONG_INTERVAL))
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The capacity should be between 2 and 852", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -175,7 +186,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The fuel capacity of a small plane should be between 4000 and 5000!", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -193,7 +204,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The fuel capacity of a mid plane should be between 26000 and 30000!", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -211,7 +222,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The fuel capacity of a wide plane should be between 130000 and 190000!", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -229,7 +240,7 @@ public class PlaneServiceTest {
 				.when(this.validator).validateCreatePlaneModel(model);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
-				() -> this.validator.validateCreatePlaneModel(model));
+				() -> this.service.createPlane(model));
 		
 		assertEquals("The fuel capacity of a jumbo plane should be between 200000 and 323000!", thrown.getMessage());
 		assertThrows(ValidatorException.class, () -> this.service.createPlane(model));
@@ -244,7 +255,7 @@ public class PlaneServiceTest {
 			.when(this.validator).validateCreatePlaneModel(model);
 	
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-			() -> this.validator.validateCreatePlaneModel(model));
+			() -> this.service.createPlane(model));
 	
 	assertEquals("Manufacturing date can not be null", thrown.getMessage());
 	assertThrows(FlightManagerException.class, () -> this.service.createPlane(model));
@@ -261,7 +272,7 @@ public class PlaneServiceTest {
 			.when(this.validator).validateCreatePlaneModel(model);
 	
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-			() -> this.validator.validateCreatePlaneModel(model));
+			() -> this.service.createPlane(model));
 	
 	assertEquals("Plane's manufacturing date shoud be in the past!", thrown.getMessage());
 	assertThrows(FlightManagerException.class, () -> this.service.createPlane(model));
