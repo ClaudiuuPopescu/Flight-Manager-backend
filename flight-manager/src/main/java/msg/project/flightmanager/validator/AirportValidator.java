@@ -74,33 +74,28 @@ public class AirportValidator {
 			throw new ValidatorException("The airport name is too long!", ErrorCode.IS_TOO_LONG);
 
 		if (!StringUtils.isAsciiPrintable(airportName))
-			throw new ValidatorException("The airport name should be only out of letters!",
+			throw new ValidatorException(
+					"The airport name should be only out of letters!",
 					ErrorCode.IS_NOT_OUT_OF_LETTERS);
 
 		Optional<Airport> aiport = this.airportRepository.findByName(airportName);
 
 		if (aiport.isPresent()) {
-			throw new FlightManagerException(HttpStatus.IM_USED, MessageFormat
-					.format("An aiport with the name [{0}] already exists. Find another one", airportName));
+			throw new FlightManagerException(
+					HttpStatus.IM_USED, 
+					MessageFormat.format("An aiport with the name [{0}] already exists. Find another one", airportName));
 		}
 	}
 
 	private void validateRunWays(int runWays) {
-		if (Integer.valueOf(runWays) == null) {
-			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The run ways field is required");
-		}
-
 		if (runWays < 1 && runWays < 8) {
-			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED,
 					"The number of run ways has to be in between 1 and 8");
 		}
 	}
 
 	private void validateGateWays(int gateWays) {
-		if (Integer.valueOf(gateWays) == null) {
-			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The gate ways field is required");
-		}
-
 		if (gateWays < 1 && gateWays < 200) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
 					"The number of run ways has to be in between 1 and 200");

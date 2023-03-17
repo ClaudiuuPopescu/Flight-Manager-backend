@@ -69,7 +69,8 @@ public class Airport {
 
 	@OneToMany(mappedBy = "from", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_start")
-	private Set<Flight> flightsStart;
+	@Builder.Default
+	private Set<Flight> flightsStart = new HashSet<>();
 	
 	public void addFlightStart(Flight flight) {
 		this.flightsStart.add(flight);
@@ -83,7 +84,8 @@ public class Airport {
 
 	@OneToMany(mappedBy = "to", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = false)
 	@Column(name = "flight_end")
-	private Set<Flight> flightsEnd;
+	@Builder.Default
+	private Set<Flight> flightsEnd = new HashSet<>();
 	
 	public void addFlightTo(Flight flight) {
 		this.flightsEnd.add(flight);

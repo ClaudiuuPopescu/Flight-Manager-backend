@@ -3,13 +3,14 @@ package msg.project.flightmanager.modelHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CreateAirportModel {
 
 	private String airportName;
-	private String codeIdentifier;
 	private int runWarys;
 	private int gateWays;
 	private CreateAddressModel address;
