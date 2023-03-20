@@ -33,30 +33,42 @@ public class CompanyService implements ICompanyService {
 	private PlaneService planeService;
 
 	@Override
-	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
+	public boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
 			if (validateCompanyByNamePhoneNumberAndEmail(companyDTO)) {
 
 				this.companyValidator.validateCompany(companyDTO);
-				Company companyToSave = companyConverter.convertToEntity(companyDTO);
+				Company companyToSave = this.companyConverter.convertToEntity(companyDTO);
 				this.companyRepository.save(companyToSave);
-
 			}
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
+		
+		return true;
 
 	}
 
 	@Override
-	public void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
+	public boolean updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
-		if (validateCompanyByNamePhoneNumberAndEmail(companyDTO)) {
+		if (companyDTO.getName() != null) {
 			Company oldCompany = findByCompanyName(companyDTO.getName()).get();
 			if (oldCompany != null) {
 				this.companyValidator.validateCompany(companyDTO);
 
 				Company companyToUpdate = companyConverter.convertToEntity(companyDTO);
+				
+				//verific telefon si email sa fie unic
+				Company companyByPhone = findByPhoneNumber(companyDTO.getPhoneNumber()).get();
+				if(!companyByPhone.equals(oldCompany) && companyByPhone != null)
+					throw new CompanyException("A company with this phoneNumber does exist!",
+							ErrorCode.EXISTING_ATTRIBUTE);
+				
+				Company companyByEmail = findByEmail(companyDTO.getEmail()).get();
+				if(!companyByEmail.equals(oldCompany) && companyByEmail != null)
+					throw new CompanyException("A company with this email does exist!",
+							ErrorCode.EXISTING_ATTRIBUTE);
 
 				companyToUpdate.setIdCompany(oldCompany.getIdCompany());
 
@@ -72,11 +84,12 @@ public class CompanyService implements ICompanyService {
 				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
+		return true;
 	}
 
 	// aici anulez zborul si sterg avioanele
 	@Override
-	public void deleteCompany(String companyName) throws CompanyException {
+	public boolean deleteCompany(String companyName) throws CompanyException {
 
 		Optional<Company> companyToDezactivate = findByCompanyName(companyName);
 
@@ -98,7 +111,7 @@ public class CompanyService implements ICompanyService {
 		} else
 			throw new CompanyException("A company with this name does not exist",
 					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-
+		return true;
 	}
 
 	@Override

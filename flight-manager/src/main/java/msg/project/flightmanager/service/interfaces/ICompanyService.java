@@ -9,11 +9,11 @@ import msg.project.flightmanager.model.Company;
 
 public interface ICompanyService {
 
-	void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
+	boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
-	void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
+	boolean updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
-	void deleteCompany(String companyName) throws CompanyException;
+	boolean deleteCompany(String companyName) throws CompanyException;
 
 	List<CompanyDto> findAll();
 
