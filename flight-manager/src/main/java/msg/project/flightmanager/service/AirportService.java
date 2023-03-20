@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.AirportConverter;
+import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.AirportDto;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
@@ -21,10 +22,8 @@ import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.modelHelper.ActionCompanyAirportCollab;
-import msg.project.flightmanager.modelHelper.CreateAddressModel;
 import msg.project.flightmanager.modelHelper.CreateAirportModel;
 import msg.project.flightmanager.modelHelper.EditAirportModel;
-import msg.project.flightmanager.repository.AddressRepository;
 import msg.project.flightmanager.repository.AirportRepository;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.service.interfaces.IAirportService;
@@ -42,9 +41,6 @@ public class AirportService implements IAirportService {
 	private CompanyRepository companyRepository;
 	@Autowired
 	private AddressService addressService;
-	@Autowired
-	private AddressRepository addressRepository;
-
 
 	@Override
 	public List<AirportDto> getAll() {
@@ -66,8 +62,8 @@ public class AirportService implements IAirportService {
 
 		Airport airport = this.airportConverter.convertCreateModelToEntity(createAirportModel);
 
-		this.addressService.createAddress(createAirportModel.getAddress());
-		Address address = getCreatedAddress(createAirportModel.getAddress());
+		AddressDto addressDto = this.addressService.createAddress(createAirportModel.getAddress());
+		Address address = this.addressService.getAddressByAllFields(addressDto).get();
 
 		airport.setAddress(address);
 
@@ -95,8 +91,8 @@ public class AirportService implements IAirportService {
 		this.airportValidator.validateEditAirport(editAirportModel);
 
 		if (editAirportModel.getAddressModel() != null) {
-			this.addressService.createAddress(editAirportModel.getAddressModel());
-			Address address =  getCreatedAddress(editAirportModel.getAddressModel());
+			AddressDto addressDto = this.addressService.createAddress(editAirportModel.getAddressModel());
+			Address address = this.addressService.getAddressByAllFields(addressDto).get();
 
 			airport.setAddress(address);
 		}
@@ -205,15 +201,5 @@ public class AirportService implements IAirportService {
 		Optional<Airport> airport = this.airportRepository.findByCodeIdentifier(codeIdentifier);
 
 		return airport.isPresent();
-	}
-	
-	private Address getCreatedAddress(CreateAddressModel createAddressModel) {
-		return this.addressRepository.findByAllAttributes(
-				createAddressModel.getCountry(),
-				createAddressModel.getCity(),
-				createAddressModel.getStreet(),
-				createAddressModel.getStreetNumber(),
-				createAddressModel.getApartment())
-				.get();
 	}
 }

@@ -10,6 +10,7 @@ import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.modelHelper.EditUserModel;
+import msg.project.flightmanager.modelHelper.UpdateUserRole;
 
 public interface IUserService {
 
@@ -19,13 +20,15 @@ public interface IUserService {
 
 	UserDto getByUsername(String username);
 
-	boolean editUserDetails(EditUserModel editUserModel);
+	boolean editPersonalDetails(String currentUsername, EditUserModel editUserModel);
 	
-	boolean editUserRole(String usernameToEdit, String newRoleTitle);
+	boolean editUserRole(UpdateUserRole updateUserRole);
 
-	boolean editUserAddress(AddressDto addressDto) throws ValidatorException;
+	boolean editUserAddress(String currentUsername, AddressDto addressDto) throws ValidatorException;
 
-	boolean deactivateUser(String username);
+	boolean deactivateUser(String deactivateUsername);
+	
+	boolean activateUser(String activateUsername);
 	
 	void checkPermission(String token, PermissionEnum permissionTitle) throws RoleException, UserException; 
 }

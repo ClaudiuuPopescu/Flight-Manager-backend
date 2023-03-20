@@ -4,6 +4,7 @@ import java.util.Date;
 
 import lombok.Builder;
 import lombok.Data;
+import msg.project.flightmanager.dto.AddressDto;
 
 @Data
 @Builder
@@ -17,5 +18,5 @@ public class CreateUserModel {
 	private Date birthDate;
 	private String roleTitle;
 
-	private CreateAddressModel address;
+	private AddressDto address;
 }

@@ -5,11 +5,13 @@ import org.springframework.http.HttpStatus;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 
 public enum PermissionEnum {
-	PERSONAL_DATA_MANAGEMENT("personal_data_management"), // CREW, FM, CM, ADM
+	PERSONAL_DATA_MANAGEMENT("personal_data_management"),
 
 	CREW_MANAGEMENT("crew_management"), // CM, ADM
 
 	FLIGHT_MANAGER_MANAGEMENT("flight_manager_management"), // ADM
+	
+	COMPANY_MANAGER_MANAGEMENT("company_manager_management"), // ADM
 
 	ADMINISTRATOR_MANAGEMENT("administrator_management"), // ADM
 
