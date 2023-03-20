@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 public class EditUserModel {
 
-	private String usernameToEdit;
 	private String firstName;
 	private String lastName;
 	private String email;

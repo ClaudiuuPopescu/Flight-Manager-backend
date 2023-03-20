@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
 import msg.project.flightmanager.converter.AirportConverter;
+import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
@@ -199,6 +200,7 @@ public class AirportServiceTest {
 		
 		CreateAddressModel addressModel = Mockito.mock(CreateAddressModel.class);
 		
+		AddressDto addressDto = Mockito.mock(AddressDto.class);
 		Address address = Mockito.mock(Address.class);
 		
 		Company company1 = Mockito.mock(Company.class);
@@ -210,13 +212,8 @@ public class AirportServiceTest {
 		CreateAirportModel model = new CreateAirportModel("name", 5, 2, addressModel, Arrays.asList(companyName1, companyName2));
 		
 		Mockito.lenient().when(this.airportConverter.convertCreateModelToEntity(model)).thenReturn(airport);
-		Mockito.lenient().when(this.addressRepository.findByAllAttributes(
-				addressModel.getCountry(), 
-				addressModel.getCity(), 
-				addressModel.getStreet(),
-				addressModel.getStreetNumber(),
-				addressModel.getApartment()
-				)).thenReturn(Optional.of(address));
+		Mockito.lenient().when(this.addressService.createAddress(addressModel)).thenReturn(addressDto);
+		Mockito.lenient().when(this.addressService.getAddressByAllFields(addressDto)).thenReturn(Optional.of(address));
 		Mockito.lenient().when(this.companyRepository.findCompanyByName(companyName1)).thenReturn(Optional.of(company1));
 		Mockito.lenient().when(this.companyRepository.findCompanyByName(companyName2)).thenReturn(Optional.of(company2));
 		
@@ -302,6 +299,7 @@ public class AirportServiceTest {
 		
 		CreateAddressModel addressModel = Mockito.mock(CreateAddressModel.class);
 		
+		AddressDto addressDto = Mockito.mock(AddressDto.class);
 		Address address = Mockito.mock(Address.class);
 		
 		EditAirportModel model = new EditAirportModel(codeIdentifier, 2, 7, addressModel);
@@ -309,13 +307,8 @@ public class AirportServiceTest {
 		Airport airport = Mockito.mock(Airport.class);
 		
 		Mockito.when(this.repository.findByCodeIdentifier(codeIdentifier)).thenReturn(Optional.of(airport));
-		Mockito.lenient().when(this.addressRepository.findByAllAttributes(
-				addressModel.getCountry(), 
-				addressModel.getCity(), 
-				addressModel.getStreet(),
-				addressModel.getStreetNumber(),
-				addressModel.getApartment()
-				)).thenReturn(Optional.of(address));
+		Mockito.lenient().when(this.addressService.createAddress(addressModel)).thenReturn(addressDto);
+		Mockito.lenient().when(this.addressService.getAddressByAllFields(addressDto)).thenReturn(Optional.of(address));
 		
 		assertTrue(this.service.editAirport(model));
 	}

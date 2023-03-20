@@ -38,14 +38,14 @@ public class AddressService implements IAddressService {
 		return this.addressConverter.convertToDTO(address);
 	}
 
-	public Optional<Address> getAddressByAllFields(CreateAddressModel createAddressModel) {
+	public Optional<Address> getAddressByAllFields(AddressDto addressDto) {
 
 		Optional<Address> address = this.addressRepository.findByAllAttributes(
-				createAddressModel.getCountry(),
-				createAddressModel.getCity(), 
-				createAddressModel.getStreet(), 
-				createAddressModel.getStreetNumber(),
-				createAddressModel.getApartment());
+				addressDto.getCountry(),
+				addressDto.getCity(), 
+				addressDto.getStreet(), 
+				addressDto.getStreetNumber(),
+				addressDto.getApartment());
 
 		return address;
 	}
@@ -63,7 +63,7 @@ public class AddressService implements IAddressService {
 		// other person
 		// and creates a new one
 		if (address.getUsers().size() > 1) {
-			AddressDto addressDtoCreated = createAddress(this.addressConverter.converCreateModeltToEntity(addressDto));
+			AddressDto addressDtoCreated = createAddress(this.addressConverter.converDtoToCreateModel(addressDto));
 			return addressDtoCreated;
 			
 		} else {

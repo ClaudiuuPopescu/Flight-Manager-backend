@@ -45,7 +45,7 @@ public class AddressConverter implements IConverter<Address, AddressDto> {
 				.build();
 	}
 
-	public CreateAddressModel converCreateModeltToEntity(AddressDto addressDto) {
+	public CreateAddressModel converDtoToCreateModel(AddressDto addressDto) {
 
 		return CreateAddressModel.builder()
 				.country(addressDto.getCountry())
@@ -55,5 +55,4 @@ public class AddressConverter implements IConverter<Address, AddressDto> {
 				.apartment(addressDto.getApartment())
 				.build();
 	}
-
 }
