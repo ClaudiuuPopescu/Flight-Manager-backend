@@ -26,6 +26,7 @@ public class AddressConverter implements IConverter<Address, AddressDto> {
 	public Address convertToEntity(AddressDto addressDto) {
 
 		return Address.builder()
+				.idAddress(addressDto.getIdAddress())
 				.country(addressDto.getCountry())
 				.city(addressDto.getCity())
 				.street(addressDto.getStreet())

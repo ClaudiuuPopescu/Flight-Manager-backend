@@ -233,7 +233,7 @@ public class UserService implements IUserService {
 		
 		Set<Permission> permissionOfRole = role.getPermissions();
 
-		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getTitle().equals(permissionTitle))
+		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getPermissionEnum().equals(permissionTitle))
 				.collect(Collectors.toList());
 		
 		if(permissionExistence.isEmpty())

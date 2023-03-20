@@ -54,7 +54,7 @@ public class RefreshTokenService implements IRefreshTokenService {
 		if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
 			this.refreshTokenRepositoy.delete(token);
 			throw new RefreshTokenException(
-					String.format("Refresh token for the user %d was expired", token.getUser().getUsername()),
+					String.format("Refresh token for the user %s was expired", token.getUser().getUsername()),
 					ErrorCode.EXPIRED);
 		}
 		return true;
@@ -70,10 +70,10 @@ public class RefreshTokenService implements IRefreshTokenService {
 				this.refreshTokenRepositoy.delete(refreshTokenOptional.get());
 			}
 			else
-				throw new RefreshTokenException(String.format("there is no User with the username: %d, that has this refresh token!", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+				throw new RefreshTokenException(String.format("there is no User with the username: %s, that has this refresh token!", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 		}
 		else
-			throw new RefreshTokenException(String.format("there is no User with the username: %d", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
+			throw new RefreshTokenException(String.format("there is no User with the username: %s", username), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 		
 	}
 

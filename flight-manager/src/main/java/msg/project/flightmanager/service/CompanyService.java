@@ -36,13 +36,13 @@ public class CompanyService implements ICompanyService {
 	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
-			if (findByCompanyName(companyDTO.getName()) == null) {
-				this.companyValidator.validateCompany(companyDTO);
+			if (validateCompanyByNamePhoneNumberAndEmail(companyDTO)) {
 
+				this.companyValidator.validateCompany(companyDTO);
 				Company companyToSave = companyConverter.convertToEntity(companyDTO);
 				this.companyRepository.save(companyToSave);
-			} else
-				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
+
+			}
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
 
@@ -51,8 +51,8 @@ public class CompanyService implements ICompanyService {
 	@Override
 	public void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
-		if (companyDTO.getName() != null) {
-			Company oldCompany = findByCompanyName(companyDTO.getName());
+		if (validateCompanyByNamePhoneNumberAndEmail(companyDTO)) {
+			Company oldCompany = findByCompanyName(companyDTO.getName()).get();
 			if (oldCompany != null) {
 				this.companyValidator.validateCompany(companyDTO);
 
@@ -78,11 +78,11 @@ public class CompanyService implements ICompanyService {
 	@Override
 	public void deleteCompany(String companyName) throws CompanyException {
 
-		Company companyToDezactivate = findByCompanyName(companyName);
+		Optional<Company> companyToDezactivate = findByCompanyName(companyName);
 
-		if (companyToDezactivate != null) {
+		if (companyToDezactivate.isPresent()) {
 
-			this.companyRepository.delete(companyToDezactivate);
+			this.companyRepository.delete(companyToDezactivate.get());
 
 //			// sterg avioane
 //			companyToDezactivate.getPlanes().stream()
@@ -103,19 +103,43 @@ public class CompanyService implements ICompanyService {
 
 	@Override
 	public List<CompanyDto> findAll() {
-		return this.companyRepository.findAll().stream().map(companyConverter::convertToDTO)
+		return this.companyRepository.findAll().stream().map(company -> this.companyConverter.convertToDTO(company))
 				.collect(Collectors.toList());
 	}
 
-	@Override
-	public Company findByCompanyName(String companyName) throws CompanyException {
+	private Optional<Company> findByCompanyName(String companyName) throws CompanyException {
 
 		Optional<Company> companyOptional = this.companyRepository.findCompanyByName(companyName);
-		if (companyOptional.isEmpty()) {
-			throw new CompanyException("A company with this name does not exist!",
-					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-		}
-		return companyOptional.get();
+		return companyOptional;
+	}
+
+	private Optional<Company> findByPhoneNumber(String phoneNumber) throws CompanyException {
+
+		Optional<Company> companyOptional = this.companyRepository.findCompanyByPhoneNumber(phoneNumber);
+		return companyOptional;
+	}
+
+	private Optional<Company> findByEmail(String email) throws CompanyException {
+
+		Optional<Company> companyOptional = this.companyRepository.findCompanyByEmail(email);
+		return companyOptional;
+	}
+
+	private boolean validateCompanyByNamePhoneNumberAndEmail(CompanyDto companyDto) throws CompanyException {
+
+		if (findByCompanyName(companyDto.getName()).isPresent())
+			throw new CompanyException("A company with this name does exist!",
+					ErrorCode.EXISTING_ATTRIBUTE);
+
+		if (findByEmail(companyDto.getEmail()).isPresent())
+			throw new CompanyException("A company with this email does exist!",
+					ErrorCode.EXISTING_ATTRIBUTE);
+
+		if (findByPhoneNumber(companyDto.getPhoneNumber()).isPresent())
+			throw new CompanyException("A company with this phoneNumber does exist!",
+					ErrorCode.EXISTING_ATTRIBUTE);
+
+		return true;
 	}
 
 }
