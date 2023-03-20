@@ -1,4 +1,4 @@
-package msg.project.flightmanager.validator;
+package msg.project.flightmanager.service.utils;
 
 public class StringUtils {
 
