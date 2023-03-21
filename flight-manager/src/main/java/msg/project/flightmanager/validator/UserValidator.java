@@ -30,7 +30,7 @@ public class UserValidator {
 		validatePassword(createUserModel.getPassword());
 		validateBithDate(createUserModel.getBirthDate());
 	}
-
+	
 	public void validateEditUserModel(EditUserModel editUserModel) {
 		validateLastName(editUserModel.getLastName());
 		validateEmail(editUserModel.getEmail());
@@ -100,7 +100,7 @@ public class UserValidator {
 		Optional<User> user = this.userRepository.findByPhoneNumber(phoneNumber);
 
 		if (user.isPresent()) {
-			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already exists");
+			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already used");
 		}
 	}
 
@@ -115,7 +115,7 @@ public class UserValidator {
 		}
 	}
 
-	public void validateBithDate(Date birthDay) {
+	private void validateBithDate(Date birthDay) {
 
 		Date now = new Date();
 
