@@ -23,6 +23,7 @@ import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.modelHelper.EditUserModel;
+import msg.project.flightmanager.modelHelper.EditUserPasswordModel;
 import msg.project.flightmanager.modelHelper.UpdateUserRole;
 import msg.project.flightmanager.service.TokenService;
 import msg.project.flightmanager.service.interfaces.IUserService;
@@ -33,7 +34,8 @@ public class UserController {
 	
 	public static final String GET_ALL = "/all";
 	public static final String CREATE_USER = "/create";
-	public static final String UPDATE_PERSONAL_DETAILS = "/update";
+	public static final String UPDATE_PERSONAL_DETAILS = "/update-details";
+	public static final String UPDATE_USER_PASSWORD = "/update-password";
 	public static final String UPDATE_USER_ROLE = "/update-role";
 	public static final String UPDATE_USER_ADDRESS = "/update-address";
 	public static final String GET_USER_BY_USERNAME = "/get-by-username/{get-username}";
@@ -103,6 +105,24 @@ public class UserController {
 				return ResponseEntity
 						.status(HttpStatus.ACCEPTED)
 						.body("Personal details updated successfully!");
+		} catch (RoleException | UserException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+		}
+	}
+	
+	@PutMapping(UPDATE_USER_PASSWORD)
+	public ResponseEntity<?> updatePassword(@RequestHeader(name = "Authorization") String token, @RequestBody EditUserPasswordModel editUserPasswordModel ){
+		
+		try {
+			this.userService.checkPermission(token, PermissionEnum.PERSONAL_DATA_MANAGEMENT);
+			
+			String currentUsername = this.tokenService.getCurrentUserUsername(token);
+						
+				this.userService.editPassword(currentUsername, editUserPasswordModel);
+				
+				return ResponseEntity
+						.status(HttpStatus.ACCEPTED)
+						.body("Password updated successfully!");
 		} catch (RoleException | UserException e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
 		}

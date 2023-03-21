@@ -30,6 +30,7 @@ import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.modelHelper.CreateAddressModel;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.modelHelper.EditUserModel;
+import msg.project.flightmanager.modelHelper.EditUserPasswordModel;
 import msg.project.flightmanager.modelHelper.UpdateUserRole;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IUserService;
@@ -64,7 +65,7 @@ public class UserService implements IUserService {
 			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No users found");
 		}
 
-		List<UserDto> usersDto = users.stream().map(this.userConverter::convertToDTO).collect(Collectors.toList());
+		List<UserDto> usersDto = users.stream().map(this.userConverter::convertToDTO).toList();
 		return usersDto;
 	}
 
@@ -131,10 +132,30 @@ public class UserService implements IUserService {
 	
 	@Transactional
 	@Override
+	public boolean editPassword(String currentUsername, EditUserPasswordModel editUserPasswordModel) {
+		
+		User user = this.userRepository.findByUsername(currentUsername).get();
+		
+		if(!this.passwordEncoder.matches(editUserPasswordModel.getCurrentPassword(), user.getPassword())) {
+			throw new FlightManagerException(
+					HttpStatus.FORBIDDEN,
+					"The password introduced does not match with your current one");
+		}
+		
+		this.userValidator.validatePassword(editUserPasswordModel.getNewPassword());
+		
+		String encodeNewPass = this.passwordEncoder.encode(editUserPasswordModel.getNewPassword());
+		user.setPassword(encodeNewPass);
+		return true;
+	}
+	
+	@Transactional
+	@Override
 	public boolean editUserRole(UpdateUserRole updateUserRole) {
 		
 		User userToEdit = this.userRepository.findByUsername(updateUserRole.getUsernameToChange())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat
 						.format("Can not edit user's role. User {0} not found", (updateUserRole.getUsernameToChange()))));
 		
 		Role role =  this.roleService.getRoleByTitle(updateUserRole.getNewRoleTitle());
@@ -222,12 +243,12 @@ public class UserService implements IUserService {
 			userToEdit.setLastName(editUserModel.getLastName());
 		}
 
-		if (!editUserModel.getEmail().equals(userToEdit.getEmail())) {
+		if (!userToEdit.getEmail().equals(editUserModel.getEmail())) {
 			this.userValidator.validateEmail(editUserModel.getEmail());
 			userToEdit.setEmail(editUserModel.getEmail());
 		}
 
-		if (!editUserModel.getPhoneNumber().equals(editUserModel.getPhoneNumber())) {
+		if (!userToEdit.getPhoneNumber().equals(editUserModel.getPhoneNumber())) {
 			this.userValidator.validatePhoneNumber(editUserModel.getPhoneNumber());
 			userToEdit.setPhoneNumber(editUserModel.getPhoneNumber());
 		}
@@ -242,18 +263,18 @@ public class UserService implements IUserService {
 		Optional<User> user = this.userRepository.findByUsername(userName);
 		
 		if(user.isEmpty()) {
-			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);			
+			throw new UserException(String.format("A user with the username %s does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);			
 		}
 		
 		Role role = this.roleService.getRoleByTitle(this.tokenService.getCurrentRol(token));
 		
 		Set<Permission> permissionOfRole = role.getPermissions();
 
-		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getTitle().equals(permissionTitle))
+		List<Permission> permissionExistence = permissionOfRole.stream().filter(permission -> permission.getPermissionEnum().equals(permissionTitle))
 				.collect(Collectors.toList());
 		
 		if(permissionExistence.isEmpty())
-			throw new RoleException(String.format("The user %d does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
+			throw new RoleException(String.format("The user %s does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
 
 	}
 }
