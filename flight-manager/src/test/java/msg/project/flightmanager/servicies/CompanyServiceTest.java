@@ -2,8 +2,6 @@ package msg.project.flightmanager.servicies;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -34,9 +32,9 @@ import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.service.CompanyService;
 import msg.project.flightmanager.service.PlaneService;
+import msg.project.flightmanager.service.utils.StringUtils;
 import msg.project.flightmanager.validator.AddressValidator;
 import msg.project.flightmanager.validator.CompanyValidator;
-import msg.project.flightmanager.service.utils.StringUtils;
 
 @ExtendWith(MockitoExtension.class)
 public class CompanyServiceTest {
@@ -126,7 +124,6 @@ public class CompanyServiceTest {
 		assertEquals(ErrorCode.EXISTING_ATTRIBUTE, exception.getErrorCode());
 	}
 
-	// TODO
 	@Test
 	void addCompany_returnsCompanyException_whenACompanyWithTheGivenAddressExists() throws ValidatorException {
 
@@ -199,9 +196,10 @@ public class CompanyServiceTest {
 	@Test
 	void addCompany_returnsTrue_whenTheTheNewCompanyIsSaved() throws CompanyException, ValidatorException {
 
-		LocalDate date = LocalDate.of(1999, 10, 10);
-		CompanyDto companyToAdd = new CompanyDto("Goodname", "0776162700", "goddEmail@gmail.com", date, addressDto);
-		assertTrue(this.companyService.addCompany(companyToAdd));
+		CompanyDto companyToAdd = new CompanyDto();
+		companyToAdd.setName("goodName");
+		Mockito.when(this.companyRepository.findCompanyByName(companyToAdd.getName())).thenReturn(Optional.ofNullable(null));
+		this.companyService.addCompany(companyToAdd);
 
 	}
 

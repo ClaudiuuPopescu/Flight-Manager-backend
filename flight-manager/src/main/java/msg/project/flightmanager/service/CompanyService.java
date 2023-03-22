@@ -36,7 +36,7 @@ public class CompanyService implements ICompanyService {
 	private AddressConverter addressConverter;
 
 	@Override
-	public boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
+	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
 			if (validateCompanyByNamePhoneNumberAddressAndEmail(companyDTO)) {
@@ -47,8 +47,6 @@ public class CompanyService implements ICompanyService {
 			}
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
-
-		return true;
 
 	}
 

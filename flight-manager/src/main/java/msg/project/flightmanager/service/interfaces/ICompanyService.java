@@ -9,7 +9,7 @@ import msg.project.flightmanager.model.Company;
 
 public interface ICompanyService {
 
-	boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
+	void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
 	void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
