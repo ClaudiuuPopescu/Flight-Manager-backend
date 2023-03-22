@@ -11,9 +11,9 @@ public interface ICompanyService {
 
 	boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
-	boolean updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
+	void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException;
 
-	boolean deleteCompany(String companyName) throws CompanyException;
+	void deleteCompany(String companyName) throws CompanyException;
 
 	List<CompanyDto> findAll();
 

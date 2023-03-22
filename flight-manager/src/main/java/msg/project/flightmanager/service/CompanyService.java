@@ -7,11 +7,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import msg.project.flightmanager.converter.AddressConverter;
 import msg.project.flightmanager.converter.CompanyConverter;
+import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.CompanyDto;
 import msg.project.flightmanager.exceptions.CompanyException;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.ValidatorException;
+import msg.project.flightmanager.model.Address;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.service.interfaces.ICompanyService;
@@ -30,13 +33,13 @@ public class CompanyService implements ICompanyService {
 	private CompanyValidator companyValidator;
 
 	@Autowired
-	private PlaneService planeService;
+	private AddressConverter addressConverter;
 
 	@Override
 	public boolean addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
-			if (validateCompanyByNamePhoneNumberAndEmail(companyDTO)) {
+			if (validateCompanyByNamePhoneNumberAddressAndEmail(companyDTO)) {
 
 				this.companyValidator.validateCompany(companyDTO);
 				Company companyToSave = this.companyConverter.convertToEntity(companyDTO);
@@ -44,74 +47,63 @@ public class CompanyService implements ICompanyService {
 			}
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
-		
+
 		return true;
 
 	}
 
 	@Override
-	public boolean updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
+	public void updateCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
-			Company oldCompany = findByCompanyName(companyDTO.getName()).get();
-			if (oldCompany != null) {
+			Optional<Company> companyOptional = findByCompanyName(companyDTO.getName());
+			if (companyOptional.isPresent()) {
+
+				Company oldCompany = companyOptional.get();
 				this.companyValidator.validateCompany(companyDTO);
 
-				Company companyToUpdate = companyConverter.convertToEntity(companyDTO);
-				
-				//verific telefon si email sa fie unic
-				Company companyByPhone = findByPhoneNumber(companyDTO.getPhoneNumber()).get();
-				if(!companyByPhone.equals(oldCompany) && companyByPhone != null)
+				Company companyToUpdate = this.companyConverter.convertToEntity(companyDTO);
+
+				Optional<Company> companyByPhone = findByPhoneNumber(companyDTO.getPhoneNumber());
+				if (companyByPhone.isPresent() && !companyByPhone.get().equals(oldCompany))
 					throw new CompanyException("A company with this phoneNumber does exist!",
 							ErrorCode.EXISTING_ATTRIBUTE);
-				
-				Company companyByEmail = findByEmail(companyDTO.getEmail()).get();
-				if(!companyByEmail.equals(oldCompany) && companyByEmail != null)
-					throw new CompanyException("A company with this email does exist!",
+
+				Optional<Company> companyByEmail = findByEmail(companyDTO.getEmail());
+				if (companyByEmail.isPresent() && !companyByEmail.get().equals(oldCompany))
+					throw new CompanyException("A company with this email does exist!", ErrorCode.EXISTING_ATTRIBUTE);
+
+				Address address = companyToUpdate.getAddress();
+				Optional<Company> companyByAddress = findByAddress(companyDTO.getAddress());
+
+				if (companyByAddress.isPresent() && !address.equals(oldCompany.getAddress()))
+					throw new CompanyException("A company with this address already exists!",
 							ErrorCode.EXISTING_ATTRIBUTE);
 
 				companyToUpdate.setIdCompany(oldCompany.getIdCompany());
-
-				if (oldCompany.getAddress() != null) {
-					companyToUpdate.setAddress(oldCompany.getAddress());
-				}
-
 				companyToUpdate.setEmployees(oldCompany.getEmployees());
 				companyToUpdate.setPlanes(oldCompany.getPlanes());
 
 				this.companyRepository.save(companyToUpdate);
 			} else
-				throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_NAME);
+				throw new CompanyException("A company with this name does not exist!",
+						ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
-		return true;
+
 	}
 
-	// aici anulez zborul si sterg avioanele
 	@Override
-	public boolean deleteCompany(String companyName) throws CompanyException {
+	public void deleteCompany(String companyName) throws CompanyException {
 
 		Optional<Company> companyToDezactivate = findByCompanyName(companyName);
 
 		if (companyToDezactivate.isPresent()) {
 
 			this.companyRepository.delete(companyToDezactivate.get());
-
-//			// sterg avioane
-//			companyToDezactivate.getPlanes().stream()
-//					.forEach(plane -> this.planeService.removePlane(plane.getTailNumber()));
-//
-//			// pun la angajati pe null
-//			companyToDezactivate.getEmployees().stream().forEach(employee -> employee.setCompany(null));
-//
-//			// scot colaborarea cu aeroportul
-//			companyToDezactivate.getAirportsCollab().stream()
-//					.forEach(airport -> airport.removeCollab(companyToDezactivate));
-
 		} else
 			throw new CompanyException("A company with this name does not exist",
 					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-		return true;
 	}
 
 	@Override
@@ -120,37 +112,44 @@ public class CompanyService implements ICompanyService {
 				.collect(Collectors.toList());
 	}
 
-	private Optional<Company> findByCompanyName(String companyName) throws CompanyException {
+	private Optional<Company> findByCompanyName(String companyName) {
 
 		Optional<Company> companyOptional = this.companyRepository.findCompanyByName(companyName);
 		return companyOptional;
 	}
 
-	private Optional<Company> findByPhoneNumber(String phoneNumber) throws CompanyException {
+	private Optional<Company> findByPhoneNumber(String phoneNumber) {
 
 		Optional<Company> companyOptional = this.companyRepository.findCompanyByPhoneNumber(phoneNumber);
 		return companyOptional;
 	}
 
-	private Optional<Company> findByEmail(String email) throws CompanyException {
+	private Optional<Company> findByEmail(String email) {
 
 		Optional<Company> companyOptional = this.companyRepository.findCompanyByEmail(email);
 		return companyOptional;
 	}
 
-	private boolean validateCompanyByNamePhoneNumberAndEmail(CompanyDto companyDto) throws CompanyException {
+	private Optional<Company> findByAddress(AddressDto addressDto) throws CompanyException {
+
+		Address address = this.addressConverter.convertToEntity(addressDto);
+		Optional<Company> companyOptional = this.companyRepository.findCompanyByAddress(address);
+		return companyOptional;
+	}
+
+	private boolean validateCompanyByNamePhoneNumberAddressAndEmail(CompanyDto companyDto) throws CompanyException {
 
 		if (findByCompanyName(companyDto.getName()).isPresent())
-			throw new CompanyException("A company with this name does exist!",
-					ErrorCode.EXISTING_ATTRIBUTE);
+			throw new CompanyException("A company with this name does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
 		if (findByEmail(companyDto.getEmail()).isPresent())
-			throw new CompanyException("A company with this email does exist!",
-					ErrorCode.EXISTING_ATTRIBUTE);
+			throw new CompanyException("A company with this email does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
 		if (findByPhoneNumber(companyDto.getPhoneNumber()).isPresent())
-			throw new CompanyException("A company with this phoneNumber does exist!",
-					ErrorCode.EXISTING_ATTRIBUTE);
+			throw new CompanyException("A company with this phoneNumber does exist!", ErrorCode.EXISTING_ATTRIBUTE);
+
+		if (findByAddress(companyDto.getAddress()).isPresent())
+			throw new CompanyException("A company with this address does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
 		return true;
 	}

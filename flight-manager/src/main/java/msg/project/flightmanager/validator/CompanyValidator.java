@@ -35,9 +35,6 @@ public class CompanyValidator {
 
 	public void validateName(String name) throws ValidatorException {
 
-		if (name.isEmpty())
-			throw new ValidatorException("Name cannot be empty!", ErrorCode.EMPTY_FIELD);
-
 		if (!StringUtils.isAsciiPrintable(name))
 			throw new ValidatorException("Name can contain only letters!", ErrorCode.IS_NOT_OUT_OF_LETTERS);
 

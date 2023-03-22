@@ -11,6 +11,11 @@ public class CompanyConverter implements IConverter<Company, CompanyDto> {
 
 	@Autowired
 	private AddressConverter addressConverter;
+	
+	@Autowired
+	public CompanyConverter(AddressConverter addressConverter) {
+		this.addressConverter = addressConverter;
+	}
 
 	@Override
 	public Company convertToEntity(CompanyDto companyDTO) {
