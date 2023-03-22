@@ -17,9 +17,7 @@ import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.modelHelper.CreateAirportModel;
 import msg.project.flightmanager.modelHelper.EditAirportModel;
 import msg.project.flightmanager.repository.AirportRepository;
-
 import msg.project.flightmanager.repository.CompanyRepository;
-
 import msg.project.flightmanager.service.utils.StringUtils;
 
 @Component

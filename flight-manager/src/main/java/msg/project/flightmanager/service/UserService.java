@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import msg.project.flightmanager.converter.AddressConverter;
 import msg.project.flightmanager.converter.UserConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.UserDto;
@@ -26,9 +27,11 @@ import msg.project.flightmanager.model.Address;
 import msg.project.flightmanager.model.Permission;
 import msg.project.flightmanager.model.Role;
 import msg.project.flightmanager.model.User;
+import msg.project.flightmanager.modelHelper.CreateAddressModel;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.modelHelper.EditUserModel;
-import msg.project.flightmanager.repository.AddressRepository;
+import msg.project.flightmanager.modelHelper.EditUserPasswordModel;
+import msg.project.flightmanager.modelHelper.UpdateUserRole;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IUserService;
 import msg.project.flightmanager.validator.UserValidator;
@@ -47,7 +50,7 @@ public class UserService implements IUserService {
 	@Autowired
 	private AddressService addressService;
 	@Autowired
-	private AddressRepository addressRepository;
+	private AddressConverter addressConverter;
 	@Autowired
 	private TokenService tokenService;
 	@Autowired
@@ -62,16 +65,14 @@ public class UserService implements IUserService {
 			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No users found");
 		}
 
-		List<UserDto> usersDto = users.stream().map(this.userConverter::convertToDTO).collect(Collectors.toList());
+		List<UserDto> usersDto = users.stream().map(this.userConverter::convertToDTO).toList();
 		return usersDto;
 	}
 
 	@Transactional
 	@Override
 	public boolean createUser(CreateUserModel createUserModel) throws ValidatorException {
-		// TODO sa aiba permisiuni
-		// TODO sa i se atribuie adresa, daca exista deja adresa, pe aia, daca nu, noua
-
+		
 		this.userValidator.validateCreateUserModel(createUserModel);
 
 		User user = this.userConverter.createUserModelToUser(createUserModel);
@@ -82,22 +83,25 @@ public class UserService implements IUserService {
 		String encodedPass = this.passwordEncoder.encode(createUserModel.getPassword());
 		user.setPassword(encodedPass);
 		
-		Role role = this.roleService.getRoleByTitle(createUserModel.getRoleTitle());
+		Role role = this.roleService.getRoleByTitle(createUserModel.getRoleTitle().toLowerCase());
 		user.setRole(role);
 
 		Optional<Address> optionalAddress = this.addressService.getAddressByAllFields(createUserModel.getAddress());
 
-		Address address;
 		if (optionalAddress.isEmpty()) {
 			// if the address does not match another address with all the fields, create new
 			// one
-			AddressDto addressDto = this.addressService.createAddress(createUserModel.getAddress());
-			address = this.addressRepository.findById(addressDto.getIdAddress()).get();
+			CreateAddressModel createAddressModel = this.addressConverter.converDtoToCreateModel(createUserModel.getAddress());
+			AddressDto addressDto = this.addressService.createAddress(createAddressModel);
+			Address address = this.addressService.getAddressByAllFields(addressDto).get();
 			user.setAddress(address);
+			
+		} else {
+			
+			// if the address matches another address based on all the fields, assign that
+			user.setAddress(optionalAddress.get());
 		}
 
-		// if the address matches another address based on all the fields, assign that
-		user.setAddress(optionalAddress.get());
 
 		this.userRepository.save(user);
 		return true;
@@ -115,34 +119,46 @@ public class UserService implements IUserService {
 
 	@Transactional
 	@Override
-	public boolean editUserDetails(EditUserModel editUserModel) {
-		// TODO verificare daca current user ii acelasi cu cel pe care vrea sa il
-		// schimbe
-		// de facut dupa ce se face Login ul
-		// altfel ar trebui sa primesc in EditUserModel si user ul care face schimbarea
-		// ca sa vad daca are voie; usernameEditing
+	public boolean editPersonalDetails(String currentUsername, EditUserModel editUserModel) {
 
-		User userToEdit = this.userRepository.findByUsername(editUserModel.getUsernameToEdit())
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
-						.format("Can not edit user's details. User {0} not found", editUserModel.getUsernameToEdit())));
+		User user = this.userRepository.findByUsername(currentUsername).get();
 
-		checkDifferencesAndSetValues(editUserModel, userToEdit);
+		checkDifferencesAndSetValues(editUserModel, user);
 
-		this.userRepository.save(userToEdit);
+		this.userRepository.save(user);
 
 		return true;
 	}
 	
 	@Transactional
 	@Override
-	public boolean editUserRole(String usernameToEdit, String newRoleTitle) {
-		// TODO Auto-generated method stub
+	public boolean editPassword(String currentUsername, EditUserPasswordModel editUserPasswordModel) {
 		
-		User userToEdit = this.userRepository.findByUsername(usernameToEdit)
-				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat
-						.format("Can not edit user's role. User {0} not found", usernameToEdit)));
+		User user = this.userRepository.findByUsername(currentUsername).get();
 		
-		Role role =  this.roleService.getRoleByTitle(newRoleTitle);
+		if(!this.passwordEncoder.matches(editUserPasswordModel.getCurrentPassword(), user.getPassword())) {
+			throw new FlightManagerException(
+					HttpStatus.FORBIDDEN,
+					"The password introduced does not match with your current one");
+		}
+		
+		this.userValidator.validatePassword(editUserPasswordModel.getNewPassword());
+		
+		String encodeNewPass = this.passwordEncoder.encode(editUserPasswordModel.getNewPassword());
+		user.setPassword(encodeNewPass);
+		return true;
+	}
+	
+	@Transactional
+	@Override
+	public boolean editUserRole(UpdateUserRole updateUserRole) {
+		
+		User userToEdit = this.userRepository.findByUsername(updateUserRole.getUsernameToChange())
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat
+						.format("Can not edit user's role. User {0} not found", (updateUserRole.getUsernameToChange()))));
+		
+		Role role =  this.roleService.getRoleByTitle(updateUserRole.getNewRoleTitle());
 		userToEdit.setRole(role);
 		
 		this.userRepository.save(userToEdit);
@@ -151,21 +167,42 @@ public class UserService implements IUserService {
 
 	@Transactional
 	@Override
-	public boolean editUserAddress(AddressDto addressDto) throws ValidatorException {
-		this.addressService.editAddress(addressDto);
-
-		// TODO sa vedem cum luam userul de la care modificam adresa
+	public boolean editUserAddress(String currentUsername, AddressDto addressDto) throws ValidatorException {
+		AddressDto address = this.addressService.editAddress(addressDto);
+		
+		Optional<Address> optionalAddress = this.addressService.getAddressByAllFields(address);;
+		
+		User currentUser = this.userRepository.findByUsername(currentUsername).get();
+		
+		if(optionalAddress.isPresent()) {
+			currentUser.setAddress(optionalAddress.get());
+			this.userRepository.save(currentUser);
+			return true;
+		}	
+		
 		return false;
 	}
 
 	@Transactional
 	@Override
-	public boolean deactivateUser(String username) {
-		User user = this.userRepository.findByUsername(username)
+	public boolean deactivateUser(String deactivateUsername) {
+		User user = this.userRepository.findByUsername(deactivateUsername)
 				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
-						MessageFormat.format("Can not deactivate user. User {0} not found", username)));
-
+						MessageFormat.format("Can not deactivate user. User {0} not found", deactivateUsername)));
+	
 		user.setActive(false);
+		this.userRepository.save(user);
+		return true;
+	}
+	
+	@Transactional
+	@Override
+	public boolean activateUser(String activateUsername) {
+		User user = this.userRepository.findByUsername(activateUsername)
+				.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not activate user. User {0} not found", activateUsername)));
+
+		user.setActive(true);
 		this.userRepository.save(user);
 		return true;
 	}
@@ -206,12 +243,12 @@ public class UserService implements IUserService {
 			userToEdit.setLastName(editUserModel.getLastName());
 		}
 
-		if (!editUserModel.getEmail().equals(userToEdit.getEmail())) {
+		if (!userToEdit.getEmail().equals(editUserModel.getEmail())) {
 			this.userValidator.validateEmail(editUserModel.getEmail());
 			userToEdit.setEmail(editUserModel.getEmail());
 		}
 
-		if (!editUserModel.getPhoneNumber().equals(editUserModel.getPhoneNumber())) {
+		if (!userToEdit.getPhoneNumber().equals(editUserModel.getPhoneNumber())) {
 			this.userValidator.validatePhoneNumber(editUserModel.getPhoneNumber());
 			userToEdit.setPhoneNumber(editUserModel.getPhoneNumber());
 		}
@@ -226,7 +263,7 @@ public class UserService implements IUserService {
 		Optional<User> user = this.userRepository.findByUsername(userName);
 		
 		if(user.isEmpty()) {
-			throw new UserException(String.format("A user with the username %d does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);			
+			throw new UserException(String.format("A user with the username %s does not exist!", userName), ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);			
 		}
 		
 		Role role = this.roleService.getRoleByTitle(this.tokenService.getCurrentRol(token));
@@ -237,7 +274,7 @@ public class UserService implements IUserService {
 				.collect(Collectors.toList());
 		
 		if(permissionExistence.isEmpty())
-			throw new RoleException(String.format("The user %d does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
+			throw new RoleException(String.format("The user %s does not have this permission!", userName), ErrorCode.DOES_NOT_HAVE_PERMISSION);
 
 	}
 }

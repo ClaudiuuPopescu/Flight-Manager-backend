@@ -19,4 +19,5 @@ public class AddressDto {
 	private int streetNumber;
 	@Nullable
 	private int apartment;
+
 }
