@@ -1,6 +1,7 @@
 package msg.project.flightmanager.service.interfaces;
 
 import java.util.List;
+import java.util.Optional;
 
 import msg.project.flightmanager.dto.FlightTemplateDto;
 import msg.project.flightmanager.exceptions.FlightTemplateException;
@@ -16,6 +17,6 @@ public interface IFlightTemplateService {
 
 	List<FlightTemplate> getAllFlightTemplates();
 
-	FlightTemplate findFlightTemplateBYID(Long flightTemplateId) throws FlightTemplateException;
+	Optional<FlightTemplate> findFlightTemplateBYID(Long flightTemplateId);
 
 }
