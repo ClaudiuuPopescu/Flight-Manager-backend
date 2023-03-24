@@ -1,6 +1,5 @@
 package msg.project.flightmanager.validator;
 
-import java.sql.Time;
 import java.time.LocalDate;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ public class FlightValidator {
 		
 		validateAirport(flightDto.getFrom());
 		validateAirport(flightDto.getTo());
-		validateBoardingTime(flightDto.getBoardingTime());
 		validateDuration(flightDto.getDuration());
 		validateFlightName(flightDto.getFlightName());
 		validateDate(flightDto.getDate());
@@ -44,12 +42,8 @@ public class FlightValidator {
 		
 		LocalDate currentDate = java.time.LocalDate.now();
 
-		if (currentDate.compareTo(date) == 1)
+		if (currentDate.compareTo(date) >= 1)
 			throw new ValidatorException("The date should be in the future!", ErrorCode.WRONG_INTERVAL);
-	}
-	
-	private void validateBoardingTime(Time time)  throws ValidatorException {
-		//TODO mai trebuie sa gandesc aici
 	}
 	
 	private void validateDuration(double duration) throws ValidatorException  {
