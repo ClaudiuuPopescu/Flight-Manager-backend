@@ -58,35 +58,18 @@ public class FlightService implements IFlightService {
 					ErrorCode.UNEXISTING_TEMPLATE);
 
 		Optional<Flight> optionalFlight = getFlightById(flightDto.getIdFlight());
-		if (optionalFlight.isEmpty())
+		if (optionalFlight.isPresent())
 			throw new FlightException("An flight with this ID is in the DB!",
 					ErrorCode.OBJECT_WITH_THIS_ID_EXISTS_IN_THE_DB);
 		else {
 
 			this.flightValidator.validateFlight(flightDto);
-
-			this.verifyAirport(flightDto.getFrom());
-			this.verifyAirport(flightDto.getTo());
-			this.verifyPlane(flightDto.getPlane());
+			verifyAttributs(flightDto);
 
 			Flight flight = this.flightConverter.convertToEntity(flightDto);
 			this.flightRepository.save(flight);
 			Plane plane = flight.getPlane();
-			if (plane != null && plane.getFirstFlight() == null) {
-
-				if (flight.getDate() != null) {
-
-					plane.setFirstFlight(flight.getDate());
-
-				} else {
-
-					plane.setFirstFlight(java.time.LocalDate.now());
-
-				}
-
-				plane.addFlight(flight);
-				this.planeRepository.save(plane);
-			}
+			changePlane(plane, flight);
 		}
 	}
 
@@ -99,9 +82,7 @@ public class FlightService implements IFlightService {
 			throw new FlightException("An flight with this ID is NOT in the DB!", ErrorCode.NOT_AN_EXISTING_FLIGHT);
 		else {
 			this.flightValidator.validateFlight(flightDto);
-			this.verifyAirport(flightDto.getFrom());
-			this.verifyAirport(flightDto.getTo());
-			this.verifyPlane(flightDto.getPlane());
+			verifyAttributs(flightDto);
 
 			Flight newFlight = this.flightConverter.convertToEntity(flightDto);
 
@@ -197,5 +178,29 @@ public class FlightService implements IFlightService {
 			flight.setActiv(false);
 			this.flightRepository.save(flight);
 		});
+	}
+
+	private void changePlane(Plane plane, Flight flight) {
+		if (plane != null && plane.getFirstFlight() == null) {
+
+			if (flight.getDate() != null) {
+
+				plane.setFirstFlight(flight.getDate());
+
+			} else {
+
+				plane.setFirstFlight(java.time.LocalDate.now());
+
+			}
+
+			plane.addFlight(flight);
+			this.planeRepository.save(plane);
+		}
+	}
+	
+	private void verifyAttributs(FlightDto flightDto) throws AirportException, PlaneException {
+		verifyAirport(flightDto.getFrom());
+		verifyAirport(flightDto.getTo());
+		verifyPlane(flightDto.getPlane());
 	}
 }
