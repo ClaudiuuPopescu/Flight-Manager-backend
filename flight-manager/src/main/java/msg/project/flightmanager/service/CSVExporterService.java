@@ -1,21 +1,18 @@
 package msg.project.flightmanager.service;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import jakarta.servlet.http.HttpServletResponse;
+import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.model.Airport;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Plane;
@@ -24,6 +21,7 @@ import msg.project.flightmanager.repository.AirportRepository;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.repository.PlaneRepository;
 import msg.project.flightmanager.repository.UserRepository;
+import msg.project.flightmanager.service.utils.CsvBeanWriterUtils;
 
 @Service
 public class CSVExporterService {
@@ -35,119 +33,143 @@ public class CSVExporterService {
 	private AirportRepository airportRepository;
 	@Autowired
 	private CompanyRepository companyRepository;
+	@Autowired
+	private CsvBeanWriterUtils csvBeanWriterUtils;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CSVExporterService.class);
 	
-	private static String objectInstance = "";
-	private static String [] csvHeader;
-	private static String [] fieldMapping;
+	private final String[] csvHeaderUser = {"ID", "USERNAME", "FIRST NAME", "LAST NAME", "EMAIL", "PHONE NUMBER", "BIRTH DATE", "ACTIVE"};
+	private final String[] fieldMappingUser = {"id", "username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "isActive"};
 	
-	private static ICsvBeanWriter csvWriter;
+	private final String[] csvHeaderPlane = {"ID", "CAPACITY", "FUEL TANK CAPACITY", "MANUFACTURING DATE", "FIRST FLIGHT", "LAST REVISION", "SIZE", "MODEL", "TAIL NUMBER"};
+	private final String[] fieldMappingPlane = {"idPlane", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevistion", "size", "model", "tailNumber"};
 	
-	public void exportToCSV(Object object, HttpServletResponse response) {
-		
-		DateFormat dateFomat = new SimpleDateFormat("dd-MM-yyyy");
-		String timeStamp = dateFomat.format(new Date());
-		String fileName = objectInstance + "-export-" + timeStamp + ".csv";
-		
-		response.setContentType("text/csv");
-		
-		String headerKey = "Content-Disposition";
-		String haderValue = "attachment; filename=" + fileName;
-		response.setHeader(headerKey, haderValue);
+	private final String[] csvHeaderAirport = {"ID", "NAME", "CODE IDENTIFIER", "RUN WAYS", "GATE WAYS"};
+	private final String[] fieldMappingAirport = {"id_airport", "airportName", "codeIdentifier", "runWays", "gateWays"};
+	
+	private final String[] csvHeaderCompany = {"ID", "NAME", "PHONE NUMBER", "EMAIL", "FOUNDED IN", "ACTIVE"};
+	private final String[] fieldMappingCompany ={"idCompany", "name", "phoneNumber", "email", "foundedIn", "isActive"};
+	
+	public CsvBeanWriter csvWriter;
+	
+	// TODO to add in the controller
+//		LocalDate timeStamp = LocalDate.now();
+//		String fileName = clazz.getSimpleName().toLowerCase() + "-export-" + timeStamp + ".csv";
+//		
+//		response.setContentType("text/csv");
+//		
+//		String headerKey = HttpHeaders.CONTENT_DISPOSITION;
+//		String haderValue = "attachment; filename=" + fileName;
+//		response.setHeader(headerKey, haderValue);
+//		PrintWriter writer = new PrintWriter (new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
+	public void exportToCSV(Class<?> clazz, PrintWriter writer) {
 		
 		try {
-			csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
+			this.csvWriter = this.csvBeanWriterUtils.getCsvBeanWriter(writer);
 			
-			csvWriter.writeHeader(csvHeader);
+			writeCSVForObject(clazz);
 			
-			writeCSVForObject(object);
-			
-			csvWriter.close();
+			this.csvWriter.close();
 		} catch (IOException e) {
 			logger.error("Error while writing CSV ", e);
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED, 
+					"Error while writing CSV");
 		}
 	}
 	
-	private void writeCSVForObject(Object object) {
-		if(object instanceof User) {
-			setStaticsForUser();
+	private void writeCSVForObject(Class<?> clazz) throws IOException {
+		if(clazz == User.class) {
+			
+			this.csvWriter.writeHeader(this.csvHeaderUser);
 			
 			List<User> users = StreamSupport.stream(this.userRepository.findAll().spliterator(), false).toList();
 			
+			if(users.isEmpty()) {
+				throw new FlightManagerException(
+						HttpStatus.NOT_FOUND, 
+						"No users found to export");
+			}
+			
 			for(User user : users) {
 				try {
-					csvWriter.write(user, fieldMapping);
+					this.csvWriter.write(user, this.fieldMappingUser);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for users ", e);
+					throw new FlightManagerException(
+							HttpStatus.EXPECTATION_FAILED, 
+							"Error while writing CSV for users");
 				}
 			}
 		}
 		
-		if(object instanceof Plane) {
-			setStaticsForPlane();
+		if(clazz == Plane.class) {
+			this.csvWriter.writeHeader(this.csvHeaderPlane);
 			
 			List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false).toList();
 			
+			if(planes.isEmpty()) {
+				throw new FlightManagerException(
+						HttpStatus.NOT_FOUND, 
+						"No planes found to export");
+			}
+			
 			for(Plane plane : planes) {
 				try {
-					csvWriter.write(plane, fieldMapping);
+					this.csvWriter.write(plane, this.fieldMappingPlane);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for planes ", e);
+					throw new FlightManagerException(
+							HttpStatus.EXPECTATION_FAILED, 
+							"Error while writing CSV for planes");
 				}
 			}
 		}
 		
-		if(object instanceof Airport) {
-			setStaticsForAirport();
+		if(clazz == Airport.class) {
+			this.csvWriter.writeHeader(this.csvHeaderAirport);
 			
 			List<Airport> airports = StreamSupport.stream(this.airportRepository.findAll().spliterator(), false).toList();
+			
+			if(airports.isEmpty()) {
+				throw new FlightManagerException(
+						HttpStatus.NOT_FOUND, 
+						"No airports found to export");
+			}
 
 			for(Airport airport : airports) {
 				try {
-					csvWriter.write(airport, fieldMapping);
+					this.csvWriter.write(airport, this.fieldMappingAirport);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for airports ", e);
+					throw new FlightManagerException(
+							HttpStatus.EXPECTATION_FAILED, 
+							"Error while writing CSV for airports");
 				}
 			}
 		}
 		
-		if(object instanceof Company) {
-			setStaticsForCompany();
+		if(clazz == Company.class) {
+			this.csvWriter.writeHeader(this.csvHeaderCompany);
 
 			List<Company> companies = StreamSupport.stream(this.companyRepository.findAll().spliterator(), false).toList();
+			
+			if(companies.isEmpty()) {
+				throw new FlightManagerException(
+						HttpStatus.NOT_FOUND, 
+						"No companies found to export");
+			}
 
 			for(Company company : companies) {
 				try {
-					csvWriter.write(company, fieldMapping);
+					this.csvWriter.write(company, this.fieldMappingCompany);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for companies ", e);
+					throw new FlightManagerException(
+							HttpStatus.EXPECTATION_FAILED, 
+							"Error while writing CSV for companies");
 				}
 			}
 		}
-	}
-	
-	private void setStaticsForUser() {
-		objectInstance = "users";
-		csvHeader = new String[] {"ID", "USERNAME", "FIRST NAME", "LAST NAME", "EMAIL", "PHONE NUMBER", "BIRTHDAY", "ACTIVE"};
-		fieldMapping = new String[] {"id", "username", "firstName", "lastName", "email", "phoneNumber", "birthDay", "isActive"};
-	}
-	
-	private void setStaticsForPlane() {
-		objectInstance = "planes";
-		csvHeader = new String[] {"ID", "CAPACITY", "FUEL TANK CAPACITY", "MANUFACTURING DATE", "FIRST FLIGHT", "LAST REVISION", "SIZE", "MODEL", "TAIL NUMBER"};
-		fieldMapping = new String[] {"idPlane", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevistion", "size", "model", "tailNumber"};
-	}
-	
-	private void setStaticsForAirport() {
-		objectInstance = "airports";
-		csvHeader = new String[] {"ID", "NAME", "CODE IDENTIFIER", "RUN WAYS", "GATE WAYS"};
-		fieldMapping = new String[] {"id_airport", "airportName", "codeIdentifier", "runWays", "gateWays"};
-	}
-	
-	private void setStaticsForCompany() {
-		objectInstance = "companies";
-		csvHeader = new String[] {"ID", "NAME", "PHONE NUMBER", "EMAIL", "FOUNDED IN", "ACTIVE"};
-		fieldMapping = new String[] {"idCompany", "name", "phoneNumber", "email", "foundedIn", "activ"};
 	}
 }

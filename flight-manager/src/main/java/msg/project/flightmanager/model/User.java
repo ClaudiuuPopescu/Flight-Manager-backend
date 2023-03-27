@@ -105,5 +105,9 @@ public class User {
 				&& Objects.equals(this.password, other.password) && Objects.equals(this.phoneNumber, other.phoneNumber)
 				&& Objects.equals(this.role, other.role) && Objects.equals(this.username, other.username);
 	}
+	
+	public boolean getIsActive() {
+		return this.isActive;
+	}
 
 }
