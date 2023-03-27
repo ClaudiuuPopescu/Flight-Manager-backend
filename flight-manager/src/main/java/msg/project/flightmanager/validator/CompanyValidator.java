@@ -35,9 +35,6 @@ public class CompanyValidator {
 
 	public void validateName(String name) throws ValidatorException {
 
-		if (name.isEmpty())
-			throw new ValidatorException("Name cannot be empty!", ErrorCode.EMPTY_FIELD);
-
 		if (!StringUtils.isAsciiPrintable(name))
 			throw new ValidatorException("Name can contain only letters!", ErrorCode.IS_NOT_OUT_OF_LETTERS);
 
@@ -63,8 +60,8 @@ public class CompanyValidator {
 		if(phoneNumber.isEmpty())
 			throw new ValidatorException("PhoneNumber cannot be empty!", ErrorCode.EMPTY_FIELD);
 		
-		if(phoneNumber.length() < 10 || phoneNumber.length() > 10)
-			throw new ValidatorException("The phone number should have 10 numbers!", ErrorCode.IS_TOO_SHORT);
+		if(phoneNumber.length() != 11)
+			throw new ValidatorException("The phone number should have 10 numbers!", ErrorCode.WRONG_INTERVAL);
 		
 		if (!phoneNumber.matches(PHONE_NUMBER_REGEX)) {
 			throw new ValidatorException("Wrong phone number!", ErrorCode.WRONG_FROMAT);
@@ -82,7 +79,7 @@ public class CompanyValidator {
 			if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == 0) {
 				if (currentDate.getDayOfMonth() < foundedIn.getDayOfMonth())
 					throw new ValidatorException("The day should be lower than the current day!", ErrorCode.WRONG_INTERVAL);
-			} else if (currentDate.getMonth().compareTo(foundedIn.getMonth()) == -1)
+			} else if (currentDate.getMonth().compareTo(foundedIn.getMonth()) < 0)
 				throw new ValidatorException("The month should be lower than the current month!", ErrorCode.WRONG_INTERVAL);
 		}
 	}

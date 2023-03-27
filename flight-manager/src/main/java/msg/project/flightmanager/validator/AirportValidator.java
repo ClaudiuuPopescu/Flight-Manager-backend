@@ -36,7 +36,7 @@ public class AirportValidator {
 		validateGateWays(airportDto.getGateWays());
 		validateAddress(airportDto.getAddressDto());
 	}
-	
+
 	public void validateCreateAiportModel(CreateAirportModel createAirportModel) throws ValidatorException {
 		validateAirportName(createAirportModel.getAirportName());
 		validateRunWays(createAirportModel.getRunWarys());
@@ -47,13 +47,12 @@ public class AirportValidator {
 	}
 
 	private void validateCompanyNamesToCollab(List<String> companyNames) {
-		for(String companyName : companyNames) {
+		for (String companyName : companyNames) {
 			this.companyRepository.findCompanyByName(companyName)
-			.orElseThrow(() -> new FlightManagerException(
-					HttpStatus.NOT_FOUND,
-					MessageFormat.format("Company [{0}] can not be added to collaboration. It does not exist.", companyName)));
+					.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat.format(
+							"Company [{0}] can not be added to collaboration. It does not exist.", companyName)));
 		}
-		
+
 	}
 
 	public void validateEditAirport(EditAirportModel editAirportModel) {
@@ -61,7 +60,6 @@ public class AirportValidator {
 		validateGateWays(editAirportModel.getGateWays());
 	}
 
-		
 	private void validateAddress(AddressDto addressDto) throws ValidatorException {
 		this.addressValidator.validateAddressDto(addressDto);
 	}
@@ -75,23 +73,20 @@ public class AirportValidator {
 			throw new ValidatorException("The airport name is too long!", ErrorCode.IS_TOO_LONG);
 
 		if (!StringUtils.isAsciiPrintable(airportName))
-			throw new ValidatorException(
-					"The airport name should be only out of letters!",
+			throw new ValidatorException("The airport name should be only out of letters!",
 					ErrorCode.IS_NOT_OUT_OF_LETTERS);
 
 		Optional<Airport> aiport = this.airportRepository.findByName(airportName);
 
 		if (aiport.isPresent()) {
-			throw new FlightManagerException(
-					HttpStatus.IM_USED, 
-					MessageFormat.format("An aiport with the name [{0}] already exists. Find another one", airportName));
+			throw new FlightManagerException(HttpStatus.IM_USED, MessageFormat
+					.format("An aiport with the name [{0}] already exists. Find another one", airportName));
 		}
 	}
 
 	private void validateRunWays(int runWays) {
 		if (runWays < 1 && runWays < 8) {
-			throw new FlightManagerException(
-					HttpStatus.EXPECTATION_FAILED,
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
 					"The number of run ways has to be in between 1 and 8");
 		}
 	}

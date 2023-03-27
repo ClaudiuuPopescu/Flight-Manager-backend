@@ -3,10 +3,12 @@ package msg.project.flightmanager.dto;
 import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
 @Builder(toBuilder = true)
+@NoArgsConstructor
 @AllArgsConstructor
 public class AddressDto {
 
@@ -17,8 +19,5 @@ public class AddressDto {
 	private int streetNumber;
 	@Nullable
 	private int apartment;
-	
-	public AddressDto() {
-		
-	}
+
 }

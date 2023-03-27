@@ -17,6 +17,4 @@ public interface ICompanyService {
 
 	List<CompanyDto> findAll();
 
-	Company findByCompanyName(String companyName) throws CompanyException;
-
 }

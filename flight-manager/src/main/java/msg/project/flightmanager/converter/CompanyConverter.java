@@ -11,6 +11,11 @@ public class CompanyConverter implements IConverter<Company, CompanyDto> {
 
 	@Autowired
 	private AddressConverter addressConverter;
+	
+	@Autowired
+	public CompanyConverter(AddressConverter addressConverter) {
+		this.addressConverter = addressConverter;
+	}
 
 	@Override
 	public Company convertToEntity(CompanyDto companyDTO) {
@@ -19,7 +24,7 @@ public class CompanyConverter implements IConverter<Company, CompanyDto> {
 				.phoneNumber(companyDTO.getPhoneNumber())
 				.email(companyDTO.getEmail())
 				.foundedIn(companyDTO.getFoundedIn())
-				.address(addressConverter.convertToEntity(companyDTO.getAddress()))
+				.address(this.addressConverter.convertToEntity(companyDTO.getAddress()))
 				.build();
 	}
 
@@ -31,7 +36,7 @@ public class CompanyConverter implements IConverter<Company, CompanyDto> {
 				.phoneNumber(company.getPhoneNumber())
 				.email(company.getEmail())
 				.foundedIn(company.getFoundedIn())
-				.address(addressConverter.convertToDTO(company.getAddress()))
+				.address(this.addressConverter.convertToDTO(company.getAddress()))
 				.build();
 	}
 

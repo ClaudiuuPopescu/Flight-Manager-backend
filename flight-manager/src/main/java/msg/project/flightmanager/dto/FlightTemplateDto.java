@@ -1,10 +1,12 @@
 package msg.project.flightmanager.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder(toBuilder = true)
+@AllArgsConstructor
 public class FlightTemplateDto {
 
 	private Long idFlightTemplate;

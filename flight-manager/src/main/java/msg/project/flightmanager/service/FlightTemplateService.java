@@ -45,67 +45,45 @@ public class FlightTemplateService implements IFlightTemplateService {
 
 	@Override
 	public void updateFlightTemplate(FlightTemplateDto flightTemplateDto) throws FlightTemplateException {
-		
-		if (findFlightTemplateBYID(flightTemplateDto.getIdFlightTemplate()) == null)
+
+		Optional<FlightTemplate> optionalFlightTemplate = findFlightTemplateBYID(
+				flightTemplateDto.getIdFlightTemplate());
+
+		if (optionalFlightTemplate.isEmpty())
 			throw new FlightTemplateException("A Flight Template with this ID does not exists!",
 					ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-
-		FlightTemplate newFlightTemplate = this.flightTemplateConverter.convertToEntity(flightTemplateDto);
-
-		if (verifyEqualExistingTemplate(newFlightTemplate))
-			throw new FlightTemplateException("A Flight Template like the given one already exists!",
-					ErrorCode.EXISTING_TEMPLATE_LIKE_THE_GIVEN_ONE);
 		else {
-			
-			FlightTemplate oldFlightTemplate = findFlightTemplateBYID(flightTemplateDto.getIdFlightTemplate());
 
-			List<Flight> flights = this.flightService.getFlightsByFlightTemplate(oldFlightTemplate);
-			
-			for(Flight flight : flights) {
-				
-				if(!newFlightTemplate.isFlightName() && !flight.getFlightName().isEmpty())
-					flight.setFlightName(null);
-				
-				if(!newFlightTemplate.isFrom() && flight.getFrom() != null)
-					flight.setFrom(null);
-					
-				if(!newFlightTemplate.isPlane() && flight.getPlane() != null)
-					flight.setPlane(null);
-					
-				if(!newFlightTemplate.isBoardingTime() && flight.getBoardingTime() != null)
-					flight.setBoardingTime(null);
-					
-				if(!newFlightTemplate.isTo() && flight.getTo() != null)
-					flight.setBoardingTime(null);
-				
-				if(!newFlightTemplate.isDate() && flight.getDate() != null)
-					flight.setDate(null);
-					
-				if(!newFlightTemplate.isGate() && flight.getGate().isEmpty())
-					flight.setGate(null);
-					
-				if(!newFlightTemplate.isDuration() && flight.getDuration() != 0)
-					flight.setDuration(0);
+			FlightTemplate newFlightTemplate = this.flightTemplateConverter.convertToEntity(flightTemplateDto);
+			if (verifyEqualExistingTemplate(newFlightTemplate))
+				throw new FlightTemplateException("A Flight Template like the given one already exists!",
+						ErrorCode.EXISTING_TEMPLATE_LIKE_THE_GIVEN_ONE);
+			else {
+
+				this.flightTemplateRepository.save(newFlightTemplate);
 			}
-			
-			this.flightTemplateRepository.save(newFlightTemplate);
-			
+
 		}
 
 	}
 
 	@Override
 	public void deleteFlightTemplate(Long flightTemplateId) throws FlightTemplateException {
-	
-		if (findFlightTemplateBYID(flightTemplateId) == null)
+
+		Optional<FlightTemplate> optionalFlightTemplate = findFlightTemplateBYID(flightTemplateId);
+
+		if (optionalFlightTemplate.isEmpty())
 			throw new FlightTemplateException("A Flight Template with this ID does not exists!",
 					ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-
-		FlightTemplate flightTemplate = findFlightTemplateBYID(flightTemplateId);
-
-		List<Flight> flightsWithGivenTemplate = this.flightService.getFlightsByFlightTemplate(flightTemplate);
-		flightsWithGivenTemplate.stream().filter(flight -> flight.getFlightTemplate().equals(flightTemplate)).forEach(flight -> {flight.setActiv(false); flight.setCanceled(true);}); 
-		
+		else {
+			FlightTemplate flightTemplate = optionalFlightTemplate.get();
+			List<Flight> flightsWithGivenTemplate = this.flightService.getFlightsByFlightTemplate(flightTemplate);
+			flightsWithGivenTemplate.stream().filter(flight -> flight.getFlightTemplate().equals(flightTemplate))
+					.forEach(flight -> {
+						flight.setActiv(false);
+						flight.setCanceled(true);
+					});
+		}
 	}
 
 	@Override
@@ -115,14 +93,9 @@ public class FlightTemplateService implements IFlightTemplateService {
 	}
 
 	@Override
-	public FlightTemplate findFlightTemplateBYID(Long flightTemplateId) throws FlightTemplateException {
+	public Optional<FlightTemplate> findFlightTemplateBYID(Long flightTemplateId) {
 
-		Optional<FlightTemplate> optionalFlightTemplate = this.flightTemplateRepository.findById(flightTemplateId);
-		if (optionalFlightTemplate.isEmpty())
-			throw new FlightTemplateException("There is no flight template with this ID in the DB ",
-					ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-
-		return optionalFlightTemplate.get();
+		return this.flightTemplateRepository.findById(flightTemplateId);
 	}
 
 	private boolean verifyEqualExistingTemplate(FlightTemplate flightTemplate) {

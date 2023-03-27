@@ -60,9 +60,9 @@ public class AuthService implements IAuthService {
 				return jwtCookie;
 
 			} else
-				throw new AuthException(String.format("Wrong password for %d", userName), ErrorCode.WRONG_PASSWORD);
+				throw new AuthException(String.format("Wrong password for %s", userName), ErrorCode.WRONG_PASSWORD);
 		} else
-			throw new AuthException(String.format("This username %d does not exists!", userName),
+			throw new AuthException(String.format("This username %s does not exists!", userName),
 					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 	}
 
@@ -80,7 +80,7 @@ public class AuthService implements IAuthService {
 		if (optionalUser.isPresent()) {
 			this.refreshTokenService.deleteByUserName(userName);
 		} else
-			throw new AuthException(String.format("There is no user with the username %d logged in!", userName),
+			throw new AuthException(String.format("There is no user with the username %s logged in!", userName),
 					ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
 
 	}
