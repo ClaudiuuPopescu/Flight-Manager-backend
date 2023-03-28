@@ -5,9 +5,11 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import msg.project.flightmanager.enums.PlaneSize;
 
 @Getter
+@Setter
 @Builder
 @AllArgsConstructor
 public class CreatePlaneModel {

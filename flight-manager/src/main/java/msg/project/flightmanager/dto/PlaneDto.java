@@ -2,12 +2,16 @@ package msg.project.flightmanager.dto;
 
 import java.time.LocalDate;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import msg.project.flightmanager.enums.PlaneSize;
 
 @Getter
+@Setter
 @Builder(toBuilder = true)
+@AllArgsConstructor
 public class PlaneDto {
 
 	private String model;

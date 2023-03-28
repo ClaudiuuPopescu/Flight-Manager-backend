@@ -40,7 +40,7 @@ public class PlaneValidator {
 		validateTailNumber(createPlaneModel.getTailNumber());
 		validateCapacity(createPlaneModel.getCapacity());
 		validateFuelTankCapacity(createPlaneModel.getFuelTankCapacity(), createPlaneModel.getSize());
-		validateManufacturingDate_CreatePlanModel(createPlaneModel.getManufacturingDate());
+		validateManufacturingDate_CreatePlaneModel(createPlaneModel.getManufacturingDate());
 	}
 
 	private void validateModel(String model) throws ValidatorException {
@@ -49,14 +49,14 @@ public class PlaneValidator {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The model fileld can not be null");
 		}
 		if (model.isEmpty())
-			throw new ValidatorException("The model field cannot be empty", ErrorCode.EMPTY_FIELD);
+			throw new ValidatorException("The model field can not be empty", ErrorCode.EMPTY_FIELD);
 		if (model.length() > 20)
 			throw new ValidatorException("The model is too long", ErrorCode.IS_TOO_LONG);
 	}
 
 	private void validateTailNumber(int tailNumber) {
 		if (tailNumber <= 0) {
-			throw new FlightManagerException(HttpStatus.IM_USED,
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
 					MessageFormat.format("Tail number [{0}] invalid, numbers bellow 0 are not accepted", tailNumber));
 		}
 
@@ -117,7 +117,7 @@ public class PlaneValidator {
 					ErrorCode.WRONG_INTERVAL);
 	}
 
-	private void validateManufacturingDate_CreatePlanModel(LocalDate manufacturingDate) {
+	private void validateManufacturingDate_CreatePlaneModel(LocalDate manufacturingDate) {
 		if (manufacturingDate == null) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "Manufacturing date can not be null");
 		}
@@ -133,45 +133,55 @@ public class PlaneValidator {
 	private void validateFirstFlightDate(LocalDate manufacturingDate, LocalDate firstFlightDate, LocalDate lastRevision)
 			throws ValidatorException {
 
-		if (firstFlightDate != null) {
-			
-			LocalDate currentDate = java.time.LocalDate.now();
-			
-			if (validateDate1IsEarlierThanDate2(currentDate, firstFlightDate))
-				throw new ValidatorException("The first flight date of the plane should be in the past!",
-						ErrorCode.WRONG_INTERVAL);
-			
-			if (manufacturingDate != null && validateDate1IsLaterThanDate2(firstFlightDate, manufacturingDate))
-				throw new ValidatorException(
-						"The first flight date of the plane should be later than the manufacturing date!",
-						ErrorCode.WRONG_INTERVAL);
-
-			if (lastRevision != null && validateDate1IsLaterThanDate2(manufacturingDate, lastRevision))
-				throw new ValidatorException(
-						"The manufacturing date of the plane should be earlier than the last revision date!",
-						ErrorCode.WRONG_INTERVAL);
-
+		if (firstFlightDate == null) {
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "First flight can not be null");
 		}
+		
+		LocalDate currentDate = java.time.LocalDate.now();
+			
+		if (validateDate1IsEarlierThanDate2(currentDate, firstFlightDate))
+			throw new ValidatorException("The first flight date of the plane should be in the past!",
+					ErrorCode.WRONG_INTERVAL);
+			
+//		if (manufacturingDate != null && validateDate1IsLaterThanDate2(firstFlightDate, manufacturingDate))
+//			throw new ValidatorException(
+//					"The first flight date of the plane should be later than the manufacturing date!",
+//					ErrorCode.WRONG_INTERVAL);
 
+		if (lastRevision != null && validateDate1IsLaterThanDate2(firstFlightDate, lastRevision))
+			throw new ValidatorException(
+					"The first flight date of the plane should be earlier than the last revision date!",
+					ErrorCode.WRONG_INTERVAL);
 	}
 
 	private void validateLastRevision(LocalDate manufacturingDate, LocalDate firstFlightDate, LocalDate lastRevision)
 			throws ValidatorException {
 
-		if (lastRevision != null) {
-			
-			LocalDate currentDate = java.time.LocalDate.now();
-			
-			if (validateDate1IsEarlierThanDate2(currentDate, firstFlightDate))
-				throw new ValidatorException("The first revision date of the plane should be in the past!",
-						ErrorCode.WRONG_INTERVAL);
+		if (lastRevision == null) {
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "Last revision can not be null");
 		}
+		
+		LocalDate currentDate = java.time.LocalDate.now();
+			
+		if (validateDate1IsEarlierThanDate2(currentDate, lastRevision))
+			throw new ValidatorException("The first revision date of the plane should be in the past!",
+					ErrorCode.WRONG_INTERVAL);
 	}
 
 	public void valiateNewRevision(LocalDate lastRevision, LocalDate newRevision) {
-		validateDate1IsEarlierThanDate2(lastRevision, newRevision);
+		
+		if(newRevision.compareTo(LocalDate.now()) > 0) {
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED,
+					"New revision must be today or earlier");
+		}
+		
+		if(!validateDate1IsEarlierThanDate2(lastRevision, newRevision)) {
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED,
+					"New revision must be later than last revision");
+		}
 
-		validateDate1IsEarlierThanDate2(newRevision, LocalDate.now());
 	}
 
 	private boolean validateFuelCapacityForSmall(int fuelTankCapacity) {
