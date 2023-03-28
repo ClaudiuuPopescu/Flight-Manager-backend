@@ -46,18 +46,17 @@ public class AirportValidator {
 
 	}
 
+	public void validateEditAirport(EditAirportModel editAirportModel) {
+		validateRunWays(editAirportModel.getRunWarys());
+		validateGateWays(editAirportModel.getGateWays());
+	}
+	
 	private void validateCompanyNamesToCollab(List<String> companyNames) {
 		for (String companyName : companyNames) {
 			this.companyRepository.findCompanyByName(companyName)
 					.orElseThrow(() -> new FlightManagerException(HttpStatus.NOT_FOUND, MessageFormat.format(
 							"Company [{0}] can not be added to collaboration. It does not exist.", companyName)));
 		}
-
-	}
-
-	public void validateEditAirport(EditAirportModel editAirportModel) {
-		validateRunWays(editAirportModel.getRunWarys());
-		validateGateWays(editAirportModel.getGateWays());
 	}
 
 	private void validateAddress(AddressDto addressDto) throws ValidatorException {
@@ -85,16 +84,16 @@ public class AirportValidator {
 	}
 
 	private void validateRunWays(int runWays) {
-		if (runWays < 1 && runWays < 8) {
+		if (runWays < 1 || runWays > 8) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
 					"The number of run ways has to be in between 1 and 8");
 		}
 	}
 
 	private void validateGateWays(int gateWays) {
-		if (gateWays < 1 && gateWays < 200) {
+		if (gateWays < 1 || gateWays > 200) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED,
-					"The number of run ways has to be in between 1 and 200");
+					"The number of gate ways has to be in between 1 and 200");
 		}
 	}
 
