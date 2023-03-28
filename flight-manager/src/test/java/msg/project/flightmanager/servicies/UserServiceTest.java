@@ -6,14 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +79,7 @@ public class UserServiceTest {
 				.lastName("lastName")
 				.email("email")
 				.phoneNumber("07")
-				.birthDate(Date.from(Instant.now()))
+				.birthDate(LocalDate.now())
 				.roleTitle("crew")
 				.address(Mockito.mock(AddressDto.class))
 				.build();
@@ -329,7 +326,7 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_throwsFlightManagerException_whenUserNotOver18() {
-		this.createUserModel.setBirthDate(new Date());
+		this.createUserModel.setBirthDate(LocalDate.now());
 		
 		Mockito.doThrow(new FlightManagerException(
 				HttpStatus.EXPECTATION_FAILED,
@@ -345,9 +342,7 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_returnsTrue_whenAllConditionsGood01WithExistingAddress() throws ParseException, ValidatorException {
-	    String dateString = "13/05/2000";
-	    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-	    Date birthDate = formatter.parse(dateString);
+	    LocalDate birthdate = LocalDate.of(2000, 5, 13);
 		
 		CreateUserModel createUserModel = CreateUserModel.builder()
 				.password("valid-password")
@@ -355,7 +350,7 @@ public class UserServiceTest {
 				.lastName("valid-lastName")
 				.email("email@airline.com")
 				.phoneNumber("0712345678")
-				.birthDate(birthDate)
+				.birthDate(birthdate)
 				.roleTitle("crew")
 				.address(Mockito.mock(AddressDto.class))
 				.build();
@@ -373,9 +368,7 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_returnsTrue_whenAllConditionsGood02newAddress() throws ParseException, ValidatorException {
-	    String dateString = "13/05/2000";
-	    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-	    Date birthDate = formatter.parse(dateString);
+	    LocalDate birthdate = LocalDate.of(2000, 5, 13);
 		
 		CreateUserModel createUserModel = CreateUserModel.builder()
 				.password("valid-password")
@@ -383,7 +376,7 @@ public class UserServiceTest {
 				.lastName("valid-lastName")
 				.email("email@airline.com")
 				.phoneNumber("0712345678")
-				.birthDate(birthDate)
+				.birthDate(birthdate)
 				.roleTitle("crew")
 				.address(Mockito.mock(AddressDto.class))
 				.build();

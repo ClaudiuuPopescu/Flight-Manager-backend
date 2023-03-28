@@ -18,11 +18,16 @@ public class UserConverter implements IConverter<User, UserDto> {
 
 	@Override
 	public UserDto convertToDTO(User user) {
-		UserDto userDto = UserDto.builder().firstName(user.getFirstName()).lastName(user.getLastName())
-				.username(user.getUsername()).email(user.getEmail()).phoneNumber(user.getPhoneNumber())
-				.birthDate(user.getBirthDate()).address(addressConverter.convertToDTO(user.getAddress()))
-				.role(roleConverter.convertToDTO(user.getRole()))
-				.company(companyConverter.convertToDTO(user.getCompany())).build();
+		UserDto userDto = UserDto.builder()
+				.firstName(user.getFirstName())
+				.lastName(user.getLastName())
+				.username(user.getUsername())
+				.email(user.getEmail())
+				.phoneNumber(user.getPhoneNumber())
+				.birthDate(user.getBirthDate())
+				.address(this.addressConverter.convertToDTO(user.getAddress()))
+				.role(this.roleConverter.convertToDTO(user.getRole()))
+				.company(this.companyConverter.convertToDTO(user.getCompany())).build();
 		return userDto;
 	}
 
@@ -34,8 +39,11 @@ public class UserConverter implements IConverter<User, UserDto> {
 
 	public User createUserModelToUser(CreateUserModel createUserModel) {
 
-		User user = User.builder().firstName(createUserModel.getFirstName()).lastName(createUserModel.getLastName())
-				.email(createUserModel.getEmail()).phoneNumber(createUserModel.getPhoneNumber())
+		User user = User.builder()
+				.firstName(createUserModel.getFirstName())
+				.lastName(createUserModel.getLastName())
+				.email(createUserModel.getEmail())
+				.phoneNumber(createUserModel.getPhoneNumber())
 				.birthDate(createUserModel.getBirthDate())
 				// TODO sa fac address, create, dto, aleaalea
 				.build();

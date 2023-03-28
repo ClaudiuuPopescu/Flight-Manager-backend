@@ -1,8 +1,6 @@
 package msg.project.flightmanager.validator;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,6 +30,7 @@ public class UserValidator {
 	}
 	
 	public void validateEditUserModel(EditUserModel editUserModel) {
+		validateFirstName(editUserModel.getFirstName());
 		validateLastName(editUserModel.getLastName());
 		validateEmail(editUserModel.getEmail());
 		validatePhoneNumber(editUserModel.getPhoneNumber());
@@ -82,9 +81,8 @@ public class UserValidator {
 		Optional<User> user = this.userRepository.findByEmail(email);
 
 		if (user.isPresent()) {
-			throw new FlightManagerException(HttpStatus.IM_USED, "The email is already exists");
+			throw new FlightManagerException(HttpStatus.IM_USED, "The email is already taken");
 		}
-
 	}
 
 	public void validatePhoneNumber(String phoneNumber) {
@@ -100,7 +98,7 @@ public class UserValidator {
 		Optional<User> user = this.userRepository.findByPhoneNumber(phoneNumber);
 
 		if (user.isPresent()) {
-			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already used");
+			throw new FlightManagerException(HttpStatus.IM_USED, "The phone number is already taken");
 		}
 	}
 
@@ -115,14 +113,11 @@ public class UserValidator {
 		}
 	}
 
-	private void validateBithDate(Date birthDay) {
+	private void validateBithDate(LocalDate birthday) {
 
-		Date now = new Date();
+		LocalDate localNow = LocalDate.now();
 
-		LocalDate localNow = now.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalDate localBirthDate = birthDay.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-		if ((localNow.getYear() - localBirthDate.getYear()) < 18) {
+		if ((localNow.getYear() - birthday.getYear()) < 18) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "User must be over 18yo");
 		}
 
