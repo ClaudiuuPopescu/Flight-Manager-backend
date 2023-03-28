@@ -1,6 +1,6 @@
 package msg.project.flightmanager.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -54,7 +54,7 @@ public class User {
 	private String phoneNumber;
 
 	@Column
-	private Date birthDate;
+	private LocalDate birthDate;
 	
 //	@Column(name = "token")
 //	private Token token;
