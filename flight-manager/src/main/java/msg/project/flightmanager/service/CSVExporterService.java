@@ -21,10 +21,11 @@ import msg.project.flightmanager.repository.AirportRepository;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.repository.PlaneRepository;
 import msg.project.flightmanager.repository.UserRepository;
+import msg.project.flightmanager.service.interfaces.ICSVExporterService;
 import msg.project.flightmanager.service.utils.CsvBeanWriterUtils;
 
 @Service
-public class CSVExporterService {
+public class CSVExporterService implements ICSVExporterService{
 	@Autowired
 	private UserRepository userRepository;
 	@Autowired
@@ -52,16 +53,7 @@ public class CSVExporterService {
 	
 	public CsvBeanWriter csvWriter;
 	
-	// TODO to add in the controller
-//		LocalDate timeStamp = LocalDate.now();
-//		String fileName = clazz.getSimpleName().toLowerCase() + "-export-" + timeStamp + ".csv";
-//		
-//		response.setContentType("text/csv");
-//		
-//		String headerKey = HttpHeaders.CONTENT_DISPOSITION;
-//		String haderValue = "attachment; filename=" + fileName;
-//		response.setHeader(headerKey, haderValue);
-//		PrintWriter writer = new PrintWriter (new OutputStreamWriter(response.getOutputStream(), "UTF-8"));
+	@Override
 	public void exportToCSV(Class<?> clazz, PrintWriter writer) {
 		
 		try {

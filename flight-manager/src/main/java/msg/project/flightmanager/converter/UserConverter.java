@@ -45,7 +45,6 @@ public class UserConverter implements IConverter<User, UserDto> {
 				.email(createUserModel.getEmail())
 				.phoneNumber(createUserModel.getPhoneNumber())
 				.birthDate(createUserModel.getBirthDate())
-				// TODO sa fac address, create, dto, aleaalea
 				.build();
 		return user;
 	}
