@@ -228,7 +228,7 @@ public class AirportValidatorTest {
 	@Test
 	void validateCreateAiportModel_throwsFlightManagerException_whenRunWaysOuttaRange01() {
 		int runWays = 47;
-		this.createAirportModel.setRunWarys(runWays);
+		this.createAirportModel.setRunWays(runWays);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.airportValidator.validateCreateAiportModel(this.createAirportModel));
@@ -240,7 +240,7 @@ public class AirportValidatorTest {
 	@Test
 	void validateCreateAiportModel_throwsFlightManagerException_whenRunWaysOuttaRange02() {
 		int runWays = 0;
-		this.createAirportModel.setRunWarys(runWays);
+		this.createAirportModel.setRunWays(runWays);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.airportValidator.validateCreateAiportModel(this.createAirportModel));

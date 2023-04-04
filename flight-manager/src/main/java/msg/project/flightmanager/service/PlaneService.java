@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import msg.project.flightmanager.converter.PlaneConverter;
 import msg.project.flightmanager.dto.PlaneDto;
+import msg.project.flightmanager.enums.PlaneSize;
 import msg.project.flightmanager.exceptions.CompanyException;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
@@ -54,8 +55,10 @@ public class PlaneService implements IPlaneService {
 	public boolean createPlane(CreatePlaneModel createPlaneModel) throws ValidatorException {
 
 		this.planeValidator.validateCreatePlaneModel(createPlaneModel);
+		PlaneSize size = PlaneSize.fromSize(createPlaneModel.getSize().toLowerCase());
 
 		Plane plane = this.planeConverter.createModelToEntity(createPlaneModel);
+		plane.setSize(size);
 
 		this.planeRepository.save(plane);
 		return true;
@@ -71,7 +74,7 @@ public class PlaneService implements IPlaneService {
 						MessageFormat.format("Plane with tail number [{0}] not found", editLastRevisionPlaneModel.getTailNumber())
 						));
 
-		this.planeValidator.valiateNewRevision(plane.getLastRevision(), editLastRevisionPlaneModel.getNewRevision());
+		this.planeValidator.validateNewRevision(plane.getLastRevision(), editLastRevisionPlaneModel.getNewRevision());
 
 		this.planeRepository.save(plane);
 		return true;

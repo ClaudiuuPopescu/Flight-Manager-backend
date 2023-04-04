@@ -85,7 +85,7 @@ public class UserService implements IUserService {
 		
 		Role role = this.roleService.getRoleByTitle(createUserModel.getRoleTitle().toLowerCase());
 		user.setRole(role);
-
+		
 		Optional<Address> optionalAddress = this.addressService.getAddressByAllFields(createUserModel.getAddress());
 
 		if (optionalAddress.isEmpty()) {

@@ -22,7 +22,7 @@ import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.repository.PlaneRepository;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.ICSVExporterService;
-import msg.project.flightmanager.service.utils.CsvBeanWriterUtils;
+import msg.project.flightmanager.service.utils.CsvBeanManagementService;
 
 @Service
 public class CSVExporterService implements ICSVExporterService{
@@ -35,21 +35,9 @@ public class CSVExporterService implements ICSVExporterService{
 	@Autowired
 	private CompanyRepository companyRepository;
 	@Autowired
-	private CsvBeanWriterUtils csvBeanWriterUtils;
+	private CsvBeanManagementService beanManagementService;
 	
 	private static final Logger logger = LoggerFactory.getLogger(CSVExporterService.class);
-	
-	private final String[] csvHeaderUser = {"ID", "USERNAME", "FIRST NAME", "LAST NAME", "EMAIL", "PHONE NUMBER", "BIRTH DATE", "ACTIVE"};
-	private final String[] fieldMappingUser = {"id", "username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "isActive"};
-	
-	private final String[] csvHeaderPlane = {"ID", "CAPACITY", "FUEL TANK CAPACITY", "MANUFACTURING DATE", "FIRST FLIGHT", "LAST REVISION", "SIZE", "MODEL", "TAIL NUMBER"};
-	private final String[] fieldMappingPlane = {"idPlane", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevistion", "size", "model", "tailNumber"};
-	
-	private final String[] csvHeaderAirport = {"ID", "NAME", "CODE IDENTIFIER", "RUN WAYS", "GATE WAYS"};
-	private final String[] fieldMappingAirport = {"id_airport", "airportName", "codeIdentifier", "runWays", "gateWays"};
-	
-	private final String[] csvHeaderCompany = {"ID", "NAME", "PHONE NUMBER", "EMAIL", "FOUNDED IN", "ACTIVE"};
-	private final String[] fieldMappingCompany ={"idCompany", "name", "phoneNumber", "email", "foundedIn", "isActive"};
 	
 	public CsvBeanWriter csvWriter;
 	
@@ -57,7 +45,7 @@ public class CSVExporterService implements ICSVExporterService{
 	public void exportToCSV(Class<?> clazz, PrintWriter writer) {
 		
 		try {
-			this.csvWriter = this.csvBeanWriterUtils.getCsvBeanWriter(writer);
+			this.csvWriter = this.beanManagementService.getCsvBeanWriter(writer);
 			
 			writeCSVForObject(clazz);
 			
@@ -73,7 +61,7 @@ public class CSVExporterService implements ICSVExporterService{
 	private void writeCSVForObject(Class<?> clazz) throws IOException {
 		if(clazz == User.class) {
 			
-			this.csvWriter.writeHeader(this.csvHeaderUser);
+			this.csvWriter.writeHeader(this.beanManagementService.csvHeaderUser);
 			
 			List<User> users = StreamSupport.stream(this.userRepository.findAll().spliterator(), false).toList();
 			
@@ -85,7 +73,7 @@ public class CSVExporterService implements ICSVExporterService{
 			
 			for(User user : users) {
 				try {
-					this.csvWriter.write(user, this.fieldMappingUser);
+					this.csvWriter.write(user, this.beanManagementService.fieldMappingUser);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for users ", e);
 					throw new FlightManagerException(
@@ -96,7 +84,7 @@ public class CSVExporterService implements ICSVExporterService{
 		}
 		
 		if(clazz == Plane.class) {
-			this.csvWriter.writeHeader(this.csvHeaderPlane);
+			this.csvWriter.writeHeader(this.beanManagementService.csvHeaderPlane);
 			
 			List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false).toList();
 			
@@ -108,7 +96,7 @@ public class CSVExporterService implements ICSVExporterService{
 			
 			for(Plane plane : planes) {
 				try {
-					this.csvWriter.write(plane, this.fieldMappingPlane);
+					this.csvWriter.write(plane, this.beanManagementService.fieldMappingPlane);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for planes ", e);
 					throw new FlightManagerException(
@@ -119,7 +107,7 @@ public class CSVExporterService implements ICSVExporterService{
 		}
 		
 		if(clazz == Airport.class) {
-			this.csvWriter.writeHeader(this.csvHeaderAirport);
+			this.csvWriter.writeHeader(this.beanManagementService.csvHeaderAirport);
 			
 			List<Airport> airports = StreamSupport.stream(this.airportRepository.findAll().spliterator(), false).toList();
 			
@@ -131,7 +119,7 @@ public class CSVExporterService implements ICSVExporterService{
 
 			for(Airport airport : airports) {
 				try {
-					this.csvWriter.write(airport, this.fieldMappingAirport);
+					this.csvWriter.write(airport, this.beanManagementService.fieldMappingAirport);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for airports ", e);
 					throw new FlightManagerException(
@@ -142,7 +130,7 @@ public class CSVExporterService implements ICSVExporterService{
 		}
 		
 		if(clazz == Company.class) {
-			this.csvWriter.writeHeader(this.csvHeaderCompany);
+			this.csvWriter.writeHeader(this.beanManagementService.csvHeaderCompany);
 
 			List<Company> companies = StreamSupport.stream(this.companyRepository.findAll().spliterator(), false).toList();
 			
@@ -154,7 +142,7 @@ public class CSVExporterService implements ICSVExporterService{
 
 			for(Company company : companies) {
 				try {
-					this.csvWriter.write(company, this.fieldMappingCompany);
+					this.csvWriter.write(company, this.beanManagementService.fieldMappingCompany);
 				} catch (IOException e) {
 					logger.error("Error while writing CSV for companies ", e);
 					throw new FlightManagerException(

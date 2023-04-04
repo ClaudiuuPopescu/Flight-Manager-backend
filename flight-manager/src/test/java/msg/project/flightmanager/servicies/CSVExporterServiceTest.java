@@ -28,7 +28,7 @@ import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.repository.PlaneRepository;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.CSVExporterService;
-import msg.project.flightmanager.service.utils.CsvBeanWriterUtils;
+import msg.project.flightmanager.service.utils.CsvBeanManagementService;
 
 @ExtendWith(MockitoExtension.class)
 public class CSVExporterServiceTest {
@@ -43,16 +43,15 @@ public class CSVExporterServiceTest {
 	@Mock
 	private CompanyRepository companyRepository;
 	@Mock
-	private CsvBeanWriterUtils beanWriterUtils;
+	private CsvBeanManagementService beanManagementService;
 
-	
 	@Test
 	void exportToCSV_throwsFlightManagerException_whenNoUsersFoundToExport() throws IOException {
 		PrintWriter writer = Mockito.mock(PrintWriter.class);
 	      
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		Mockito.when(this.userRepository.findAll()).thenReturn(Collections.emptyList());
 			
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -68,7 +67,7 @@ public class CSVExporterServiceTest {
 	      
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		Mockito.when(this.planeRepository.findAll()).thenReturn(Collections.emptyList());
 	
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -84,7 +83,7 @@ public class CSVExporterServiceTest {
 	      
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		Mockito.when(this.airportRepository.findAll()).thenReturn(Collections.emptyList());
 	
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -100,7 +99,7 @@ public class CSVExporterServiceTest {
 		
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		Mockito.when(this.companyRepository.findAll()).thenReturn(Collections.emptyList());
 	
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -112,8 +111,6 @@ public class CSVExporterServiceTest {
 	
 	@Test
 	void exportToCSV_throwsFlightManagerException_whenCanNotWirteCsvForUser() throws IOException {
-		String[] fieldMappingUser = {"id", "username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "isActive"};
-
 		User user = Mockito.mock(User.class);
 		PrintWriter writer = Mockito.mock(PrintWriter.class);
 		
@@ -121,10 +118,10 @@ public class CSVExporterServiceTest {
 
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		Mockito.doThrow(IOException.class)
-		.when(csvWriter).write(user, fieldMappingUser);
+		.when(csvWriter).write(user, this.beanManagementService.fieldMappingUser);
 			
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.service.exportToCSV(User.class, writer));
@@ -135,7 +132,6 @@ public class CSVExporterServiceTest {
 	
 	@Test
 	void exportToCSV_throwsFlightManagerException_whenCanNotWirteCsvForPlane() throws IOException {
-		String[] fieldMappingPlane = {"idPlane", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevistion", "size", "model", "tailNumber"};
 
 		Plane plane = Mockito.mock(Plane.class);
 		PrintWriter writer = Mockito.mock(PrintWriter.class);
@@ -144,10 +140,10 @@ public class CSVExporterServiceTest {
 
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		Mockito.doThrow(IOException.class)
-		.when(csvWriter).write(plane, fieldMappingPlane);
+		.when(csvWriter).write(plane, this.beanManagementService.fieldMappingPlane);
 			
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.service.exportToCSV(Plane.class, writer));
@@ -158,7 +154,6 @@ public class CSVExporterServiceTest {
 	
 	@Test
 	void exportToCSV_throwsFlightManagerException_whenCanNotWirteCsvForAirport() throws IOException {
-		String[] fieldMappingAirport = {"id_airport", "airportName", "codeIdentifier", "runWays", "gateWays"};
 
 		Airport airport = Mockito.mock(Airport.class);
 		PrintWriter writer = Mockito.mock(PrintWriter.class);
@@ -167,10 +162,10 @@ public class CSVExporterServiceTest {
 
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		Mockito.doThrow(IOException.class)
-		.when(csvWriter).write(airport, fieldMappingAirport);
+		.when(csvWriter).write(airport, this.beanManagementService.fieldMappingAirport);
 			
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.service.exportToCSV(Airport.class, writer));
@@ -181,7 +176,6 @@ public class CSVExporterServiceTest {
 	
 	@Test
 	void exportToCSV_throwsFlightManagerException_whenCanNotWirteCsvForCompany() throws IOException {
-		String[] fieldMappingCompany ={"idCompany", "name", "phoneNumber", "email", "foundedIn", "isActive"};
 
 		Company company = Mockito.mock(Company.class);
 		PrintWriter writer = Mockito.mock(PrintWriter.class);
@@ -190,10 +184,10 @@ public class CSVExporterServiceTest {
 
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		Mockito.doThrow(IOException.class)
-		.when(csvWriter).write(company, fieldMappingCompany);
+		.when(csvWriter).write(company, this.beanManagementService.fieldMappingCompany);
 			
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.service.exportToCSV(Company.class, writer));
@@ -211,7 +205,7 @@ public class CSVExporterServiceTest {
 
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		Mockito.doThrow(IOException.class)
 		.when(csvWriter).close();
@@ -233,7 +227,7 @@ public class CSVExporterServiceTest {
 		
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		this.service.exportToCSV(User.class, writer);
 		verify(csvWriter).close();
@@ -254,7 +248,7 @@ public class CSVExporterServiceTest {
 			
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		this.service.exportToCSV(Plane.class, writer);
 		verify(csvWriter).close();
@@ -269,7 +263,7 @@ public class CSVExporterServiceTest {
 			
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		this.service.exportToCSV(Airport.class, writer);
 		verify(csvWriter).close();
@@ -284,7 +278,7 @@ public class CSVExporterServiceTest {
 			
 		CsvBeanWriter csvWriter = Mockito.mock(CsvBeanWriter.class);
 		
-		Mockito.when(this.beanWriterUtils.getCsvBeanWriter(writer)).thenReturn(csvWriter);
+		Mockito.when(this.beanManagementService.getCsvBeanWriter(writer)).thenReturn(csvWriter);
 		
 		this.service.exportToCSV(Company.class, writer);
 		verify(csvWriter).close();

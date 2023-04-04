@@ -25,13 +25,13 @@ import msg.project.flightmanager.service.interfaces.ICSVExporterService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 
 @RestController
-@RequestMapping("/api/export")
+@RequestMapping("/api/csv-exporter")
 public class CSVExporterController {
 	
-	public static final String EXPORT_USER = "-user";
-	public static final String EXPORT_PLANE = "-plane";
-	public static final String EXPORT_AIRPORT = "-airport";
-	public static final String EXPORT_COMPANY = "-company";
+	public static final String EXPORT_USER = "/user";
+	public static final String EXPORT_PLANE = "/plane";
+	public static final String EXPORT_AIRPORT = "/airport";
+	public static final String EXPORT_COMPANY = "/company";
 	
 	@Autowired
 	private ICSVExporterService exporterService;
@@ -39,7 +39,7 @@ public class CSVExporterController {
 	private IUserService userService;
 	
 	@GetMapping(EXPORT_USER)
-	public ResponseEntity<?> exportUser(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
+	public ResponseEntity<String> exportUser(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			
@@ -61,12 +61,12 @@ public class CSVExporterController {
 					.body("Users exported successfully!");
 
 		} catch (RoleException | UserException | IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 
 	@GetMapping(EXPORT_PLANE)
-	public ResponseEntity<?> exportPlane(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){	
+	public ResponseEntity<String> exportPlane(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){	
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			
@@ -88,12 +88,12 @@ public class CSVExporterController {
 					.body("Planes exported successfully!");
 
 		} catch (RoleException | UserException | IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
 	@GetMapping(EXPORT_AIRPORT)
-	public ResponseEntity<?> exportAirport(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
+	public ResponseEntity<String> exportAirport(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
 		
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
@@ -116,12 +116,12 @@ public class CSVExporterController {
 					.body("Airports exported successfully!");
 
 		} catch (RoleException | UserException | IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 	
 	@GetMapping(EXPORT_COMPANY)
-	public ResponseEntity<?> exportCompany(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
+	public ResponseEntity<String> exportCompany(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
 		
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
@@ -144,7 +144,7 @@ public class CSVExporterController {
 					.body("Companies exported successfully!");
 
 		} catch (RoleException | UserException | IOException e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
 }

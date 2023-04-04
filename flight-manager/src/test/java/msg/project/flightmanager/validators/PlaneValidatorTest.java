@@ -16,7 +16,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import msg.project.flightmanager.dto.PlaneDto;
-import msg.project.flightmanager.enums.PlaneSize;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.model.Plane;
@@ -36,11 +35,10 @@ public class PlaneValidatorTest {
 	
 	@BeforeEach
 	void init() {
-		this.planeDto = new PlaneDto("model", 47, 50, 4500, LocalDate.of(2015, 3, 18),
-				LocalDate.of(2017, 5, 20), LocalDate.of(2020, 7, 15),
-				PlaneSize.SMALL);
+		this.planeDto = new PlaneDto("model", 47, 50, 4500, "18/03/2015",
+				"20/05/2017", "15/07/2020", "small", null);
 		
-		this.createPlaneModel = new CreatePlaneModel("model", 47, 47, 4500, LocalDate.of(2015, 3, 18), PlaneSize.SMALL);
+		this.createPlaneModel = new CreatePlaneModel("model", 47, 47, 4500, "18/03/2015", "small");
 	}
 	
 	@Test
@@ -135,7 +133,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeSmall01() {
-		PlaneSize size = PlaneSize.SMALL;
+		String size = "small";
 		int fuelTankCapacity = 150;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -150,7 +148,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeSmall02() {
-		PlaneSize size = PlaneSize.SMALL;
+		String size = "small";
 		int fuelTankCapacity = 5555;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -165,7 +163,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeMid01() {
-		PlaneSize size = PlaneSize.MID;
+		String size = "mid";
 		int fuelTankCapacity = 150;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -180,7 +178,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeMid02() {
-		PlaneSize size = PlaneSize.MID;
+		String size = "mid";
 		int fuelTankCapacity = 35000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -195,7 +193,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeWide01() {
-		PlaneSize size = PlaneSize.WIDE;
+		String size = "wide";
 		int fuelTankCapacity = 150;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -210,7 +208,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeWide02() {
-		PlaneSize size = PlaneSize.WIDE;
+		String size = "wide";
 		int fuelTankCapacity = 200000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -225,7 +223,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeJumbo01() {
-		PlaneSize size = PlaneSize.JUMBO;
+		String size = "jumbo";
 		int fuelTankCapacity = 150;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -240,7 +238,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeJumbo02() {
-		PlaneSize size = PlaneSize.JUMBO;
+		String size = "jumbo";
 		int fuelTankCapacity = 350000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -254,19 +252,19 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenManufacturingDateNull() {
-		this.planeDto.setManufacturingDate(null);
+	void validatePlane_throwsFlightManagerException_whenManufacturingDateWrongFormat() {
+		this.planeDto.setManufacturingDate("2000/05/07");
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validatePlane(this.planeDto));
 
-		assertEquals("Manufacturing date can not be null", thrown.getMessage());
+		assertEquals("Manufacturing date must have the following format: dd/MM/yyyy", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
 	}
 	
 	@Test
 	void validatePlane_throwsFlightManagerException_whenManufacturingDateNotInThePast() {
-		LocalDate manufacturingDate = LocalDate.of(2024, 7, 3);
+		String manufacturingDate = "03/07/2024";
 		this.planeDto.setManufacturingDate(manufacturingDate);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -278,8 +276,8 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenManufacturingDateLaterThanFirstFlight() {
-		LocalDate firstFlight = LocalDate.of(2022, 1, 1);
-		LocalDate manufacturingDate = LocalDate.of(2023, 1, 3);
+		String firstFlight = "01/01/2020";
+		String manufacturingDate = "01/01/2023";
 		
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setManufacturingDate(manufacturingDate);
@@ -293,9 +291,9 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenManufacturingDateLaterThanLastRevision() {
-		LocalDate firstFlight = LocalDate.of(2023, 2, 1);
-		LocalDate lastRevision = LocalDate.of(2022, 8, 1);
-		LocalDate manufacturingDate = LocalDate.of(2023, 1, 3);
+		String firstFlight = "01/02/2023";
+		String lastRevision = "01/08/2022";
+		String manufacturingDate = "03/01/2023";
 		
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setLastRevision(lastRevision);
@@ -309,19 +307,19 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenFirstFightNull() {
-		this.planeDto.setFirstFlight(null);
+	void validatePlane_throwsFlightManagerException_whenFirstWrongFormat() {
+		this.planeDto.setFirstFlight("2017/05/02");
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validatePlane(this.planeDto));
 
-		assertEquals("First flight can not be null", thrown.getMessage());
+		assertEquals("First flight date must have the following format: dd/MM/yyyy", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
 	}
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFirstFightNotInThePast() {
-		LocalDate firstFlight = LocalDate.of(2025, 1, 2);
+		String firstFlight = "07/01/2025";
 		this.planeDto.setFirstFlight(firstFlight);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -347,8 +345,8 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenFirstFightEarlierThanManufacturingDate() {
-		LocalDate firstFlight = LocalDate.of(2023, 2, 2);
-		LocalDate lastRevision = LocalDate.of(2023, 1, 2);
+		String firstFlight = "02/02/2023";
+		String lastRevision = "02/01/2023";
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setLastRevision(lastRevision);
 		
@@ -360,19 +358,19 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenLastRevisionNull() {
-		this.planeDto.setLastRevision(null);
+	void validatePlane_throwsFlightManagerException_whenLastRevisionWrongFormat() {
+		this.planeDto.setLastRevision("13/05-2007");
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validatePlane(this.planeDto));
 
-		assertEquals("Last revision can not be null", thrown.getMessage());
+		assertEquals("Last revision date must have the following format: dd/MM/yyyy", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
 	}
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenLastRevisionNotInThePast() {
-		LocalDate lastRevision = LocalDate.of(2023, 7, 2);
+		String lastRevision = "02/07/2023";
 		this.planeDto.setLastRevision(lastRevision);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -384,7 +382,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_returnsVoid_whenAllConditionsGood01() throws ValidatorException {
-		PlaneSize size = PlaneSize.SMALL;
+		String size = "small";
 		int fuelTankCapacity = 4500;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -395,7 +393,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_returnsVoid_whenAllConditionsGood02() throws ValidatorException {
-		PlaneSize size = PlaneSize.MID;
+		String size = "mid";
 		int fuelTankCapacity = 27000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -406,7 +404,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_returnsVoid_whenAllConditionsGood03() throws ValidatorException {
-		PlaneSize size = PlaneSize.WIDE;
+		String size = "wide";
 		int fuelTankCapacity = 135000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -417,7 +415,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_returnsVoid_whenAllConditionsGood04() throws ValidatorException {
-		PlaneSize size = PlaneSize.JUMBO;
+		String size = "jumbo";
 		int fuelTankCapacity = 250000;
 		
 		this.planeDto.setFuelTankCapacity(fuelTankCapacity);
@@ -428,26 +426,31 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateNewRevision_throwsFlightManagerException_whenNewRevisionDateLaterThanToday() {
-		LocalDate lastRevision = LocalDate.of(2022, 9, 10);
-		LocalDate newRevision = LocalDate.of(2027, 1, 2);
+		LocalDate lastRevision = LocalDate.of(2021,10,9);
+		String newRevision = "02/01/2025";
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.planeValidator.valiateNewRevision(lastRevision, newRevision));
+				() -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
 
 		assertEquals("New revision must be today or earlier", thrown.getMessage());
-		assertThrows(FlightManagerException.class, () -> this.planeValidator.valiateNewRevision(lastRevision, newRevision));
+		assertThrows(FlightManagerException.class, () -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
 	}
 	
 	@Test
 	void validateNewRevision_throwsFlightManagerException_whenNewRevisionEarlierThanLastRevision() {
-		LocalDate lastRevision = LocalDate.of(2022, 9, 10);
-		LocalDate newRevision = LocalDate.of(2021, 1, 2);
+		LocalDate lastRevision = LocalDate.of(2022, 10, 9);
+		String newRevision = "02/01/2017";
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.planeValidator.valiateNewRevision(lastRevision, newRevision));
+				() -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
 
 		assertEquals("New revision must be later than last revision", thrown.getMessage());
-		assertThrows(FlightManagerException.class, () -> this.planeValidator.valiateNewRevision(lastRevision, newRevision));
+		assertThrows(FlightManagerException.class, () -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
+	}
+	
+	@Test
+	void validateNewRevision_returnsVoid_whenAllConditionsGood() {
+		this.planeValidator.validateNewRevision(LocalDate.of(2022,10,9), "15/03/2023");
 	}
 	
 	@Test
@@ -542,7 +545,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeSmall01() {
-		PlaneSize size = PlaneSize.SMALL;
+		String size = "small";
 		int fuelTankCapacity = 150;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -557,7 +560,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeSmall02() {
-		PlaneSize size = PlaneSize.SMALL;
+		String size = "small";
 		int fuelTankCapacity = 5555;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -572,7 +575,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeMid01() {
-		PlaneSize size = PlaneSize.MID;
+		String size = "mid";
 		int fuelTankCapacity = 150;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -587,7 +590,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeMid02() {
-		PlaneSize size = PlaneSize.MID;
+		String size = "mid";
 		int fuelTankCapacity = 35000;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -602,7 +605,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeWide01() {
-		PlaneSize size = PlaneSize.WIDE;
+		String size = "wide";
 		int fuelTankCapacity = 150;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -617,7 +620,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeWide02() {
-		PlaneSize size = PlaneSize.WIDE;
+		String size = "wide";
 		int fuelTankCapacity = 200000;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -632,7 +635,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeJumbo01() {
-		PlaneSize size = PlaneSize.JUMBO;
+		String size = "jumbo";
 		int fuelTankCapacity = 150;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -647,7 +650,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateCreatePlaneModel_throwsValidatorException_whenFuelTankCapacityOutOfRangeForSizeJumbo02() {
-		PlaneSize size = PlaneSize.JUMBO;
+		String size = "jumbo";
 		int fuelTankCapacity = 350000;
 		
 		this.createPlaneModel.setFuelTankCapacity(fuelTankCapacity);
@@ -661,19 +664,19 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingDateNull() {
-		this.createPlaneModel.setManufacturingDate(null);
+	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingDateWrongFormat() {
+		this.createPlaneModel.setManufacturingDate("2000/05/05");
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validateCreatePlaneModel(this.createPlaneModel));
 
-		assertEquals("Manufacturing date can not be null", thrown.getMessage());
+		assertEquals("Manufacturing date must have the following format: dd/MM/yyyy", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validateCreatePlaneModel(this.createPlaneModel));
 	}
 	
 	@Test
 	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingLaterThanToday() {
-		LocalDate manufacturingDate = LocalDate.of(2024, 1, 1);
+		String manufacturingDate = "01/01/2024";
 		this.createPlaneModel.setManufacturingDate(manufacturingDate);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -681,5 +684,10 @@ public class PlaneValidatorTest {
 
 		assertEquals("Plane's manufacturing date shoud be in the past!", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validateCreatePlaneModel(this.createPlaneModel));
+	}
+	
+	@Test
+	void validateCreatePlane_returnsVoid_whenAllConditionsGood() throws ValidatorException {
+		this.planeValidator.validateCreatePlaneModel(this.createPlaneModel);
 	}
 }

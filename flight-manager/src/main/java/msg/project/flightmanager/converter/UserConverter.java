@@ -1,5 +1,8 @@
 package msg.project.flightmanager.converter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +27,7 @@ public class UserConverter implements IConverter<User, UserDto> {
 				.username(user.getUsername())
 				.email(user.getEmail())
 				.phoneNumber(user.getPhoneNumber())
-				.birthDate(user.getBirthDate())
+				.birthDate(user.getBirthDate().toString())
 				.address(this.addressConverter.convertToDTO(user.getAddress()))
 				.role(this.roleConverter.convertToDTO(user.getRole()))
 				.company(this.companyConverter.convertToDTO(user.getCompany())).build();
@@ -44,7 +47,7 @@ public class UserConverter implements IConverter<User, UserDto> {
 				.lastName(createUserModel.getLastName())
 				.email(createUserModel.getEmail())
 				.phoneNumber(createUserModel.getPhoneNumber())
-				.birthDate(createUserModel.getBirthDate())
+				.birthDate(LocalDate.parse(createUserModel.getBirthDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
 				.build();
 		return user;
 	}

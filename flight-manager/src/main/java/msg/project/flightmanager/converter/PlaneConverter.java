@@ -1,5 +1,8 @@
 package msg.project.flightmanager.converter;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.stereotype.Component;
 
 import msg.project.flightmanager.dto.PlaneDto;
@@ -12,10 +15,15 @@ public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 	@Override
 	public PlaneDto convertToDTO(Plane plane) {
 
-		PlaneDto planeDto = PlaneDto.builder().model(plane.getModel()).tailNumber(plane.getTailNumber())
-				.capacity(plane.getCapacity()).fuelTankCapacity(plane.getFuelTankCapacity())
-				.manufacturingDate(plane.getManufacturingDate()).firstFlight(plane.getFirstFlight())
-				.lastRevision(plane.getLastRevision()).size(plane.getSize()).build();
+		PlaneDto planeDto = PlaneDto.builder()
+				.model(plane.getModel())
+				.tailNumber(plane.getTailNumber())
+				.capacity(plane.getCapacity())
+				.fuelTankCapacity(plane.getFuelTankCapacity())
+				.manufacturingDate(plane.getManufacturingDate().toString())
+				.firstFlight(plane.getFirstFlight().toString())
+				.lastRevision(plane.getLastRevision().toString())
+				.size(plane.getSize().toString().toLowerCase()).build();
 
 		return planeDto;
 	}
@@ -28,9 +36,13 @@ public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 
 	public Plane createModelToEntity(CreatePlaneModel createPlaneModel) {
 
-		Plane plane = Plane.builder().model(createPlaneModel.getModel()).tailNumber(createPlaneModel.getTailNumber())
-				.capacity(createPlaneModel.getCapacity()).fuelTankCapacity(createPlaneModel.getFuelTankCapacity())
-				.manufacturingDate(createPlaneModel.getManufacturingDate()).size(createPlaneModel.getSize()).build();
+		Plane plane = Plane.builder()
+				.model(createPlaneModel.getModel())
+				.tailNumber(createPlaneModel.getTailNumber())
+				.capacity(createPlaneModel.getCapacity())
+				.fuelTankCapacity(createPlaneModel.getFuelTankCapacity())
+				.manufacturingDate(LocalDate.parse(createPlaneModel.getManufacturingDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.build();
 
 		return plane;
 	}
