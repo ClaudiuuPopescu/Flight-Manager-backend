@@ -23,7 +23,7 @@ public class WebSecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .addFilterAfter(new JWTAuthorizationFilter(userRepository, refreshTokenRepositoy), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JWTAuthorizationFilter(this.userRepository, this.refreshTokenRepositoy), UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(authorize -> authorize                                  
             			.requestMatchers("/auth/login").permitAll());
         

@@ -1,5 +1,7 @@
 package msg.project.flightmanager.modelHelper;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +21,7 @@ public class CreateUserModel {
 	private String lastName;
 	private String email;
 	private String phoneNumber;
-	private String birthDate;
+	private LocalDate birthDate;
 	private String roleTitle;
 
 	@Builder.Default

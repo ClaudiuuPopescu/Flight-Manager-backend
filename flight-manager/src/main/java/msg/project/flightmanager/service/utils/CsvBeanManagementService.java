@@ -57,7 +57,7 @@ public class CsvBeanManagementService {
 	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // LAST NAME
 	            new NotNull(new StrRegEx("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@airline.com$")), // EMAIL
 	            new NotNull(new StrRegEx("^(\\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\\s|\\.|\\-)?([0-9]{3}(\\s|\\.|\\-|)){2}$")), // PHONE NUMBER
-	            new NotNull(new StrRegEx("^(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/\\d{4}$")), // BIRTH DATE -> dd/MM/yyyy
+	            new LocalDateProcessor(), // BIRTH DATE
 	            new NotNull(new StrRegEx("^[A-Za-z]+$")), // ROLE TITLE
 	            // address dto fields
 	            new NotNull(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
@@ -75,7 +75,7 @@ public class CsvBeanManagementService {
 				new NotNull(new ParseInt()), // TAIL NUMBER
 	            new NotNull(new ParseInt()), // CAPACITY
 	            new NotNull(new ParseInt()), // FUEL TANK CAPACITY
-	            new NotNull(new StrRegEx("^(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/\\d{4}$")), // MANUFACTURING DATE -> dd/MM/yyyy
+	            new LocalDateProcessor(), // MANUFACTURING DATE
 	            new NotNull(new StrRegEx("^[a-z]+$")), // SIZE
 		};
 		return processors;
@@ -101,7 +101,7 @@ public class CsvBeanManagementService {
 				new NotNull(new StrRegEx("^[A-Za-z]+$")), // NAME
 	            new NotNull(), // PHONE NUMBER
 	            new NotNull(), // EMAIL
-	            new LocalDateProcessor(), // FOUNDED IN // LocalDate -> yyyy/MM/dd
+	            new LocalDateProcessor(), // FOUNDED IN // LocalDate
 	            // address dto fields
 	            new NotNull(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
 	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY

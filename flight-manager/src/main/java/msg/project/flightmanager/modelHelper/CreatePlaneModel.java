@@ -1,5 +1,7 @@
 package msg.project.flightmanager.modelHelper;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +19,6 @@ public class CreatePlaneModel {
 	private int tailNumber;
 	private int capacity;
 	private int fuelTankCapacity;
-	private String manufacturingDate;
+	private LocalDate manufacturingDate;
 	private String size;
 }

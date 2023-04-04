@@ -22,7 +22,7 @@ public interface CompanyRepository extends CrudRepository<Company, Long> {
 	@Query("SELECT c FROM Company c WHERE c.name = :name")
 	Optional<Company> findCompanyByName(@Param("name") String name);
 	
-	@Query("SELECT c FROM Company c WHERE c.phone_number = :phoneNumber")
+	@Query("SELECT c FROM Company c WHERE c.phone_number=:phoneNumber")
 	Optional<Company> findCompanyByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 	
 	@Query("SELECT c FROM Company c WHERE c.email = :email")

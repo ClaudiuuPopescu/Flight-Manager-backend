@@ -1,8 +1,5 @@
 package msg.project.flightmanager.converter;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 import org.springframework.stereotype.Component;
 
 import msg.project.flightmanager.dto.PlaneDto;
@@ -20,9 +17,9 @@ public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 				.tailNumber(plane.getTailNumber())
 				.capacity(plane.getCapacity())
 				.fuelTankCapacity(plane.getFuelTankCapacity())
-				.manufacturingDate(plane.getManufacturingDate().toString())
-				.firstFlight(plane.getFirstFlight().toString())
-				.lastRevision(plane.getLastRevision().toString())
+				.manufacturingDate(plane.getManufacturingDate())
+				.firstFlight(plane.getFirstFlight())
+				.lastRevision(plane.getLastRevision())
 				.size(plane.getSize().toString().toLowerCase()).build();
 
 		return planeDto;
@@ -41,7 +38,7 @@ public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 				.tailNumber(createPlaneModel.getTailNumber())
 				.capacity(createPlaneModel.getCapacity())
 				.fuelTankCapacity(createPlaneModel.getFuelTankCapacity())
-				.manufacturingDate(LocalDate.parse(createPlaneModel.getManufacturingDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+				.manufacturingDate(createPlaneModel.getManufacturingDate())
 				.build();
 
 		return plane;
