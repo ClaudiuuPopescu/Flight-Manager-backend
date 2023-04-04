@@ -33,7 +33,6 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private RefreshTokenRepositoy refreshTokenRepositoy;
     
-    
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

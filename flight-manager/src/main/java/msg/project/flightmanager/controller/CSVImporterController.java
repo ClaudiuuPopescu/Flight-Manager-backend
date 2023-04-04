@@ -15,6 +15,7 @@ import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Plane;
 import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.service.CSVImporterService;
+import msg.project.flightmanager.service.interfaces.IUserService;
 
 @RestController
 @RequestMapping("/api/csv-importer")
@@ -27,8 +28,8 @@ public class CSVImporterController {
 	
 	@Autowired
 	private CSVImporterService csvImporterService;
-//	@Autowired
-//	private IUserService userService;
+	@Autowired
+	private IUserService userService;
 	
 	@PostMapping(IMPORT_USER)
 	public ResponseEntity<String> importUser(@RequestParam("file") MultipartFile file) throws CompanyException {

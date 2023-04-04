@@ -23,13 +23,14 @@ import msg.project.flightmanager.modelHelper.CreateAirportModel;
 import msg.project.flightmanager.modelHelper.CreatePlaneModel;
 import msg.project.flightmanager.modelHelper.CreateUserModel;
 import msg.project.flightmanager.service.interfaces.IAirportService;
+import msg.project.flightmanager.service.interfaces.ICSVImporterService;
 import msg.project.flightmanager.service.interfaces.ICompanyService;
 import msg.project.flightmanager.service.interfaces.IPlaneService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 import msg.project.flightmanager.service.utils.CsvBeanManagementService;
 
 @Service
-public class CSVImporterService {
+public class CSVImporterService implements ICSVImporterService{
 	@Autowired
 	CsvBeanManagementService beanManagementService;
 	@Autowired
@@ -45,11 +46,12 @@ public class CSVImporterService {
 
 	private static String TYPE = "text/csv";
 	  
+	@Override
 	public boolean hasCSVFormat(MultipartFile file) {
-
 		return TYPE.equals(file.getContentType());
 	}
 	
+	@Override
 	public void csvToEntity(Class<?> clazz, MultipartFile file) throws CompanyException {
 		CsvBeanReader reader = this.beanManagementService.getCsvBeanReader(file);
 			
@@ -79,7 +81,7 @@ public class CSVImporterService {
 				logger.error("Error while creating import for: " + clazz.getSimpleName(), e.getMessage());
 				throw new FlightManagerException(
 						HttpStatus.EXPECTATION_FAILED,
-						MessageFormat.format("Error while creating {0} for import",clazz.getSimpleName().toLowerCase()));
+						MessageFormat.format("Error while creating {0} from import",clazz.getSimpleName().toLowerCase()));
 			}finally {
 				try {
 					reader.close();
@@ -88,7 +90,7 @@ public class CSVImporterService {
 
 					throw new FlightManagerException(
 							HttpStatus.EXPECTATION_FAILED,
-							MessageFormat.format("Error closing the reader: {0}", e.getMessage()));
+							"Error closing the reader");
 				}
 			}
 	}
