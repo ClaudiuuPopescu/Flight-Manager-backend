@@ -35,7 +35,7 @@ public class CompanyService implements ICompanyService {
 	@Autowired
 	private AddressConverter addressConverter;
 
-	@Override
+	@Override //TODO save the address before saving company
 	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {

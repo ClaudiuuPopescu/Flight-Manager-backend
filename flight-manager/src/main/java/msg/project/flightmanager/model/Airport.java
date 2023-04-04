@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.validator.constraints.Length;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -12,6 +11,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -19,6 +20,8 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -36,6 +39,7 @@ import lombok.NoArgsConstructor;
 public class Airport {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
 	@Column
 	private Long id_airport;
@@ -46,11 +50,13 @@ public class Airport {
 	@Column(unique = true)
 	private String codeIdentifier; // name = John F. Kennedy International Airport -> code = JFKIA
 
-	@Length(min = 1, max = 8)
+	@Min(1)
+	@Max(8)
 	@Column
 	private int runWays;
 
-	@Length(min = 1, max = 200)
+	@Min(1)
+	@Max(200)
 	@Column
 	private int gateWays;
 

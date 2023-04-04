@@ -39,7 +39,7 @@ public class AirportValidator {
 
 	public void validateCreateAiportModel(CreateAirportModel createAirportModel) throws ValidatorException {
 		validateAirportName(createAirportModel.getAirportName());
-		validateRunWays(createAirportModel.getRunWarys());
+		validateRunWays(createAirportModel.getRunWays());
 		validateGateWays(createAirportModel.getGateWays());
 		validateCompanyNamesToCollab(createAirportModel.getCompanyNames_toCollab());
 		this.addressValidator.validateCreateModel(createAirportModel.getAddress());

@@ -3,7 +3,6 @@ package msg.project.flightmanager.validators;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,7 @@ public class UserValidatorTest {
 	@BeforeEach
 	void init() {
 		this.createUserModel = new CreateUserModel("passssssword", "fname", "lname", "email@airline.com",
-				"0712345678", LocalDate.now(), "role", Mockito.mock(AddressDto.class));
+				"0712345678", "03/04/2023", "role", Mockito.mock(AddressDto.class));
 		
 		this.editUserModel = new EditUserModel("fname", "lname", "email@airline.com", "0753215607");
 	}
@@ -194,8 +193,20 @@ public class UserValidatorTest {
 	}
 	
 	@Test
+	void validateCreateUserModel_throwsFlightManagerException_whenDateWrongFormat() {
+		String birthday = "2015/01/01";
+		this.createUserModel.setBirthDate(birthday);
+		
+		FlightManagerException thrown = assertThrows(FlightManagerException.class,
+				() -> this.validator.validateCreateUserModel(this.createUserModel));
+
+		assertEquals("The date must have the following format: dd/MM/yyyy", thrown.getMessage());
+		assertThrows(FlightManagerException.class, () -> this.validator.validateCreateUserModel(this.createUserModel));
+	}
+	
+	@Test
 	void validateCreateUserModel_throwsFlightManagerException_whenBirthUnder18() {
-		LocalDate birthday = LocalDate.of(2007, 5, 1);
+		String birthday = "15/01/2015";
 		this.createUserModel.setBirthDate(birthday);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
@@ -207,7 +218,7 @@ public class UserValidatorTest {
 	
 	@Test
 	void validateCreateUserModel_allConditionsGood() {
-		LocalDate birthday = LocalDate.of(2000, 5, 13);
+		String birthday = "15/01/2000";
 		this.createUserModel.setBirthDate(birthday);
 		
 		this.validator.validateCreateUserModel(this.createUserModel);

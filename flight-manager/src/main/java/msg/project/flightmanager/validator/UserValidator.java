@@ -1,6 +1,7 @@
 package msg.project.flightmanager.validator;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -113,11 +114,20 @@ public class UserValidator {
 		}
 	}
 
-	private void validateBithDate(LocalDate birthday) {
+	private void validateBithDate(String birthday) {
+		String regexDate = "^(0[1-9]|[12]\\d|3[01])/(0[1-9]|1[0-2])/\\d{4}$"; // dd/MM/yyyy
+		
+		Pattern pattern = Pattern.compile(regexDate);
+		Matcher matcher = pattern.matcher(birthday);
 
+		if (!matcher.matches()) {
+			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "The date must have the following format: dd/MM/yyyy");
+		}
+		
+		LocalDate birthdate = LocalDate.parse(birthday, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 		LocalDate localNow = LocalDate.now();
 
-		if ((localNow.getYear() - birthday.getYear()) < 18) {
+		if ((localNow.getYear() - birthdate.getYear()) < 18) {
 			throw new FlightManagerException(HttpStatus.EXPECTATION_FAILED, "User must be over 18yo");
 		}
 

@@ -16,8 +16,10 @@ public class AirportConverter implements IConverter<Airport, AirportDto> {
 	@Override
 	public AirportDto convertToDTO(Airport airport) {
 
-		return AirportDto.builder().airportName(airport.getAirportName())
-				.codeIdentifier(airport.getCodeIdentifier()).runWarys(airport.getRunWays())
+		return AirportDto.builder()
+				.airportName(airport.getAirportName())
+				.codeIdentifier(airport.getCodeIdentifier())
+				.runWarys(airport.getRunWays())
 				.gateWays(airport.getGateWays())
 				.addressDto(this.addressConverter.convertToDTO(airport.getAddress())).build();
 
@@ -32,7 +34,9 @@ public class AirportConverter implements IConverter<Airport, AirportDto> {
 	}
 
 	public Airport convertCreateModelToEntity(CreateAirportModel airportModel) {
-		return Airport.builder().airportName(airportModel.getAirportName()).runWays(airportModel.getRunWarys())
+		return Airport.builder()
+				.airportName(airportModel.getAirportName())
+				.runWays(airportModel.getRunWays())
 				.gateWays(airportModel.getGateWays())
 				.address(this.addressConverter.converCreateModeltToEntity(airportModel.getAddress())).build();
 	}
