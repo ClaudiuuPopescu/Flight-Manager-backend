@@ -29,11 +29,10 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
     private static final String AUTHORITIES = "authorities";
 
     @Autowired
-    private final UserRepository userRepository;
-
+    private UserRepository userRepository;
     @Autowired
-    private final RefreshTokenRepositoy refreshTokenRepositoy;
-
+    private RefreshTokenRepositoy refreshTokenRepositoy;
+    
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,

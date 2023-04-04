@@ -35,10 +35,10 @@ public class PlaneValidatorTest {
 	
 	@BeforeEach
 	void init() {
-		this.planeDto = new PlaneDto("model", 47, 50, 4500, "18/03/2015",
-				"20/05/2017", "15/07/2020", "small", null);
+		this.planeDto = new PlaneDto("model", 47, 50, 4500, LocalDate.of(2015, 3, 18),
+				LocalDate.of(2017, 5, 20), LocalDate.of(2020, 7, 2), "small", null);
 		
-		this.createPlaneModel = new CreatePlaneModel("model", 47, 47, 4500, "18/03/2015", "small");
+		this.createPlaneModel = new CreatePlaneModel("model", 47, 47, 4500, LocalDate.of(2015, 3, 18), "small");
 	}
 	
 	@Test
@@ -252,19 +252,41 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenManufacturingDateWrongFormat() {
-		this.planeDto.setManufacturingDate("2000/05/07");
+	void validatePlane_throwsFlightManagerException_whenManufacturingDateNull() {
+		this.planeDto.setManufacturingDate(null);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validatePlane(this.planeDto));
 
-		assertEquals("Manufacturing date must have the following format: dd/MM/yyyy", thrown.getMessage());
+		assertEquals("The manufacturing date can not be null", thrown.getMessage());
+		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
+	}
+	
+	@Test
+	void validatePlane_throwsFlightManagerException_whenFirstFlightDateDateNull() {
+		this.planeDto.setFirstFlight(null);
+		
+		FlightManagerException thrown = assertThrows(FlightManagerException.class,
+				() -> this.planeValidator.validatePlane(this.planeDto));
+
+		assertEquals("The first flight date can not be null", thrown.getMessage());
+		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
+	}
+	
+	@Test
+	void validatePlane_throwsFlightManagerException_whenLastRevisionDateDateNull() {
+		this.planeDto.setLastRevision(null);
+		
+		FlightManagerException thrown = assertThrows(FlightManagerException.class,
+				() -> this.planeValidator.validatePlane(this.planeDto));
+
+		assertEquals("The last revision date can not be null", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
 	}
 	
 	@Test
 	void validatePlane_throwsFlightManagerException_whenManufacturingDateNotInThePast() {
-		String manufacturingDate = "03/07/2024";
+		LocalDate manufacturingDate = LocalDate.of(2025, 1, 1);
 		this.planeDto.setManufacturingDate(manufacturingDate);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -276,8 +298,8 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenManufacturingDateLaterThanFirstFlight() {
-		String firstFlight = "01/01/2020";
-		String manufacturingDate = "01/01/2023";
+		LocalDate firstFlight = LocalDate.of(2020, 1, 1);
+		LocalDate manufacturingDate = LocalDate.of(2023, 1, 1);
 		
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setManufacturingDate(manufacturingDate);
@@ -291,9 +313,9 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validatePlane_throwsValidatorException_whenManufacturingDateLaterThanLastRevision() {
-		String firstFlight = "01/02/2023";
-		String lastRevision = "01/08/2022";
-		String manufacturingDate = "03/01/2023";
+		LocalDate firstFlight = LocalDate.of(2023, 1, 1);
+		LocalDate lastRevision = LocalDate.of(2022, 1, 1);
+		LocalDate manufacturingDate = LocalDate.of(2023, 1, 1);
 		
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setLastRevision(lastRevision);
@@ -307,19 +329,8 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenFirstWrongFormat() {
-		this.planeDto.setFirstFlight("2017/05/02");
-		
-		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.planeValidator.validatePlane(this.planeDto));
-
-		assertEquals("First flight date must have the following format: dd/MM/yyyy", thrown.getMessage());
-		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
-	}
-	
-	@Test
 	void validatePlane_throwsValidatorException_whenFirstFightNotInThePast() {
-		String firstFlight = "07/01/2025";
+		LocalDate firstFlight = LocalDate.of(2025, 1, 1);
 		this.planeDto.setFirstFlight(firstFlight);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -344,11 +355,14 @@ public class PlaneValidatorTest {
 //	}
 	
 	@Test
-	void validatePlane_throwsValidatorException_whenFirstFightEarlierThanManufacturingDate() {
-		String firstFlight = "02/02/2023";
-		String lastRevision = "02/01/2023";
+	void validatePlane_throwsValidatorException_whenFirstFightEarlierThanLastRevision() {
+		LocalDate manufacturingDate = LocalDate.of(2020, 1, 2);
+		LocalDate firstFlight = LocalDate.of(2022, 1, 1);
+		LocalDate lastRevision = LocalDate.of(2021, 1, 3);
+		
 		this.planeDto.setFirstFlight(firstFlight);
 		this.planeDto.setLastRevision(lastRevision);
+		this.planeDto.setManufacturingDate(manufacturingDate);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
 				() -> this.planeValidator.validatePlane(this.planeDto));
@@ -358,19 +372,9 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validatePlane_throwsFlightManagerException_whenLastRevisionWrongFormat() {
-		this.planeDto.setLastRevision("13/05-2007");
-		
-		FlightManagerException thrown = assertThrows(FlightManagerException.class,
-				() -> this.planeValidator.validatePlane(this.planeDto));
-
-		assertEquals("Last revision date must have the following format: dd/MM/yyyy", thrown.getMessage());
-		assertThrows(FlightManagerException.class, () -> this.planeValidator.validatePlane(this.planeDto));
-	}
-	
-	@Test
 	void validatePlane_throwsValidatorException_whenLastRevisionNotInThePast() {
-		String lastRevision = "02/07/2023";
+		LocalDate lastRevision = LocalDate.of(2025, 1, 1);
+
 		this.planeDto.setLastRevision(lastRevision);
 		
 		ValidatorException thrown = assertThrows(ValidatorException.class,
@@ -427,7 +431,7 @@ public class PlaneValidatorTest {
 	@Test
 	void validateNewRevision_throwsFlightManagerException_whenNewRevisionDateLaterThanToday() {
 		LocalDate lastRevision = LocalDate.of(2021,10,9);
-		String newRevision = "02/01/2025";
+		LocalDate newRevision = LocalDate.of(2025,10,9);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
@@ -439,7 +443,7 @@ public class PlaneValidatorTest {
 	@Test
 	void validateNewRevision_throwsFlightManagerException_whenNewRevisionEarlierThanLastRevision() {
 		LocalDate lastRevision = LocalDate.of(2022, 10, 9);
-		String newRevision = "02/01/2017";
+		LocalDate newRevision = LocalDate.of(2017, 10, 9);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validateNewRevision(lastRevision, newRevision));
@@ -450,7 +454,7 @@ public class PlaneValidatorTest {
 	
 	@Test
 	void validateNewRevision_returnsVoid_whenAllConditionsGood() {
-		this.planeValidator.validateNewRevision(LocalDate.of(2022,10,9), "15/03/2023");
+		this.planeValidator.validateNewRevision(LocalDate.of(2022,10,9), LocalDate.of(2023,2,9));
 	}
 	
 	@Test
@@ -664,19 +668,20 @@ public class PlaneValidatorTest {
 	}
 	
 	@Test
-	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingDateWrongFormat() {
-		this.createPlaneModel.setManufacturingDate("2000/05/05");
+	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingNull() {
+		this.createPlaneModel.setManufacturingDate(null);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,
 				() -> this.planeValidator.validateCreatePlaneModel(this.createPlaneModel));
 
-		assertEquals("Manufacturing date must have the following format: dd/MM/yyyy", thrown.getMessage());
+		assertEquals("The manufacturing date can not be null", thrown.getMessage());
 		assertThrows(FlightManagerException.class, () -> this.planeValidator.validateCreatePlaneModel(this.createPlaneModel));
+
 	}
 	
 	@Test
 	void validateCreatePlaneModel_throwsFlightManagerException_whenManufacturingLaterThanToday() {
-		String manufacturingDate = "01/01/2024";
+		LocalDate manufacturingDate = LocalDate.of(2024, 1, 1);
 		this.createPlaneModel.setManufacturingDate(manufacturingDate);
 		
 		FlightManagerException thrown = assertThrows(FlightManagerException.class,

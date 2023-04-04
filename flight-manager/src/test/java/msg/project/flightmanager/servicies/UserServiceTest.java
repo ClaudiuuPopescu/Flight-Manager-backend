@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -78,7 +79,7 @@ public class UserServiceTest {
 				.lastName("lastName")
 				.email("email")
 				.phoneNumber("07")
-				.birthDate("13/05/2000")
+				.birthDate(LocalDate.of(2000, 5, 13))
 				.roleTitle("crew")
 				.address(Mockito.mock(AddressDto.class))
 				.build();
@@ -325,7 +326,9 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_throwsFlightManagerException_whenUserNotOver18() {
-		this.createUserModel.setBirthDate("03/04/2023");
+		LocalDate birthdate = LocalDate.of(2023, 4, 3);
+		
+		this.createUserModel.setBirthDate(birthdate);
 		
 		Mockito.doThrow(new FlightManagerException(
 				HttpStatus.EXPECTATION_FAILED,
@@ -341,7 +344,8 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_returnsTrue_whenAllConditionsGood01WithExistingAddress() throws ParseException, ValidatorException {
-	    String birthdate = "13/05/2000";
+		LocalDate birthdate = LocalDate.of(2000, 5, 13);
+
 		
 		CreateUserModel createUserModel = CreateUserModel.builder()
 				.password("valid-password")
@@ -367,7 +371,7 @@ public class UserServiceTest {
 	
 	@Test
 	void createUser_returnsTrue_whenAllConditionsGood02newAddress() throws ParseException, ValidatorException {
-	    String birthdate = "13/05/2000";
+		LocalDate birthdate = LocalDate.of(2000, 5, 13);
 		
 		CreateUserModel createUserModel = CreateUserModel.builder()
 				.password("valid-password")

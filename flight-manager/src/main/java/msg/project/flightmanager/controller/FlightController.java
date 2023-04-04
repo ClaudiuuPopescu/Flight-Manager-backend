@@ -24,8 +24,6 @@ import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.service.interfaces.IFlightService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 
-
-
 @RestController
 public class FlightController {
 

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
@@ -70,7 +71,7 @@ public class PlaneServiceTest {
 	
 	@Test
 	void createPlane_throwsFlightManagerException_whenPlaneModelNull() throws ValidatorException {
-		CreatePlaneModel model = new CreatePlaneModel(null , 1, 2, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel(null , 1, 2, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new FlightManagerException(
 				HttpStatus.EXPECTATION_FAILED,
@@ -86,7 +87,7 @@ public class PlaneServiceTest {
 	
 	@Test
 	void createPlane_throwsValidatorException_whenPlaneModelEmpty() throws ValidatorException {
-		CreatePlaneModel model = new CreatePlaneModel("" , 1, 2, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel("" , 1, 2, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new ValidatorException(
 				"The model field cannot be empty",
@@ -103,7 +104,7 @@ public class PlaneServiceTest {
 	@Test
 	void createPlane_throwsValidatorException_whenPlaneModelTooLong() throws ValidatorException {
 		String planeModel = "thisIsAVeryLongString";
-		CreatePlaneModel model = new CreatePlaneModel(planeModel , 1, 2, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel(planeModel , 1, 2, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new ValidatorException(
 				"The model is too long",
@@ -121,7 +122,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsFlightManagerException_whenTailNumberNull() throws ValidatorException {
 		int tailNumber = -5;
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new FlightManagerException(
 						HttpStatus.IM_USED,
@@ -139,7 +140,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsFlightManagerException_whenTailNumberAlreadyExists() throws ValidatorException {
 		int tailNumber = 1;
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , tailNumber, 2, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new FlightManagerException(
 					HttpStatus.IM_USED,
@@ -157,7 +158,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenCapacityOutOfRange() throws ValidatorException {
 		int capacity = 853;
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, capacity, 3, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, capacity, 3, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new ValidatorException(
 				"The capacity should be between 2 and 852",
@@ -175,7 +176,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeSMALL() throws ValidatorException {
 		int fuelCapacity = 6000; 
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, "15/10/2020", "small");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.of(2020, 10, 15), "small");
 		
 		Mockito.doThrow(new ValidatorException(
 					"The fuel capacity of a small plane should be between 4000 and 5000!",
@@ -193,7 +194,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeMID() throws ValidatorException {
 		int fuelCapacity = 45000; 
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, "15/10/2020", "mid");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.of(2020, 10, 15), "mid");
 		
 		Mockito.doThrow(new ValidatorException(
 					"The fuel capacity of a mid plane should be between 26000 and 30000!",
@@ -211,7 +212,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeWIDE() throws ValidatorException {
 		int fuelCapacity = 45000; 
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, "15/10/2020", "wide");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.of(2020, 10, 15), "wide");
 		
 		Mockito.doThrow(new ValidatorException(
 					"The fuel capacity of a wide plane should be between 130000 and 190000!",
@@ -229,7 +230,7 @@ public class PlaneServiceTest {
 	void createPlane_throwsValidatorException_whenFuelTankCapaicityOutOfRangeForPlaneSizeJUMBO() throws ValidatorException {
 		int fuelCapacity = 500000; 
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, "15/10/2020", "jumbo");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, fuelCapacity, LocalDate.of(2020, 10, 15), "jumbo");
 		
 		Mockito.doThrow(new ValidatorException(
 					"The fuel capacity of a jumbo plane should be between 200000 and 323000!",
@@ -260,7 +261,7 @@ public class PlaneServiceTest {
 	
 	@Test
 	void createPlane_throwsFlightManagerException_whenManufacturingDateIsNotInThePast() throws ValidatorException {
-		String manufacturingDate = "10/07/2024";
+		LocalDate manufacturingDate = LocalDate.of(2024, 10, 15);
 		
 		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, 2000, manufacturingDate, "small");
 
@@ -278,7 +279,7 @@ public class PlaneServiceTest {
 	@Test
 	void createPlane_returnsTrue_whenAllConditionsGood() throws ValidatorException {
 		
-		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, 2000, "10/07/2024", "small");
+		CreatePlaneModel model = new CreatePlaneModel("pm" , 1, 5, 2000, LocalDate.of(2022, 10, 15), "small");
 		
 		Plane plane = new Plane();
 		
@@ -289,7 +290,7 @@ public class PlaneServiceTest {
 	
 	@Test
 	void editLastRevisionPlane_throwsFlightManagerException_whenPlaneNotFound() {
-		EditLastRevisionPlaneModel editModel = new EditLastRevisionPlaneModel(99, "03/04/2023");
+		EditLastRevisionPlaneModel editModel = new EditLastRevisionPlaneModel(99, LocalDate.of(2024, 10, 15));
 		
 		Mockito.when(this.repository.findByTailNumber(editModel.getTailNumber())).thenReturn(Optional.empty());
 		
@@ -304,7 +305,7 @@ public class PlaneServiceTest {
 	void editLastRevisionPlane_returnsTrue_whenAllConditionsGood() {
 		Optional<Plane> optionalPlane = Optional.of(new Plane());
 		
-		EditLastRevisionPlaneModel editModel = new EditLastRevisionPlaneModel(99, "03/04/2023");
+		EditLastRevisionPlaneModel editModel = new EditLastRevisionPlaneModel(99, LocalDate.of(2023, 10, 15));
 		
 		Mockito.when(this.repository.findByTailNumber(editModel.getTailNumber())).thenReturn(optionalPlane);
 		

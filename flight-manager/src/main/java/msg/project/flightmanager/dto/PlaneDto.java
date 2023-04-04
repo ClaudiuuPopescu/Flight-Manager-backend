@@ -1,5 +1,7 @@
 package msg.project.flightmanager.dto;
 
+import java.time.LocalDate;
+
 import io.micrometer.common.lang.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,11 +18,11 @@ public class PlaneDto {
 	private int tailNumber;
 	private int capacity;
 	private int fuelTankCapacity;
-	private String manufacturingDate;
-	private String firstFlight;
-	private String lastRevision;
+	private LocalDate manufacturingDate;
+	private LocalDate firstFlight;
+	private LocalDate lastRevision;
 	private String size;
 	
 	@Nullable
-	private String newRevision;
+	private LocalDate newRevision;
 }

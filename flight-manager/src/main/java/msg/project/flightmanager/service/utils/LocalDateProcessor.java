@@ -11,7 +11,7 @@ import org.supercsv.util.CsvContext;
 
 public class LocalDateProcessor extends CellProcessorAdaptor {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
     public LocalDateProcessor() {
         super();
