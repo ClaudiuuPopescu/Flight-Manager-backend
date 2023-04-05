@@ -52,18 +52,18 @@ public class CsvBeanManagementService {
 	
 	public CellProcessor[] getUserProcessor() {
 		CellProcessor[] processors = new CellProcessor[] {
-				new NotNull(), // PASSWORD
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // FIRST NAME
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // LAST NAME
+				new NotNull(new StrRegEx("^[^,;.:\\\"'\\\\s\\\\p{So}:]*$")), // PASSWORD
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // FIRST NAME
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // LAST NAME
 	            new NotNull(new StrRegEx("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@airline.com$")), // EMAIL
-	            new NotNull(new StrRegEx("^(\\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\\s|\\.|\\-)?([0-9]{3}(\\s|\\.|\\-|)){2}$")), // PHONE NUMBER
+	            new IllegalCharsProcessor(new StrRegEx("^(\\+4|)?(07[0-8]{1}[0-9]{1}|02[0-9]{2}|03[0-9]{2}){1}?(\\s|\\.|\\-)?([0-9]{3}(\\s|\\.|\\-|)){2}$")), // PHONE NUMBER
 	            new LocalDateProcessor(), // BIRTH DATE
-	            new NotNull(new StrRegEx("^[A-Za-z]+$")), // ROLE TITLE
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+$")), // ROLE TITLE
 	            // address dto fields
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
-	            new NotNull(new ParseInt()), // STREET NO
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
+	            new IllegalCharsProcessor(new ParseInt()), // STREET NO
 	            new Optional(new ParseInt()), // APARTMENT
 		};
 		return processors;
@@ -71,26 +71,26 @@ public class CsvBeanManagementService {
 	
 	public CellProcessor[] getPlaneProcessor() {
 		CellProcessor[] processors = new CellProcessor[] {
-				new NotNull(), // MODEL
-				new NotNull(new ParseInt()), // TAIL NUMBER
-	            new NotNull(new ParseInt()), // CAPACITY
-	            new NotNull(new ParseInt()), // FUEL TANK CAPACITY
+				new IllegalCharsProcessor(), // MODEL
+				new IllegalCharsProcessor(new ParseInt()), // TAIL NUMBER
+	            new IllegalCharsProcessor(new ParseInt()), // CAPACITY
+	            new IllegalCharsProcessor(new ParseInt()), // FUEL TANK CAPACITY
 	            new LocalDateProcessor(), // MANUFACTURING DATE
-	            new NotNull(new StrRegEx("^[a-z]+$")), // SIZE
+	            new IllegalCharsProcessor(new StrRegEx("^[a-z]+$")), // SIZE
 		};
 		return processors;
 	}
 	
 	public CellProcessor[] getAirportProcessor() {
 		CellProcessor[] processors = new CellProcessor[] {
-				new NotNull(new StrRegEx("^[A-Za-z]+$")), // AIRPORT NAME
-	            new NotNull(new ParseInt()), // RUN WAYS
-	            new NotNull(new ParseInt()), // GATE WAYS
+				new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+$")), // AIRPORT NAME
+	            new IllegalCharsProcessor(new ParseInt()), // RUN WAYS
+	            new IllegalCharsProcessor(new ParseInt()), // GATE WAYS
 	            // address dto fields
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
-	            new NotNull(new ParseInt()), // STREET NO
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
+	            new IllegalCharsProcessor(new ParseInt()), // STREET NO
 	            new Optional(new ParseInt()), // APPARTMENT
 		};
 		return processors;
@@ -98,15 +98,15 @@ public class CsvBeanManagementService {
 	
 	public CellProcessor[] getCompanyProcessor() {
 		CellProcessor[] processors = new CellProcessor[] {
-				new NotNull(new StrRegEx("^[A-Za-z]+$")), // NAME
-	            new NotNull(), // PHONE NUMBER
-	            new NotNull(), // EMAIL
+				new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+$")), // NAME
+	            new IllegalCharsProcessor(), // PHONE NUMBER
+	            new NotNull(new StrRegEx("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@airline.com$")), // EMAIL
 	            new LocalDateProcessor(), // FOUNDED IN // LocalDate
 	            // address dto fields
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
-	            new NotNull(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
-	            new NotNull(new ParseInt()), // STREET NO
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ ]*[A-Za-z]+)*$")), // COUNTRY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // CITY
+	            new IllegalCharsProcessor(new StrRegEx("^[A-Za-z]+([ -]*[A-Za-z]+)*$")), // STREET
+	            new IllegalCharsProcessor(new ParseInt()), // STREET NO
 	            new Optional(new ParseInt()), // APPARTMENT
 		};
 		return processors;
