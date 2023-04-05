@@ -24,12 +24,16 @@ public class LocalDateProcessor extends CellProcessorAdaptor {
     @SuppressWarnings("unchecked")
 	@Override
     public Object execute(Object value, CsvContext context) throws SuperCsvException {
-        if (value == null) {
-            return this.next.execute(null, context);
-        }
+    	validateInputNotNull(value, context);
 
         if (!(value instanceof String)) {
             throw new SuperCsvCellProcessorException(String.class, value, context, this);
+        }
+        
+        String stringValue = value.toString(); 
+        if(!stringValue.matches("^\\d{4}/\\d{2}/\\d{2}$")) {
+            throw new SuperCsvCellProcessorException("Date not following the format [yyyy/MM/dd]: " + stringValue, context, this);
+
         }
 
         LocalDate localDate;
