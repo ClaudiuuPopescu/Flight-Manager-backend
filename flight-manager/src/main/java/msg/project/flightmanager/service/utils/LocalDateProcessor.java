@@ -11,7 +11,7 @@ import org.supercsv.util.CsvContext;
 
 public class LocalDateProcessor extends CellProcessorAdaptor {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public LocalDateProcessor() {
         super();
@@ -31,8 +31,8 @@ public class LocalDateProcessor extends CellProcessorAdaptor {
         }
         
         String stringValue = value.toString(); 
-        if(!stringValue.matches("^\\d{4}/\\d{2}/\\d{2}$")) {
-            throw new SuperCsvCellProcessorException("Date not following the format [yyyy/MM/dd]: " + stringValue, context, this);
+        if(!stringValue.matches("^\\d{4}-\\d{2}-\\d{2}$")) {
+            throw new SuperCsvCellProcessorException("Date not following the format yyyy-MM-dd: " + stringValue, context, this);
 
         }
 

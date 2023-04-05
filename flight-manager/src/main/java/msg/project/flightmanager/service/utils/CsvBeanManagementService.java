@@ -3,6 +3,8 @@ package msg.project.flightmanager.service.utils;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,17 +23,23 @@ import msg.project.flightmanager.exceptions.FlightManagerException;
 @Component
 public class CsvBeanManagementService {
 	
-	public final String[] csvHeaderUser = {"USERNAME", "FIRST NAME", "LAST NAME", "EMAIL", "PHONE NUMBER", "BIRTH DATE", "ACTIVE"};
-	public final String[] fieldMappingUser = {"username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "isActive"};
+	public final String[] csvHeaderUser = {"username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "active",
+			"address.country", "address.city", "address.street", "address.streetNumber", "address.apartment"};
+				
+	public final String[] fieldMappingUser = {"username", "firstName", "lastName", "email", "phoneNumber", "birthDate", "isActive",
+			"country", "city", "street", "streetNumber", "apartment"};
 	
-	public final String[] csvHeaderPlane = {"TAIL NUMBER", "MODEL", "CAPACITY", "FUEL TANK CAPACITY", "MANUFACTURING DATE", "FIRST FLIGHT", "LAST REVISION", "SIZE"};
-	public final String[] fieldMappingPlane = {"tailNumber", "model", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevistion", "size"};
+	public final String[] csvHeaderPlane = {"tailNumber", "model", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevision", "size"};
+	public final String[] fieldMappingPlane = {"tailNumber", "model", "capacity", "fuelTankCapacity", "manufacturingDate", "firstFlight", "lastRevision", "size"};
 	
-	public final String[] csvHeaderAirport = {"NAME", "CODE IDENTIFIER", "RUN WAYS", "GATE WAYS"};
+	public final String[] csvHeaderAirport = {"name", "codeIdentifier", "runWays", "gateWays"};
 	public final String[] fieldMappingAirport = {"airportName", "codeIdentifier", "runWays", "gateWays"};
 	
-	public final String[] csvHeaderCompany = {"NAME", "PHONE NUMBER", "EMAIL", "FOUNDED IN", "ACTIVE"};
-	public final String[] fieldMappingCompany ={"name", "phoneNumber", "email", "foundedIn", "isActive"};
+	public final String[] csvHeaderCompany = {"name", "phoneNumber", "email", "foundedIn", "active",
+			"address.country", "address.city", "address.street", "address.streetNumber", "address.apartment"};
+	
+	public final String[] fieldMappingCompany ={"name", "phoneNumber", "email", "foundedIn", "isActive",
+			"country", "city", "street", "streetNumber", "apartment"};
 
 	public CsvBeanWriter getCsvBeanWriter(PrintWriter writer) {
 		return new CsvBeanWriter(writer, CsvPreference.STANDARD_PREFERENCE);
@@ -49,6 +57,18 @@ public class CsvBeanManagementService {
 					"Could not get the input stream out of the file");
 		}
 	}
+	
+	   public String[] getHeaderSimplify(String[] arr) {
+	        List<String> headers = new ArrayList<>();
+	        for (String s : arr) {
+	            if(s.contains(".")){
+	                headers.add(s.split("\\.")[1]);
+	            }else{
+	                headers.add(s);
+	            }
+	        }
+	        return headers.toArray(new String[headers.size()]);
+	    }
 	
 	public CellProcessor[] getUserProcessor() {
 		CellProcessor[] processors = new CellProcessor[] {

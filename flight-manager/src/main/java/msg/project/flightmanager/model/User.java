@@ -109,5 +109,4 @@ public class User {
 	public boolean getIsActive() {
 		return this.isActive;
 	}
-
 }

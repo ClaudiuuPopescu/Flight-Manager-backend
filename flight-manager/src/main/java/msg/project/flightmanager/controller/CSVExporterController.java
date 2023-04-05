@@ -39,7 +39,7 @@ public class CSVExporterController {
 	private IUserService userService;
 	
 	@GetMapping(EXPORT_USER)
-	public ResponseEntity<String> exportUser(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
+	public ResponseEntity<String> exportUser(@RequestHeader(name = "Authorization") String token, HttpServletResponse response) throws IOException{
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			
@@ -66,7 +66,7 @@ public class CSVExporterController {
 	}
 
 	@GetMapping(EXPORT_PLANE)
-	public ResponseEntity<String> exportPlane(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){	
+	public ResponseEntity<String> exportPlane(@RequestHeader(name = "Authorization") String token, HttpServletResponse response) throws IOException{	
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			
@@ -93,8 +93,7 @@ public class CSVExporterController {
 	}
 	
 	@GetMapping(EXPORT_AIRPORT)
-	public ResponseEntity<String> exportAirport(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
-		
+	public ResponseEntity<String> exportAirport(@RequestHeader(name = "Authorization") String token, HttpServletResponse response) throws IOException{
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			
@@ -121,8 +120,7 @@ public class CSVExporterController {
 	}
 	
 	@GetMapping(EXPORT_COMPANY)
-	public ResponseEntity<String> exportCompany(@RequestHeader(name = "Authorization") String token, HttpServletResponse response){
-		
+	public ResponseEntity<String> exportCompany(@RequestHeader(name = "Authorization") String token, HttpServletResponse response) throws IOException{
 		try {
 			this.userService.checkPermission(token, PermissionEnum.EXPORT_DATA);
 			

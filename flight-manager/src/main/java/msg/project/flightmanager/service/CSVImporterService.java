@@ -56,7 +56,9 @@ public class CSVImporterService implements ICSVImporterService{
 		CsvBeanReader reader = this.beanManagementService.getCsvBeanReader(file);
 			
 			try {
-				String[] header = reader.getHeader(true);
+				String[] initialHeader = reader.getHeader(true);
+				
+				String[] header = this.beanManagementService.getHeaderSimplify(initialHeader);
 				
 				if(clazz == User.class) {
 					readForUser(reader, header);

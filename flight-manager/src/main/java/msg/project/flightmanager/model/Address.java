@@ -1,5 +1,4 @@
 package msg.project.flightmanager.model;
-
 import java.util.HashSet;
 import java.util.Set;
 
