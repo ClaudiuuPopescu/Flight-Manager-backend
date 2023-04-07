@@ -16,9 +16,10 @@ import msg.project.flightmanager.model.Report;
 import msg.project.flightmanager.model.User;
 import msg.project.flightmanager.repository.ReportRepository;
 import msg.project.flightmanager.repository.UserRepository;
+import msg.project.flightmanager.service.interfaces.IReportService;
 
 @Service
-public class ReportService {
+public class ReportService implements IReportService{
 	
 	@Autowired
 	private ReportRepository reportRepository;
@@ -27,6 +28,7 @@ public class ReportService {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Override
 	public ReportDto generateReport(ReportDto dtoToCreate) {
 		if(dtoToCreate.getContent().length() < 50) {
 			throw new FlightManagerException(
@@ -52,6 +54,18 @@ public class ReportService {
 		this.reportRepository.save(report);
 		
 		return this.reportConverter.convertToDTO(report);
+	}
+	
+	
+	@Override
+	public boolean deleteReport(String reportCode) {
+		Report report = this.reportRepository.findByReportCode(reportCode)
+				.orElseThrow(() -> new FlightManagerException(
+						HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not delete report. Report with code {0}, not found", reportCode)));
+		
+		this.reportRepository.delete(report);
+		return true;
 	}
 	
 	private String generateReportCode(ReportTypeEnum typeEnum) {

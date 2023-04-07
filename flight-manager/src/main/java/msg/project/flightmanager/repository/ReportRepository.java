@@ -18,5 +18,8 @@ public interface ReportRepository extends CrudRepository<Report, Long> {
 	 
 	 @Query("SELECT MAX(r.id) FROM Report r WHERE r.type = :type")
 	 Optional<Long> findLastIdByType(@Param("type") ReportTypeEnum type);
+	 
+	 @Query("SELECT r from Report r where r.reportCode = :reportCode")
+	 Optional<Report> findByReportCode(@Param("reportCode") String reportCode);
 
 }
