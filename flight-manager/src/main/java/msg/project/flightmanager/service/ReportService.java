@@ -8,12 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import jakarta.transaction.Transactional;
 import msg.project.flightmanager.converter.ReportConverter;
 import msg.project.flightmanager.dto.ReportDto;
 import msg.project.flightmanager.enums.ReportTypeEnum;
 import msg.project.flightmanager.exceptions.FlightManagerException;
+import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.Report;
 import msg.project.flightmanager.model.User;
+import msg.project.flightmanager.repository.FlightRepository;
 import msg.project.flightmanager.repository.ReportRepository;
 import msg.project.flightmanager.repository.UserRepository;
 import msg.project.flightmanager.service.interfaces.IReportService;
@@ -27,36 +30,40 @@ public class ReportService implements IReportService{
 	private ReportConverter reportConverter;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private FlightRepository flightRepository;
 	
+	@Transactional
 	@Override
 	public ReportDto generateReport(ReportDto dtoToCreate) {
-		if(dtoToCreate.getContent().length() < 50) {
-			throw new FlightManagerException(
-					HttpStatus.LENGTH_REQUIRED,
-					"Content must have a minimum length of 50 characters");
-		}
-		
-		Report report = this.reportConverter.convertToEntity(dtoToCreate);
-		report.setContent(dtoToCreate.getContent());
+		validateContent(dtoToCreate.getContent());
 		
 		ReportTypeEnum reportType = ReportTypeEnum.fromLabel(dtoToCreate.getReportType());
-		report.setReportType(reportType);
 		
 		String reportCode = generateReportCode(reportType);
-		report.setReportCode(reportCode);
 		
 		User generatedBy = this.userRepository.findByUsername(dtoToCreate.getReporteByUsername())
 				.orElseThrow(() -> new FlightManagerException(
 						HttpStatus.NOT_FOUND,
 						MessageFormat.format("Can not generate report. User {0} not found", dtoToCreate.getReporteByUsername())));
+		
+		Flight flight = this.flightRepository.findById(dtoToCreate.getFlightDto().getIdFlight())
+				.orElseThrow(() -> new FlightManagerException(
+						HttpStatus.NOT_FOUND,
+						MessageFormat.format("Can not generate report. Flihgt with id {0} not found", dtoToCreate.getFlightDto().getIdFlight())));
+		
+		Report report = this.reportConverter.convertToEntity(dtoToCreate);
+		report.setReportType(reportType);
+		report.setReportCode(reportCode);
 		report.setReportedBy(generatedBy);
+		report.setFlight(flight);
 		
 		this.reportRepository.save(report);
 		
 		return this.reportConverter.convertToDTO(report);
 	}
 	
-	
+	@Transactional
 	@Override
 	public boolean deleteReport(String reportCode) {
 		Report report = this.reportRepository.findByReportCode(reportCode)
@@ -74,10 +81,23 @@ public class ReportService implements IReportService{
 		
 		Optional<Long> lastIdOfType = this.reportRepository.findLastIdByType(typeEnum);
 		
-		Long lastId = lastIdOfType.isPresent() ? lastIdOfType.get() : 0;
+		Long newId = lastIdOfType.isPresent() ? lastIdOfType.get() +1 : 0;
 		
-		String reportCode = String.format("%s-%s-%03d", typeEnum.toString(), date, lastId);
+		String reportCode = String.format("%s-%s-%03d", typeEnum.toString(), date, newId);
 		
 		return reportCode;
+	}
+	
+	public void validateContent(String content) {
+		if(content == null) {
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED,
+					"Content can not be null");
+		}
+		if(content.length() < 75) {
+			throw new FlightManagerException(
+					HttpStatus.LENGTH_REQUIRED,
+					"Content must have a minimum length of 75 characters");
+		}
 	}
 }

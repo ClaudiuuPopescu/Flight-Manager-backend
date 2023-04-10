@@ -14,7 +14,7 @@ public class ReportConverter implements IConverter<Report, ReportDto> {
 		return ReportDto.builder()
 				.reportCode(entity.getReportCode())
 				.reportType(entity.getReportType().getLabel())
-				.generateAt(entity.getGeneratedAt())
+				.generatedAt(entity.getGeneratedAt())
 				.content(entity.getContent())
 				.reporteByUsername(entity.getReportedBy().getUsername())
 				.flightDto(this.flightConverter.convertToDTO(entity.getFlight()))

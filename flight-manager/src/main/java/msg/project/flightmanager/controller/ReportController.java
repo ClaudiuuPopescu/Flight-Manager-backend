@@ -15,11 +15,12 @@ import msg.project.flightmanager.dto.ReportDto;
 import msg.project.flightmanager.enums.PermissionEnum;
 import msg.project.flightmanager.exceptions.RoleException;
 import msg.project.flightmanager.exceptions.UserException;
+import msg.project.flightmanager.service.TokenService;
 import msg.project.flightmanager.service.interfaces.IReportService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 
 @RestController
-@RequestMapping("/api/airport")
+@RequestMapping("/api/report")
 public class ReportController {
 
 	public static final String GENERATE_REPORT = "/generate";
@@ -29,11 +30,17 @@ public class ReportController {
 	private IReportService reportService;
 	@Autowired
 	private IUserService userService;
+	@Autowired
+	private TokenService tokenService;
 	
 	@PostMapping(GENERATE_REPORT)
 	public ResponseEntity<String> generateReport(@RequestHeader(name = "Authorization") String token, @RequestBody ReportDto reportDto){
 		try {
 			this.userService.checkPermission(token, PermissionEnum.GENERATE_REPORT);	
+			
+			String currentUsername = this.tokenService.getCurrentUserUsername(token);
+			
+			reportDto.setReporteByUsername(currentUsername);
 			this.reportService.generateReport(reportDto);
 			
 			return ResponseEntity
