@@ -13,11 +13,11 @@ import msg.project.flightmanager.model.Report;
 @Repository
 public interface ReportRepository extends CrudRepository<Report, Long> {
 	
-	 @Query("SELECT MAX(r.id) FROM Report r")
+	 @Query("SELECT MAX(r.id_report) FROM Report r")
 	 Optional<Long> getLastReportId();
 	 
-	 @Query("SELECT MAX(r.id) FROM Report r WHERE r.type = :type")
-	 Optional<Long> findLastIdByType(@Param("type") ReportTypeEnum type);
+	 @Query("SELECT MAX(r.id_report) FROM Report r WHERE r.reportType = :reportType")
+	 Optional<Long> findLastIdByType(@Param("reportType") ReportTypeEnum reportType);
 	 
 	 @Query("SELECT r from Report r where r.reportCode = :reportCode")
 	 Optional<Report> findByReportCode(@Param("reportCode") String reportCode);

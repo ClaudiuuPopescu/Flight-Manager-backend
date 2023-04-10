@@ -1,10 +1,12 @@
 package msg.project.flightmanager.converter;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import msg.project.flightmanager.dto.ReportDto;
 import msg.project.flightmanager.model.Report;
 
+@Component
 public class ReportConverter implements IConverter<Report, ReportDto> {
 	@Autowired
 	private FlightConverter flightConverter;

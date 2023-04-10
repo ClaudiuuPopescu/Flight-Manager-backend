@@ -78,7 +78,7 @@ public class User {
 	@JoinColumn(name = "company_id")
 	private Company company;
 	
-	@OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "reportedBy", fetch = FetchType.LAZY)
 	@Builder.Default
 	private Set<Report> reports = new HashSet<>();
 
