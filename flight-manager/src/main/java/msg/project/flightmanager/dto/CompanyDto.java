@@ -21,6 +21,7 @@ public class CompanyDto {
 
 	private LocalDate foundedIn;
 
+	@Builder.Default
 	private AddressDto address = new AddressDto();
 
 	public void setCountry(String country) {
