@@ -93,7 +93,7 @@ public class CSVImporterServiceTest {
 	    Writer writer = new FileWriter(csvFile);
 	    writer.write("Password,FirstName,LastName,Email,PhoneNumber,BirthDate,RoleTitle"
 	    		+ "Country,City,Street,StreetNumber,Apartment\n");
-	    writer.write("password123,randomFn,randomLn,email@airline.com,0753247035,13/05/2000,crew,"
+	    writer.write("password123,randomFn,randomLn,email@airline.com,0753247035,2000-05-13,crew,"
 	    		+ "Romania,Targu Mures,Insulei,1,null");
 	    writer.close();
 	    
@@ -103,6 +103,7 @@ public class CSVImporterServiceTest {
 		
 		Mockito.when(this.beanManagementService.getCsvBeanReader(file)).thenReturn(reader);
 		Mockito.when(reader.getHeader(true)).thenReturn(this.csvHeaderUser);
+		Mockito.when(this.beanManagementService.getHeaderSimplify(this.csvHeaderUser)).thenReturn(this.csvHeaderUser);
 
 		CreateUserModel createUserModel = Mockito.mock(CreateUserModel.class);
 		
@@ -118,7 +119,7 @@ public class CSVImporterServiceTest {
 	    File csvFile = File.createTempFile("test", ".csv");
 	    Writer writer = new FileWriter(csvFile);
 	    writer.write("model,tailNumber,capacity,fuelTankCapacity,manufacturingDate,size\n");
-	    writer.write("modelPlane,47,200,4500,01/01/2022,small");
+	    writer.write("modelPlane,47,200,4500,2022-01-01,small");
 	    writer.close();
 	    
 	    MultipartFile file = Mockito.mock(MultipartFile.class);
@@ -127,7 +128,8 @@ public class CSVImporterServiceTest {
 		
 		Mockito.when(this.beanManagementService.getCsvBeanReader(file)).thenReturn(reader);
 		Mockito.when(reader.getHeader(true)).thenReturn(this.csvHeaderPlane);
-
+		Mockito.when(this.beanManagementService.getHeaderSimplify(this.csvHeaderPlane)).thenReturn(this.csvHeaderPlane);
+		
 		CreatePlaneModel createPlaneModel= Mockito.mock(CreatePlaneModel.class);
 		
 		Mockito.when(reader.read(CreatePlaneModel.class, this.csvHeaderPlane, this.beanManagementService.getPlaneProcessor())).thenReturn(createPlaneModel).thenReturn(null);
@@ -151,7 +153,8 @@ public class CSVImporterServiceTest {
 		
 		Mockito.when(this.beanManagementService.getCsvBeanReader(file)).thenReturn(reader);
 		Mockito.when(reader.getHeader(true)).thenReturn(this.csvHeaderAirport);
-
+		Mockito.when(this.beanManagementService.getHeaderSimplify(this.csvHeaderAirport)).thenReturn(this.csvHeaderAirport);
+		
 		CreateAirportModel createAirportModel = Mockito.mock(CreateAirportModel.class);
 		
 		Mockito.when(reader.read(CreateAirportModel.class, this.csvHeaderAirport, this.beanManagementService.getAirportProcessor())).thenReturn(createAirportModel).thenReturn(null);
@@ -166,7 +169,7 @@ public class CSVImporterServiceTest {
 	    File csvFile = File.createTempFile("test", ".csv");
 	    Writer writer = new FileWriter(csvFile);
 	    writer.write("Name,PhoneNumber,Email,FoundedIn,Country,City,Street,StreetNumber,Apartment\n");
-	    writer.write("Company,0753215607,company@airline.com,13/05/2000,Romania,Timisoara,Strada,1,");
+	    writer.write("Company,0753215607,company@airline.com,2000-05-13,Romania,Timisoara,Strada,1,");
 	    writer.close();
 	    
 	    MultipartFile file = Mockito.mock(MultipartFile.class);
@@ -175,6 +178,7 @@ public class CSVImporterServiceTest {
 		
 		Mockito.when(this.beanManagementService.getCsvBeanReader(file)).thenReturn(reader);
 		Mockito.when(reader.getHeader(true)).thenReturn(this.csvHeaderCompany);
+		Mockito.when(this.beanManagementService.getHeaderSimplify(this.csvHeaderCompany)).thenReturn(this.csvHeaderCompany);
 
 		CompanyDto companyDto = Mockito.mock(CompanyDto.class);
 		
@@ -227,7 +231,7 @@ public class CSVImporterServiceTest {
 		Writer writer = new FileWriter(csvFile);
 	    writer.write("Password,FirstName,LastName,Email,PhoneNumber,BirthDate,RoleTitle"
 	    		+ "Country,City,Street,StreetNumber,Apartment\n");
-	    writer.write("password123,randomFn,randomLn,email@airline.com,0753247035,13/05/2000,crew,"
+	    writer.write("password123,randomFn,randomLn,email@airline.com,0753247035,2000-05-13,crew,"
 	    		+ "Romania,Targu Mures,Insulei,1,null");
 	    writer.close();
 	    
@@ -237,6 +241,7 @@ public class CSVImporterServiceTest {
 		
 		Mockito.when(this.beanManagementService.getCsvBeanReader(file)).thenReturn(reader);
 		Mockito.when(reader.getHeader(true)).thenReturn(this.csvHeaderUser);
+		Mockito.when(this.beanManagementService.getHeaderSimplify(this.csvHeaderUser)).thenReturn(this.csvHeaderUser);
 
 		CreateUserModel createUserModel = Mockito.mock(CreateUserModel.class);
 		
