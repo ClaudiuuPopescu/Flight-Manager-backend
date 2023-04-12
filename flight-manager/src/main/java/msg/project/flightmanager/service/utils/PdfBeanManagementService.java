@@ -12,6 +12,10 @@ import com.itextpdf.text.pdf.PdfPCell;
 @Component
 public class PdfBeanManagementService {
 	
+	public String getSystemPropertyHome() {
+		return System.getProperty("user.home");
+	}
+	
 	public Document getDocument() {
 		return new Document();
 	}
