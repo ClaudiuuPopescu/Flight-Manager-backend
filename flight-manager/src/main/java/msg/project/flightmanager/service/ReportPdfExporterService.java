@@ -1,6 +1,7 @@
 package msg.project.flightmanager.service;
 
 import java.io.FileNotFoundException;
+import java.text.MessageFormat;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,16 +19,22 @@ import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.Plane;
 import msg.project.flightmanager.model.Report;
+import msg.project.flightmanager.repository.ReportRepository;
 import msg.project.flightmanager.service.interfaces.IReportPdfExporterService;
 import msg.project.flightmanager.service.utils.PdfBeanManagementService;
 
 @Service
 public class ReportPdfExporterService implements IReportPdfExporterService{
 	@Autowired
-	PdfBeanManagementService beanManagement;
+	private PdfBeanManagementService beanManagement;
+	@Autowired
+	private ReportRepository reportRepository;
 	
 	@Override
-	public void exportToPdf(Report report) {
+	public void exportToPdf(String reportCode) {
+		
+		Report report = getReport(reportCode);
+		
 		String reportIdentifier =  report.getFlight().getIdFlight() + "-" + report.getReportCode();
 		String path = this.beanManagement.getSystemPropertyHome() + "/Downloads/report-" + reportIdentifier + ".pdf";
 		
@@ -176,5 +183,12 @@ public class ReportPdfExporterService implements IReportPdfExporterService{
         for (int i = 0; i < number; i++) {
             paragraph.add(this.beanManagement.getParagraph(content));
         }
+    }
+    
+    private Report getReport(String reportCode) {
+    	return this.reportRepository.findByReportCode(reportCode)
+    			.orElseThrow(() -> new FlightManagerException(
+    					HttpStatus.NOT_FOUND,
+    					MessageFormat.format("Can not export report to pdf. Report with code {0} not found", reportCode)));
     }
 }

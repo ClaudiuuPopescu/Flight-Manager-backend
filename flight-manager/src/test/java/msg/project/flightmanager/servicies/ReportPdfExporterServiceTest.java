@@ -7,10 +7,12 @@ import static org.mockito.Mockito.verify;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.sql.Time;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,6 +38,7 @@ import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.Plane;
 import msg.project.flightmanager.model.Report;
 import msg.project.flightmanager.model.User;
+import msg.project.flightmanager.repository.ReportRepository;
 import msg.project.flightmanager.service.ReportPdfExporterService;
 import msg.project.flightmanager.service.utils.PdfBeanManagementService;
 
@@ -45,6 +48,8 @@ public class ReportPdfExporterServiceTest {
 	private ReportPdfExporterService service;
 	@Mock
 	private PdfBeanManagementService beanManagement;
+	@Mock
+	private ReportRepository reportRepository;
 	
 	private Report report;
 	private User reportedBy;
@@ -57,26 +62,44 @@ public class ReportPdfExporterServiceTest {
 	private Company company;
 	
 	@Test
+	void exportToPdf_throwsFlightManagerException_whenCanFindReportByCode(){
+		String reportCode = "invalidCode";
+		
+		Mockito.when(this.reportRepository.findByReportCode(reportCode)).thenReturn(Optional.empty());
+		
+		FlightManagerException thrown = assertThrows(FlightManagerException.class,
+				() -> this.service.exportToPdf(reportCode));
+		
+		assertEquals(MessageFormat.format("Can not export report to pdf. Report with code {0} not found", reportCode),
+				thrown.getMessage());
+	}
+	
+	@Test
 	void exportToPdf_throwsFlightManagerException_whenFileNotFound() throws FileNotFoundException {
+			String reportCode = "FR-" + LocalDate.now().toString().replace("-", "") + "-002";
+		
 			String systemPath = System.getProperty("user.home");
 			String reportIdentifier =  this.report.getFlight().getIdFlight() + "-" + this.report.getReportCode();
 			String path = systemPath + "/Downloads/report-" + reportIdentifier + ".pdf";
 			
 			Document document = Mockito.mock(Document.class);
 			
+			Mockito.when(this.reportRepository.findByReportCode(reportCode)).thenReturn(Optional.of(this.report));
 			Mockito.when(this.beanManagement.getSystemPropertyHome()).thenReturn(systemPath);
 			Mockito.when(this.beanManagement.getDocument()).thenReturn(document);
 			
 			Mockito.when(this.beanManagement.getFileOutputStream(path)).thenThrow(FileNotFoundException.class);
 			
 			FlightManagerException thrown = assertThrows(FlightManagerException.class,
-					() -> this.service.exportToPdf(this.report));
+					() -> this.service.exportToPdf(reportCode));
 				
 			assertEquals("File not found", thrown.getMessage());
 	}
 	
 	@Test
 	void exportToPdf_throwsFlightManagerException_whenCanNotCreatePdfDocument() throws FileNotFoundException, DocumentException {
+		String reportCode = "FR-" + LocalDate.now().toString().replace("-", "") + "-002";
+		
 		String systemPath = System.getProperty("user.home");
 		String reportIdentifier =  this.report.getFlight().getIdFlight() + "-" + this.report.getReportCode();
 		String path = systemPath + "/Downloads/report-" + reportIdentifier + ".pdf";
@@ -84,6 +107,7 @@ public class ReportPdfExporterServiceTest {
 		Document document = Mockito.mock(Document.class);
 		FileOutputStream os = Mockito.mock(FileOutputStream.class);
 		
+		Mockito.when(this.reportRepository.findByReportCode(reportCode)).thenReturn(Optional.of(this.report));
 		Mockito.when(this.beanManagement.getSystemPropertyHome()).thenReturn(systemPath);
 		Mockito.when(this.beanManagement.getDocument()).thenReturn(document);
 		Mockito.when(this.beanManagement.getFileOutputStream(path)).thenReturn(os);
@@ -101,7 +125,7 @@ public class ReportPdfExporterServiceTest {
 			 Mockito.when(document.add(emptyParagraph)).thenThrow(DocumentException.class);
 
 			FlightManagerException thrown = assertThrows(FlightManagerException.class,
-					() -> this.service.exportToPdf(this.report));
+					() -> this.service.exportToPdf(reportCode));
 					
 			assertEquals("Error occured when creating the pdf document", thrown.getMessage());
 		}	
@@ -109,13 +133,16 @@ public class ReportPdfExporterServiceTest {
 	
 	@Test
 	void exportToPdf_returnsVoid_whenPdfExportedSuccessfully() throws FileNotFoundException {
+		String reportCode = "FR-" + LocalDate.now().toString().replace("-", "") + "-002";
+
 		String systemPath = System.getProperty("user.home");
 		String reportIdentifier =  this.report.getFlight().getIdFlight() + "-" + this.report.getReportCode();
 		String path = systemPath + "/Downloads/report-" + reportIdentifier + ".pdf";
 		
 		Document document = Mockito.mock(Document.class);
 		FileOutputStream os = Mockito.mock(FileOutputStream.class);
-		
+
+		Mockito.when(this.reportRepository.findByReportCode(reportCode)).thenReturn(Optional.of(this.report));
 		Mockito.when(this.beanManagement.getSystemPropertyHome()).thenReturn(systemPath);
 		Mockito.when(this.beanManagement.getDocument()).thenReturn(document);
 		Mockito.when(this.beanManagement.getFileOutputStream(path)).thenReturn(os);
@@ -136,7 +163,7 @@ public class ReportPdfExporterServiceTest {
 			 Mockito.when(this.beanManagement.getPdfPCell()).thenReturn(cell);
 			 Mockito.when(this.beanManagement.getTimeFormatter(this.flight.getBoardingTime())).thenReturn(timeFormatted);
 			 
-			 this.service.exportToPdf(this.report);
+			 this.service.exportToPdf(reportCode);
 			 verify(document).close();
 		}
 	}	

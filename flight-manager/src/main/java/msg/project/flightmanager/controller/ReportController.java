@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import msg.project.flightmanager.enums.PermissionEnum;
 import msg.project.flightmanager.exceptions.RoleException;
 import msg.project.flightmanager.exceptions.UserException;
 import msg.project.flightmanager.service.TokenService;
+import msg.project.flightmanager.service.interfaces.IReportPdfExporterService;
 import msg.project.flightmanager.service.interfaces.IReportService;
 import msg.project.flightmanager.service.interfaces.IUserService;
 
@@ -24,12 +26,16 @@ import msg.project.flightmanager.service.interfaces.IUserService;
 public class ReportController {
 
 	public static final String GENERATE_REPORT = "/generate";
-	public static final String DELETE_REPORT = "/delete/{reportCode}";
+	public static final String DELETE_REPORT = "/delete/{delete-reportCode}";
+	public static final String EXPORT_REPORT_PDF = "/export-pdf/{export-reportCode}";
+
 	
 	@Autowired
 	private IReportService reportService;
 	@Autowired
 	private IUserService userService;
+	@Autowired
+	private IReportPdfExporterService pdfExporterService;
 	@Autowired
 	private TokenService tokenService;
 	
@@ -52,7 +58,7 @@ public class ReportController {
 	}
 	
 	@DeleteMapping(DELETE_REPORT)
-	public ResponseEntity<String> deleteReport(@RequestHeader(name = "Authorization") String token, @PathVariable("reportCode") String reportCode){
+	public ResponseEntity<String> deleteReport(@RequestHeader(name = "Authorization") String token, @PathVariable("delete-reportCode") String reportCode){
 		try {
 			this.userService.checkPermission(token, PermissionEnum.GENERATE_REPORT);
 			
@@ -65,5 +71,19 @@ public class ReportController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 		}
 	}
-
+	
+	@GetMapping(EXPORT_REPORT_PDF) // TODO to look over this one after all entities and services are done
+	public ResponseEntity<String> exportReport(@RequestHeader(name = "Authorization") String token, @PathVariable("export-reportCode") String reportCode){
+		try {
+			this.userService.checkPermission(token, PermissionEnum.GENERATE_REPORT);
+			
+			this.pdfExporterService.exportToPdf(reportCode);
+			
+			return ResponseEntity
+					.status(HttpStatus.ACCEPTED)
+					.body("Report exported successfully!");
+		} catch (RoleException | UserException e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+		}
+	}
 }
