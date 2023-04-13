@@ -28,7 +28,7 @@ public class ReportPdfExporterService implements IReportPdfExporterService{
 	@Override
 	public void exportToPdf(Report report) {
 		String reportIdentifier =  report.getFlight().getIdFlight() + "-" + report.getReportCode();
-		String path = System.getProperty("user.home") + "/Downloads/report-" + reportIdentifier + ".pdf";
+		String path = this.beanManagement.getSystemPropertyHome() + "/Downloads/report-" + reportIdentifier + ".pdf";
 		
 		Document document = this.beanManagement.getDocument();
 		document.setPageSize(PageSize.A4);
@@ -44,12 +44,12 @@ public class ReportPdfExporterService implements IReportPdfExporterService{
 
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-			new FlightManagerException(
+			throw new FlightManagerException(
 					HttpStatus.NOT_FOUND,
 					"File not found");
 		} catch (DocumentException e) {
 			e.printStackTrace();
-			new FlightManagerException(
+			throw new FlightManagerException(
 					HttpStatus.EXPECTATION_FAILED,
 					"Error occured when creating the pdf document");
 		}
@@ -113,18 +113,20 @@ public class ReportPdfExporterService implements IReportPdfExporterService{
 	}
 	
 	private void setFlightDetails(PdfPCell reportInfo, Flight flight) {
+		String airportDepartName = flight.getFrom().getAirportName();
 		String countryDepart = flight.getFrom().getAddress().getCountry();
 		String cityDepart = flight.getFrom().getAddress().getCity();
 		String streetDepart = flight.getFrom().getAddress().getStreet();
+		String airportArrivalName = flight.getTo().getAirportName();
 		String countryArrival = flight.getTo().getAddress().getCountry();
 		String cityArrival = flight.getTo().getAddress().getCity();
 		String streetArrival = flight.getTo().getAddress().getStreet();
 		
 		Paragraph flightDetails = this.beanManagement.getParagraph("Flight details:");
 		Paragraph flightName = this.beanManagement.getParagraph("Flight name: " + flight.getFlightName());
-		Paragraph airportDepart = this.beanManagement.getParagraph("Airport deparature: " + countryDepart + ", " + ", " + cityDepart + ", " + streetDepart);
+		Paragraph airportDepart = this.beanManagement.getParagraph("Airport deparature: " + airportDepartName + ", " + countryDepart + ", " + cityDepart + ", " + streetDepart);
 		Paragraph deparatureTime = this.beanManagement.getParagraph("Deparature time: " + flight.getBoardingTime());
-		Paragraph airportArrival = this.beanManagement.getParagraph("Airport arrival: " + countryArrival + ", " + ", " + cityArrival + ", " + streetArrival);
+		Paragraph airportArrival = this.beanManagement.getParagraph("Airport arrival: " + airportArrivalName + ", " + countryArrival + ", " + cityArrival + ", " + streetArrival);
 		Paragraph duration = this.beanManagement.getParagraph("Duration: " + flight.getDuration());
 		Paragraph linedParagraph = this.beanManagement.getParagraph();
 		addCustomLine(linedParagraph, 1, "-".repeat(135));
