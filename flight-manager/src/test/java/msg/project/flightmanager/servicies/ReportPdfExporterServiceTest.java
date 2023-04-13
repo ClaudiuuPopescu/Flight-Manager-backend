@@ -2,8 +2,10 @@ package msg.project.flightmanager.servicies;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -11,10 +13,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import msg.project.flightmanager.enums.ReportTypeEnum;
 import msg.project.flightmanager.exceptions.FlightManagerException;
@@ -39,15 +46,11 @@ public class ReportPdfExporterServiceTest {
 	private User reportedBy;
 	private Flight flight;
 	private Airport airportFrom;
-	private Address addressFrom; 
+	private Address addressFrom;
 	private Airport airportTo;
 	private Address addressTo;
 	private Plane plane;
 	private Company company;
-	
-//	try (MockedStatic<PdfWriter> pdfWriter = Mockito.mockStatic(PdfWriter.class)) {
-//	pdfWriter.when(() -> PdfWriter.getInstance(document, stream));
-//}
 	
 	@Test
 	void exportToPdf_throwsFlightManagerException_whenFileNotFound() throws FileNotFoundException {
@@ -66,37 +69,69 @@ public class ReportPdfExporterServiceTest {
 					() -> this.service.exportToPdf(this.report));
 				
 			assertEquals("File not found", thrown.getMessage());
-			assertThrows(FlightManagerException.class, () -> this.service.exportToPdf(this.report));
 	}
 	
+	@Test
+	void exportToPdf_throwsFlightManagerException_whenCanNotCreatePdfDocument() throws FileNotFoundException, DocumentException {
+		String systemPath = System.getProperty("user.home");
+		String reportIdentifier =  this.report.getFlight().getIdFlight() + "-" + this.report.getReportCode();
+		String path = systemPath + "/Downloads/report-" + reportIdentifier + ".pdf";
+		
+		Document document = Mockito.mock(Document.class);
+		FileOutputStream os = Mockito.mock(FileOutputStream.class);
+		
+		Mockito.when(this.beanManagement.getSystemPropertyHome()).thenReturn(systemPath);
+		Mockito.when(this.beanManagement.getDocument()).thenReturn(document);
+		Mockito.when(this.beanManagement.getFileOutputStream(path)).thenReturn(os);
+
+		try (MockedStatic<PdfWriter> mocked = Mockito.mockStatic(PdfWriter.class)) {
+			
+			 PdfWriter pdfWriter = Mockito.mock(PdfWriter.class); 
+		        		
+			 mocked.when(() -> PdfWriter.getInstance(document, os)).thenReturn(pdfWriter);
+			 
+			 Paragraph emptyParagraph = Mockito.mock(Paragraph.class);
+			 
+			 Mockito.when(this.beanManagement.getParagraph()).thenReturn(emptyParagraph);
+			 
+			 Mockito.when(document.add(emptyParagraph)).thenThrow(DocumentException.class);
+
+			FlightManagerException thrown = assertThrows(FlightManagerException.class,
+					() -> this.service.exportToPdf(this.report));
+					
+			assertEquals("Error occured when creating the pdf document", thrown.getMessage());
+		}	
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	@Test
+	void exportToPdf_returnsVoid_whenPdfExportedSuccessfully() throws FileNotFoundException {
+		String systemPath = System.getProperty("user.home");
+		String reportIdentifier =  this.report.getFlight().getIdFlight() + "-" + this.report.getReportCode();
+		String path = systemPath + "/Downloads/report-" + reportIdentifier + ".pdf";
+		
+		Document document = Mockito.mock(Document.class);
+		FileOutputStream os = Mockito.mock(FileOutputStream.class);
+		
+		Mockito.when(this.beanManagement.getSystemPropertyHome()).thenReturn(systemPath);
+		Mockito.when(this.beanManagement.getDocument()).thenReturn(document);
+		Mockito.when(this.beanManagement.getFileOutputStream(path)).thenReturn(os);
+		
+		try (MockedStatic<PdfWriter> mocked = Mockito.mockStatic(PdfWriter.class)) {
+			
+			 PdfWriter pdfWriter = Mockito.mock(PdfWriter.class); 
+		        		
+			 mocked.when(() -> PdfWriter.getInstance(document, os)).thenReturn(pdfWriter);
+			 
+			 Paragraph paragraph = Mockito.mock(Paragraph.class);
+			 PdfPCell cell = Mockito.mock(PdfPCell.class);
+			 
+			 Mockito.when(this.beanManagement.getParagraph()).thenReturn(paragraph);
+			 Mockito.when(this.beanManagement.getPdfPCell()).thenReturn(cell);
+			 
+			 this.service.exportToPdf(this.report);
+			 verify(document).close();
+		}
+	}	
 	
 	@BeforeEach
 	void init() {		
