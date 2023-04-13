@@ -1,6 +1,6 @@
 package msg.project.flightmanager.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -46,7 +46,7 @@ public class Report {
 	private ReportTypeEnum reportType;
 	
 	@Column
-	private LocalDate generatedAt;
+	private LocalDateTime generatedAt;
 	
 	@Column
 	private String content;
@@ -61,6 +61,6 @@ public class Report {
 	
 	@PrePersist
 	private void setGenerateAt() {
-		this.generatedAt = LocalDate.now();
+		this.generatedAt = LocalDateTime.now();
 	}
 }

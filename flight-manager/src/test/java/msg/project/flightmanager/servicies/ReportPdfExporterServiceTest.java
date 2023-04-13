@@ -6,7 +6,11 @@ import static org.mockito.Mockito.verify;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -125,8 +129,12 @@ public class ReportPdfExporterServiceTest {
 			 Paragraph paragraph = Mockito.mock(Paragraph.class);
 			 PdfPCell cell = Mockito.mock(PdfPCell.class);
 			 
+			 Time time = Time.valueOf(LocalTime.now());
+			 String timeFormatted = new SimpleDateFormat("HH:mm yyyy/MM/dd").format(time);
+			 
 			 Mockito.when(this.beanManagement.getParagraph()).thenReturn(paragraph);
 			 Mockito.when(this.beanManagement.getPdfPCell()).thenReturn(cell);
+			 Mockito.when(this.beanManagement.getTimeFormatter(this.flight.getBoardingTime())).thenReturn(timeFormatted);
 			 
 			 this.service.exportToPdf(this.report);
 			 verify(document).close();
@@ -171,6 +179,7 @@ public class ReportPdfExporterServiceTest {
 				.plane(this.plane)
 				.from(this.airportFrom)
 				.to(this.airportTo)
+				.boardingTime(Time.valueOf(LocalTime.now()))
 				.duration(5.2)
 				.build();
 		
@@ -183,7 +192,7 @@ public class ReportPdfExporterServiceTest {
 				.reportCode("FR-" + LocalDate.now().toString().replace("-", "") + "-002")
 				.reportType(ReportTypeEnum.FR)
 				.content("content")
-				.generatedAt(LocalDate.now())
+				.generatedAt(LocalDateTime.now())
 				.reportedBy(this.reportedBy)
 				.flight(this.flight).build();
 	}
