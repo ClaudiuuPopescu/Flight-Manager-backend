@@ -2,6 +2,8 @@ package msg.project.flightmanager.service.utils;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 
 import org.springframework.stereotype.Component;
 
@@ -34,6 +36,11 @@ public class PdfBeanManagementService {
 	
 	public PdfPCell getPdfPCell() {
 		return new PdfPCell();
+	}
+	
+	public String getTimeFormatter(Time time) {
+		return new SimpleDateFormat("HH:mm yyyy/MM/dd")
+		.format(time);
 	}
 
 }
