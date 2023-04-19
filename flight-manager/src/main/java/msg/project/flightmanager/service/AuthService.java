@@ -44,9 +44,10 @@ public class AuthService implements IAuthService {
 			String encodedPassword = this.passwordEncoder.encode(password);
 			User user = userOptional.get();
 			if (user.getPassword().equals(encodedPassword)) {
+				
 				// creez cookie si token
 
-				Authentication authentication = authenticationManager
+				Authentication authentication = this.authenticationManager
 						.authenticate(new UsernamePasswordAuthenticationToken(userName, password));
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -6,8 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -18,11 +20,18 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import msg.project.flightmanager.converter.PlaneConverter;
+import msg.project.flightmanager.enums.PlaneSize;
 import msg.project.flightmanager.exceptions.CompanyException;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
+import msg.project.flightmanager.jsonModule.JSONModuleBeanManagement;
+import msg.project.flightmanager.jsonModule.LocalDateModule;
+import msg.project.flightmanager.jsonModule.PlaneSizeModule;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.FlightTemplate;
@@ -46,6 +55,8 @@ public class PlaneServiceTest {
 	private PlaneRepository repository;
 	@Mock
 	private CompanyRepository companyRepository;
+	@Mock
+	private JSONModuleBeanManagement jsonModuleBeanManagement;
 
 	@Test
 	void getAll_throwsFlightManagerException_whenNoPlaneFound() {
@@ -60,13 +71,57 @@ public class PlaneServiceTest {
 	}
 	
 	@Test
-	void getAll_returnsListOfPlanes_whenPlanesExistInDataBase() {
-		Plane first_plane = new Plane();
-		Plane second_plane = new Plane();
+	void getAll_throwsFlightManagerException_whenFailedMappingToJSON() throws JsonProcessingException {
+		Plane plane = Mockito.mock(Plane.class);
 		
-		Mockito.when(this.repository.findAll()).thenReturn(Arrays.asList(first_plane, second_plane));
+		List<Plane> planes = new ArrayList<>();
+		planes.add(plane);
 		
-		assertEquals(2,this.service.getAll().size());
+		ObjectMapper objectMapper = Mockito.mock(ObjectMapper.class);
+		LocalDateModule localDateModule = Mockito.mock(LocalDateModule.class);
+		objectMapper.registerModule(localDateModule);
+		
+		Mockito.when(this.jsonModuleBeanManagement.getObjectMapper()).thenReturn(objectMapper);
+		Mockito.when(this.jsonModuleBeanManagement.getLocalDateModule()).thenReturn(localDateModule);
+		Mockito.when(this.repository.findAll()).thenReturn(Arrays.asList(plane));
+		
+		Mockito.doThrow(JsonProcessingException.class)
+		.when(objectMapper).writeValueAsString(planes);
+		
+		FlightManagerException thrown = assertThrows(FlightManagerException.class,
+				() -> this.service.getAll());
+
+		assertEquals("Can not get all planes. Could not serialize the list of planes", thrown.getMessage());
+	}
+	
+	@Test
+	void getAll_returnsPlanesAsJSON_whenPlanesExistInDatabase() {
+		Plane first_plane = Plane.builder()
+				.capacity(32)
+				.fuelTankCapacity(4500)
+				.manufacturingDate(LocalDate.of(2017, 5, 27))
+				.firstFlight(LocalDate.of(2017, 7, 1))
+				.lastRevision(LocalDate.of(2022, 12, 12))
+				.size(PlaneSize.SMALL)
+				.model("cool")
+				.tailNumber(47).build();
+		
+		List<Plane> planes = new ArrayList<>();
+		planes.add(first_plane);
+		
+		ObjectMapper objectMapper = new ObjectMapper();
+		LocalDateModule localDateModule = new LocalDateModule();
+		PlaneSizeModule planeSizeModule = new PlaneSizeModule();
+		objectMapper.registerModule(localDateModule);
+		objectMapper.registerModule(planeSizeModule);
+		
+		Mockito.when(this.jsonModuleBeanManagement.getObjectMapper()).thenReturn(objectMapper);
+		Mockito.when(this.jsonModuleBeanManagement.getLocalDateModule()).thenReturn(localDateModule);
+		Mockito.when(this.jsonModuleBeanManagement.getPlaneSizeEnumModule()).thenReturn(planeSizeModule);
+		Mockito.when(this.repository.findAll()).thenReturn(planes);
+		
+		String output = "[{\"capacity\":32,\"fuelTankCapacity\":4500,\"manufacturingDate\":\"2017-05-27\",\"firstFlight\":\"2017-07-01\",\"lastRevision\":\"2022-12-12\",\"size\":\"small\",\"model\":\"cool\",\"tailNumber\":47}]";
+		assertEquals(output, this.service.getAll());
 	}
 	
 	@Test
