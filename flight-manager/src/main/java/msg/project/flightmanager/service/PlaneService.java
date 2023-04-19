@@ -4,20 +4,22 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import msg.project.flightmanager.converter.PlaneConverter;
-import msg.project.flightmanager.dto.PlaneDto;
 import msg.project.flightmanager.enums.PlaneSize;
 import msg.project.flightmanager.exceptions.CompanyException;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.FlightManagerException;
 import msg.project.flightmanager.exceptions.ValidatorException;
+import msg.project.flightmanager.jsonModule.JSONModuleBeanManagement;
 import msg.project.flightmanager.model.Company;
 import msg.project.flightmanager.model.Flight;
 import msg.project.flightmanager.model.Plane;
@@ -38,17 +40,32 @@ public class PlaneService implements IPlaneService {
 	private PlaneConverter planeConverter;
 	@Autowired
 	private CompanyRepository companyRepository;
-
+	@Autowired
+	private JSONModuleBeanManagement jsonModuleBeanManagement;
+	
 	@Override
-	public List<PlaneDto> getAll() {
+	public String getAll() {
 		List<Plane> planes = StreamSupport.stream(this.planeRepository.findAll().spliterator(), false).toList();
 
 		if (planes.isEmpty()) {
 			throw new FlightManagerException(HttpStatus.NO_CONTENT, "No planes found");
 		}
 
-		List<PlaneDto> planeDto = planes.stream().map(this.planeConverter::convertToDTO).collect(Collectors.toList());
-		return planeDto;
+		ObjectMapper objectMapper = this.jsonModuleBeanManagement.getObjectMapper();
+		objectMapper.registerModule(this.jsonModuleBeanManagement.getLocalDateModule());
+		objectMapper.registerModule(this.jsonModuleBeanManagement.getPlaneSizeEnumModule());
+		
+		try {
+			String jsonPlanes = objectMapper.writeValueAsString(planes);
+			
+			return jsonPlanes;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			
+			throw new FlightManagerException(
+					HttpStatus.EXPECTATION_FAILED,
+					"Can not get all planes. Could not serialize the list of planes");
+		}
 	}
 
 	@Override

@@ -6,7 +6,9 @@ import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -35,38 +37,48 @@ import msg.project.flightmanager.enums.PlaneSize;
 @NoArgsConstructor
 @EqualsAndHashCode
 @JsonIgnoreProperties("hibernateLazyInitializer")
-public class Plane {
+public class Plane extends Object{
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	@GenericGenerator(name = "native", strategy = "native")
+	@JsonIgnore
 	@Column(name = "idPlane")
 	private Long idPlane;
 
+	@JsonProperty("capacity")
 	@Column(name = "capacity", nullable = false)
 	private int capacity;
 
+	@JsonProperty("fuelTankCapacity")
 	@Column(name = "fuelTankCapacity", nullable = false)
 	private int fuelTankCapacity;
 
+	@JsonProperty("manufacturingDate")
 	@Column(name = "manufacturingDate")
 	private LocalDate manufacturingDate;
 
+	@JsonProperty("firstFlight")
 	@Column(name = "firstFlight")
 	private LocalDate firstFlight;
 
+	@JsonProperty("lastRevision")
 	@Column(name = "lastRevision")
 	private LocalDate lastRevision;
 
+	@JsonProperty("size")
 	@Column(name = "size", nullable = false)
 	private PlaneSize size;
     
+	@JsonProperty("model")
 	@Column(nullable = false, length = 20)
 	private String model;
 
+	@JsonProperty("tailNumber")
 	@Column(nullable = false, unique = true)
     private int tailNumber;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "company_id")
 	private Company company;
@@ -79,6 +91,7 @@ public class Plane {
 		this.company.getPlanes().remove(this);
 	}
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "plane", fetch = FetchType.LAZY)
 	@Builder.Default
 	private Set<Flight> flights = new HashSet<>();
