@@ -3,6 +3,7 @@ package msg.project.flightmanager.model;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -32,9 +33,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
 @JsonIgnoreProperties("hibernateLazyInitializer")
-
 //daca un aeroport e sters --> anulez zborul si pun aeroportul pe null
 //daca un plane e sters --> anulez zborul, pun activ pe false si pun plane pe null
 public class Flight {
@@ -113,5 +112,42 @@ public class Flight {
 	@OneToMany(mappedBy = "flight", fetch = FetchType.LAZY)
 	@Builder.Default
 	private Set<Report> reports = new HashSet<>();
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Flight other = (Flight) obj;
+		return activ == other.activ && Objects.equals(boardingTime, other.boardingTime) && canceled == other.canceled
+				&& Objects.equals(date, other.date)
+				&& Double.doubleToLongBits(duration) == Double.doubleToLongBits(other.duration)
+				&& Objects.equals(flightName, other.flightName)
+				&& Objects.equals(flightTemplate, other.flightTemplate)
+				&& Objects.equals(from, other.from) 
+				&& Objects.equals(gate, other.gate)
+				&& Objects.equals(idFlight, other.idFlight) 
+				&& Objects.equals(plane, other.plane) 
+				&& Objects.equals(to, other.to);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(activ, boardingTime, canceled, date, duration, flightName, from, gate, idFlight, to);
+	}
+
+	@Override
+	public String toString() {
+		return "Flight [idFlight=" + idFlight + ", flightName=" + flightName + ", date=" + date + ", gate=" + gate
+				+ ", boardingTime=" + boardingTime + ", activ=" + activ + ", canceled=" + canceled + ", duration="
+				+ duration + ", from=" + from + ", to=" + to + ", plane=" + plane.getTailNumber() 
+				+ ", flightTemplate=" + flightTemplate.getIdFlightTemplate()
+				+ "]";
+	}
+	
+	
 
 }

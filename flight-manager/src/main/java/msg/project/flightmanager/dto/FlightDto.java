@@ -21,9 +21,10 @@ public class FlightDto {
 	private String gate;
 	private Time boardingTime;
 	private double duration;
-	private AirportDto from;
-	private AirportDto to;
-	private PlaneDto plane;
+	private String from;
+	private String to;
+	//tailNumber
+	private int plane;
 	private Long flightTemplateID;
 
 }

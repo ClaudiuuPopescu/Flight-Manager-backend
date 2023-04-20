@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import msg.project.flightmanager.converter.AddressConverter;
 import msg.project.flightmanager.converter.CompanyConverter;
 import msg.project.flightmanager.dto.AddressDto;
 import msg.project.flightmanager.dto.CompanyDto;
@@ -16,6 +15,7 @@ import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.ValidatorException;
 import msg.project.flightmanager.model.Address;
 import msg.project.flightmanager.model.Company;
+import msg.project.flightmanager.repository.AddressRepository;
 import msg.project.flightmanager.repository.CompanyRepository;
 import msg.project.flightmanager.service.interfaces.ICompanyService;
 import msg.project.flightmanager.validator.CompanyValidator;
@@ -33,9 +33,9 @@ public class CompanyService implements ICompanyService {
 	private CompanyValidator companyValidator;
 
 	@Autowired
-	private AddressConverter addressConverter;
+	private AddressRepository addressRepository;
 
-	@Override //TODO save the address before saving company
+	@Override // TODO save the address before saving company
 	public void addCompany(CompanyDto companyDTO) throws CompanyException, ValidatorException {
 
 		if (companyDTO.getName() != null) {
@@ -43,11 +43,17 @@ public class CompanyService implements ICompanyService {
 
 				this.companyValidator.validateCompany(companyDTO);
 				Company companyToSave = this.companyConverter.convertToEntity(companyDTO);
+				AddressDto addressDto = companyDTO.getAddress();
+				Optional<Address> addressOptional = this.addressRepository.findByAllAttributes(addressDto.getCountry(),
+						addressDto.getCity(), addressDto.getStreet(), addressDto.getStreetNumber(),
+						addressDto.getApartment());
+				if (addressOptional.isPresent()) {
+					companyToSave.setAddress(addressOptional.get());
+				}
 				this.companyRepository.save(companyToSave);
 			}
 		} else
 			throw new CompanyException("A company should have a name!", ErrorCode.EMPTY_FIELD);
-
 	}
 
 	@Override
@@ -71,12 +77,22 @@ public class CompanyService implements ICompanyService {
 				if (companyByEmail.isPresent() && !companyByEmail.get().equals(oldCompany))
 					throw new CompanyException("A company with this email does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
-				Address address = companyToUpdate.getAddress();
-				Optional<Company> companyByAddress = findByAddress(companyDTO.getAddress());
+				AddressDto addressDto = companyDTO.getAddress();
 
-				if (companyByAddress.isPresent() && !address.equals(oldCompany.getAddress()))
-					throw new CompanyException("A company with this address already exists!",
-							ErrorCode.EXISTING_ATTRIBUTE);
+				Optional<Address> addressOptional = this.addressRepository.findByAllAttributes(addressDto.getCountry(),
+						addressDto.getCity(), addressDto.getStreet(), addressDto.getStreetNumber(),
+						addressDto.getApartment());
+
+				if (addressOptional.isPresent()) {
+
+					Company companyByAddress = findByAddress(addressDto);
+					if (companyByAddress != null && !companyByAddress.equals(oldCompany))
+						throw new CompanyException("A company with this address already exists!",
+								ErrorCode.EXISTING_ATTRIBUTE);
+
+					else
+						companyToUpdate.setAddress(addressOptional.get());
+				}
 
 				companyToUpdate.setIdCompany(oldCompany.getIdCompany());
 				companyToUpdate.setEmployees(oldCompany.getEmployees());
@@ -128,11 +144,22 @@ public class CompanyService implements ICompanyService {
 		return companyOptional;
 	}
 
-	private Optional<Company> findByAddress(AddressDto addressDto) throws CompanyException {
+	private Company findByAddress(AddressDto addressDto) throws CompanyException {
 
-		Address address = this.addressConverter.convertToEntity(addressDto);
-		Optional<Company> companyOptional = this.companyRepository.findCompanyByAddress(address);
-		return companyOptional;
+		Optional<Address> addressOptional = this.addressRepository.findByAllAttributes(addressDto.getCountry(),
+				addressDto.getCity(), addressDto.getStreet(), addressDto.getStreetNumber(), addressDto.getApartment());
+
+		if (addressOptional.isPresent()) {
+			Company company = addressOptional.get().getCompany();
+
+			if (company == null)
+				throw new CompanyException("A company at this address does not exist",
+						ErrorCode.NOT_AN_EXISTING_COMPANY);
+			else
+				return company;
+		} else
+			throw new CompanyException("This address does not exist in the DB",
+					ErrorCode.NOT_AN_EXISTING_ADDRESS_IN_THE_DB);
 	}
 
 	private boolean validateCompanyByNamePhoneNumberAddressAndEmail(CompanyDto companyDto) throws CompanyException {
@@ -146,7 +173,7 @@ public class CompanyService implements ICompanyService {
 		if (findByPhoneNumber(companyDto.getPhoneNumber()).isPresent())
 			throw new CompanyException("A company with this phoneNumber does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
-		if (findByAddress(companyDto.getAddress()).isPresent())
+		if (findByAddress(companyDto.getAddress()) != null)
 			throw new CompanyException("A company with this address does exist!", ErrorCode.EXISTING_ATTRIBUTE);
 
 		return true;

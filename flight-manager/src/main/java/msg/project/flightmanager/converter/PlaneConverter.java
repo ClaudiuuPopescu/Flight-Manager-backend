@@ -2,7 +2,9 @@ package msg.project.flightmanager.converter;
 
 import org.springframework.stereotype.Component;
 
+import jakarta.validation.constraints.Size;
 import msg.project.flightmanager.dto.PlaneDto;
+import msg.project.flightmanager.enums.PlaneSize;
 import msg.project.flightmanager.model.Plane;
 import msg.project.flightmanager.modelHelper.CreatePlaneModel;
 
@@ -26,9 +28,19 @@ public class PlaneConverter implements IConverter<Plane, PlaneDto> {
 	}
 
 	@Override
-	public Plane convertToEntity(PlaneDto dto) {
-		// TODO Auto-generated method stub
-		return null;
+	public Plane convertToEntity(PlaneDto planeDto) {
+		Plane plane = Plane.builder()
+				.model(planeDto.getModel())
+				.tailNumber(planeDto.getTailNumber())
+				.capacity(planeDto.getCapacity())
+				.fuelTankCapacity(planeDto.getFuelTankCapacity())
+				.manufacturingDate(planeDto.getManufacturingDate())
+				.firstFlight(planeDto.getFirstFlight())
+				.lastRevision(planeDto.getLastRevision())
+				.size(PlaneSize.fromSize(planeDto.getSize()))
+				.build();
+	
+		return plane;
 	}
 
 	public Plane createModelToEntity(CreatePlaneModel createPlaneModel) {

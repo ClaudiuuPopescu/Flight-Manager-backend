@@ -16,13 +16,13 @@ import msg.project.flightmanager.model.Company;
 @Transactional
 public interface CompanyRepository extends CrudRepository<Company, Long> {
 
-	@Override
+	@Query("SELECT c FROM Company c)
 	List<Company> findAll();
 
 	@Query("SELECT c FROM Company c WHERE c.name = :name")
 	Optional<Company> findCompanyByName(@Param("name") String name);
 	
-//	@Query("SELECT c FROM Company c WHERE c.phone_number=:phoneNumber")
+//	@Query("SELECT c FROM Company c WHERE c.phone_number = :phoneNumber")
 	Optional<Company> findCompanyByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 	
 	@Query("SELECT c FROM Company c WHERE c.email = :email")

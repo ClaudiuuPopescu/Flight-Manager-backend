@@ -15,11 +15,11 @@ import msg.project.flightmanager.model.FlightTemplate;
 @Transactional
 public interface FlightTemplateRepository extends CrudRepository<FlightTemplate, Long> {
 
-	@Override
+	@Query("SELECT ft FROM FlightTemplate ft")
 	List<FlightTemplate> findAll();
 	
-	@Query("SELECT ft FROM FlightTemplate ft where ft.idFlightTemplate = :idFlightTEmplate")
-	Optional<FlightTemplate> findFlightTemplateByID(@Param("idFlightTEmplate") Long idFlightTEmplate);
+	@Query("SELECT ft FROM FlightTemplate ft where ft.idFlightTemplate = :idFlightTemplate")
+	Optional<FlightTemplate> findFlightTemplateByID(@Param("idFlightTEmplate") Long idFlightTemplate);
 	
 	@Query("SELECT idFlightTemplate FROM FlightTemplate")
 	List<Long> getTemplatesIds();

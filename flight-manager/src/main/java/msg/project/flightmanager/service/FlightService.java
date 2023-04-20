@@ -53,7 +53,8 @@ public class FlightService implements IFlightService {
 	public void addFlight(FlightDto flightDto)
 			throws FlightException, ValidatorException, AirportException, PlaneException {
 
-		if (!this.flightTemplateRepository.getTemplatesIds().contains(flightDto.getFlightTemplateID()))
+		Optional<FlightTemplate> optionalFlightTemplate = this.flightTemplateRepository.findFlightTemplateByID(flightDto.getFlightTemplateID());
+		if (optionalFlightTemplate.isEmpty())
 			throw new FlightException("The flight cannot be made out of an unexisting flight template",
 					ErrorCode.UNEXISTING_TEMPLATE);
 
@@ -64,11 +65,16 @@ public class FlightService implements IFlightService {
 		else {
 
 			this.flightValidator.validateFlight(flightDto);
-			verifyAttributs(flightDto);
+			Plane plane = this.planeRepository.findByTailNumber(flightDto.getPlane()).get();
+			Airport to = this.airportRepository.findByName(flightDto.getTo()).get();
+			Airport from = this.airportRepository.findByName(flightDto.getFrom()).get();
 
 			Flight flight = this.flightConverter.convertToEntity(flightDto);
+			flight.setPlane(plane);
+			flight.setTo(to);
+			flight.setFrom(from);
 			this.flightRepository.save(flight);
-			Plane plane = flight.getPlane();
+			// mi sa nu ia flight fara id
 			changePlane(plane, flight);
 		}
 	}
@@ -82,10 +88,16 @@ public class FlightService implements IFlightService {
 			throw new FlightException("An flight with this ID is NOT in the DB!", ErrorCode.NOT_AN_EXISTING_FLIGHT);
 		else {
 			this.flightValidator.validateFlight(flightDto);
-			verifyAttributs(flightDto);
-
+			Plane plane = this.planeRepository.findByTailNumber(flightDto.getPlane()).get();
+			Airport to = this.airportRepository.findByName(flightDto.getTo()).get();
+			Airport from = this.airportRepository.findByName(flightDto.getFrom()).get();
 			Flight newFlight = this.flightConverter.convertToEntity(flightDto);
-
+			newFlight.setPlane(plane);
+			newFlight.setTo(to);
+			newFlight.setFrom(from);
+			this.flightRepository.save(newFlight);
+			// mi sa nu ia flight fara id
+			changePlane(plane, newFlight);
 			this.flightRepository.save(newFlight);
 
 		}
@@ -147,29 +159,6 @@ public class FlightService implements IFlightService {
 				.collect(Collectors.toList());
 	}
 
-	private void verifyPlane(PlaneDto planeDto) throws PlaneException {
-
-		if (planeDto != null) {
-			Optional<Plane> optionalPlane = this.planeRepository.findByTailNumber(planeDto.getTailNumber());
-			if (optionalPlane.isEmpty())
-				throw new PlaneException(
-						String.format("A plane with this tail number %d does not exist", planeDto.getTailNumber()),
-						ErrorCode.NOT_AN_EXISTING_NAME_IN_THE_DB);
-		}
-	}
-
-	private void verifyAirport(AirportDto airportDto) throws AirportException {
-
-		if (airportDto != null) {
-			Optional<Airport> optionalAirport = this.airportRepository
-					.findByCodeIdentifier(airportDto.getCodeIdentifier());
-			if (optionalAirport.isEmpty())
-				throw new AirportException(
-						String.format("An airport with the given code %s for End does not exist in the DB",
-								airportDto.getCodeIdentifier()),
-						ErrorCode.NOT_AN_EXISTING_ID_IN_THE_DB);
-		}
-	}
 
 	private void verifyDateOfTheFlights(List<Flight> flights) {
 
@@ -192,15 +181,8 @@ public class FlightService implements IFlightService {
 				plane.setFirstFlight(java.time.LocalDate.now());
 
 			}
-
-			plane.addFlight(flight);
 			this.planeRepository.save(plane);
 		}
 	}
 	
-	private void verifyAttributs(FlightDto flightDto) throws AirportException, PlaneException {
-		verifyAirport(flightDto.getFrom());
-		verifyAirport(flightDto.getTo());
-		verifyPlane(flightDto.getPlane());
-	}
 }

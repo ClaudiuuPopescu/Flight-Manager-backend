@@ -1,13 +1,14 @@
 package msg.project.flightmanager.model;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -68,7 +69,7 @@ public class FlightTemplate {
 	@Builder.Default
 	private boolean duration = false;
 
-	@OneToMany(mappedBy = "flightTemplate", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "flightTemplate", fetch = FetchType.LAZY)
 	@Column(name = "flights")
 	private Set<Flight> flights;
 	
@@ -98,7 +99,17 @@ public class FlightTemplate {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(boardingTime, date, duration, flightName, flights, from, gate, idFlightTemplate, plane, to);
+		return Objects.hash(boardingTime, date, duration, flightName, from, gate, idFlightTemplate, plane, to);
 	}
+
+	@Override
+	public String toString() {
+		List<String> flights = this.getFlights().stream().map(flight -> flight.getFlightName()).collect(Collectors.toList());
+		return "FlightTemplate [idFlightTemplate=" + idFlightTemplate + ", flightName=" + flightName + ", from=" + from
+				+ ", plane=" + plane + ", boardingTime=" + boardingTime + ", to=" + to + ", date=" + date + ", gate="
+				+ gate + ", duration=" + duration + ", flights=" + flights + "]";
+	}
+	
+	
 
 }

@@ -32,9 +32,9 @@ public class FlightConverter implements IConverter<Flight, FlightDto>{
 				.gate(flight.getGate())
 				.boardingTime(flight.getBoardingTime())
 				.duration(flight.getDuration())
-				.from(this.airportConverter.convertToDTO(flight.getFrom()))
-				.to(this.airportConverter.convertToDTO(flight.getTo()))
-				.plane(this.planeConverter.convertToDTO(flight.getPlane()))
+				.from(flight.getFrom().getAirportName())
+				.to(flight.getTo().getAirportName())
+				.plane(flight.getPlane().getTailNumber())
 				.flightTemplateID(flight.getFlightTemplate().getIdFlightTemplate())
 				.build();
 	}
@@ -49,9 +49,6 @@ public class FlightConverter implements IConverter<Flight, FlightDto>{
 				.gate(flightDto.getGate())
 				.boardingTime(flightDto.getBoardingTime())
 				.duration(flightDto.getDuration())
-				.from(this.airportConverter.convertToEntity(flightDto.getFrom()))
-				.to(this.airportConverter.convertToEntity(flightDto.getTo()))
-				.plane(this.planeConverter.convertToEntity(flightDto.getPlane()))
 				.flightTemplate(this.flightTemplateRepository.findById(flightDto.getFlightTemplateID()).get())
 				.build();
 	}

@@ -1,6 +1,7 @@
 package msg.project.flightmanager.validator;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,15 +11,19 @@ import msg.project.flightmanager.dto.FlightDto;
 import msg.project.flightmanager.dto.PlaneDto;
 import msg.project.flightmanager.exceptions.ErrorCode;
 import msg.project.flightmanager.exceptions.ValidatorException;
+import msg.project.flightmanager.model.Airport;
+import msg.project.flightmanager.model.Plane;
+import msg.project.flightmanager.repository.AirportRepository;
+import msg.project.flightmanager.repository.PlaneRepository;
 
 @Component
 public class FlightValidator {
 	
 	@Autowired
-	private PlaneValidator planeValidator;
+	private PlaneRepository planeRepository;
 	
 	@Autowired
-	private AirportValidator airportValidator;
+	private AirportRepository airportRepository;
 	
 	
 	public void validateFlight(FlightDto flightDto) throws ValidatorException {
@@ -52,14 +57,18 @@ public class FlightValidator {
 			throw new ValidatorException("The duration should be higher than 10 minutes!", ErrorCode.IS_TOO_SHORT);
 	}
 	
-	private void validateAirport(AirportDto airportDto)  throws ValidatorException {
+	private void validateAirport(String airportName)  throws ValidatorException {
 		
-		airportValidator.validateAirport(airportDto);
+		Optional<Airport> airportOptional = this.airportRepository.findByName(airportName);
+		if(airportOptional.isEmpty())
+			throw new ValidatorException(String.format("An airport with the name %s does not exist!", airportName), ErrorCode.NOT_AN_EXISTING_AIRPORT);
+		
 	}
 	
-	private void validatePlane(PlaneDto planeDto)  throws ValidatorException {
-		
-		planeValidator.validatePlane(planeDto);
+	private void validatePlane(int planeTailNumber)  throws ValidatorException {
+		Optional<Plane> optionalPlane = this.planeRepository.findByTailNumber(planeTailNumber);
+		if(optionalPlane.isEmpty())
+			throw new ValidatorException(String.format("A plane with the tailnumber %d does not exist!", planeTailNumber), ErrorCode.NOT_AN_EXISTING_PLANE);
 	}
 	
 
